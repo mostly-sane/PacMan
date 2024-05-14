@@ -25,7 +25,7 @@ public class PacMan extends ApplicationAdapter {
 	public void create(){
 		test = new Texture(Gdx.files.internal("test.png"));
 		camera = new OrthographicCamera();
-		camera.setToOrtho(true, 500, 560);
+		camera.setToOrtho(false, 500, 560);
 		batch = new SpriteBatch();
 
 		for (int i = 0; i < rows; i++) {
@@ -39,8 +39,17 @@ public class PacMan extends ApplicationAdapter {
 	public void render(){
 		ScreenUtils.clear(0, 0, 0.2f, 1);
 		camera.update();
-
 		batch.setProjectionMatrix(camera.combined);
+
+		redrawGrid();
+
+	}
+
+	public void dispose(){
+
+	}
+
+	public void redrawGrid(){
 		batch.begin();
 		for (int i = 0; i < rows; i++) {
 			for (int j = 0; j < columns; j++) {
@@ -48,9 +57,5 @@ public class PacMan extends ApplicationAdapter {
 			}
 		}
 		batch.end();
-	}
-
-	public void dispose(){
-
 	}
 }
