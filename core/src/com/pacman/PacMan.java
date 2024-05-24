@@ -10,6 +10,9 @@ import com.badlogic.gdx.utils.ScreenUtils;
 public class PacMan extends ApplicationAdapter {
 	private OrthographicCamera camera;
 	private SpriteBatch batch;
+	private PacManController controller;
+
+	public Tile currentTile;
 
 	int rows = 25;
 	int columns = 28;
@@ -33,6 +36,10 @@ public class PacMan extends ApplicationAdapter {
 				grid[i][j] = new Tile(i, j, w, h, true);
 			}
 		}
+
+
+		controller = new PacManController(this);
+		Gdx.input.setInputProcessor(controller);
 	}
 
 	@Override
