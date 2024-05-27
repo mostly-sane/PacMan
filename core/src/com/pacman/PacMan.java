@@ -37,13 +37,17 @@ public class PacMan extends ApplicationAdapter {
 
 	boolean shouldDrawGrid = true;
 
+	private MovingObject movingObject;
+
 	public void create(){
 		super.create();
 		frameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), false);
 		textureRegion = new TextureRegion(frameBuffer.getColorBufferTexture());
 		textureRegion.flip(false, true);
 
-		Gdx.graphics.setContinuousRendering(false);
+		movingObject = new MovingObject(0, 0, 50, 50, "badlogic.jpg", 2, 2);
+
+		Gdx.graphics.setContinuousRendering(true);
 		//Gdx.graphics.requestRendering();
 		//LevelManager.generateLevel("levels/default.txt");
 		grid = LevelManager.loadLevel(Gdx.files.internal("levels/default.txt").file());
@@ -57,11 +61,11 @@ public class PacMan extends ApplicationAdapter {
 		camera.setToOrtho(true, appW, appH);
 		batch = new SpriteBatch();
 
-		controller = new PacManController(this);
-		Gdx.input.setInputProcessor(controller);
+//		controller = new PacManController(this);
+//		Gdx.input.setInputProcessor(controller);
 
 		redrawGrid();
-		Gdx.graphics.requestRendering();
+		//Gdx.graphics.requestRendering();
 	}
 
 	@Override
@@ -69,18 +73,19 @@ public class PacMan extends ApplicationAdapter {
 		camera.update();
 		batch.setProjectionMatrix(camera.combined);
 
+		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(Gdx.gl.GL_COLOR_BUFFER_BIT);
 		batch.begin();
 		batch.draw(textureRegion, 0, 0);
 		batch.end();
 
-		String fps = "FPS: " + Gdx.graphics.getFramesPerSecond();
-		System.out.println(fps);
+		movingObject.update();
+		batch.begin();
+		batch.draw(movingObject.texture, movingObject.x, movingObject.y, movingObject.width, movingObject.height);
+		batch.end();
 
-//		if(shouldDrawGrid){
-//			//ScreenUtils.clear(0, 0, 0.2f, 1);
-//			redrawGrid();
-//		}
+//		String fps = "FPS: " + Gdx.graphics.getFramesPerSecond();
+//		System.out.println(fps);
 	}
 
 	public void dispose(){
@@ -93,6 +98,11 @@ public class PacMan extends ApplicationAdapter {
 		w = appW/19;
 		h = appH/21;
 		shouldDrawGrid = true;
+	}
+
+	@Override
+	public void pause() {
+		System.out.println("Paused");
 	}
 
 	public void redrawGrid(){
