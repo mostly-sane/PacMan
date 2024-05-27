@@ -54,11 +54,12 @@ public class PacMan extends ApplicationAdapter {
 
 	@Override
 	public void render(){
-		super.render();
 		camera.update();
 		batch.setProjectionMatrix(camera.combined);
+		Gdx.gl.glClear(Gdx.gl.GL_COLOR_BUFFER_BIT);
+
 		if(shouldDrawGrid){
-			ScreenUtils.clear(0, 0, 0.2f, 1);
+			//ScreenUtils.clear(0, 0, 0.2f, 1);
 			redrawGrid();
 		}
 	}
@@ -76,8 +77,8 @@ public class PacMan extends ApplicationAdapter {
 	}
 
 	public void redrawGrid(){
-		batch.begin();
 		for (int i = 0; i < rows; i++) {
+			batch.begin();
 			for (int j = 0; j < columns; j++) {
 				// Save the current sprite's position and dimensions
 				float x = grid[i][j].x;
@@ -96,8 +97,9 @@ public class PacMan extends ApplicationAdapter {
 				// Draw the sprite with rotation
 				batch.draw(textureRegion, x, y, originX, originY, width, height, scaleX, scaleY, rotation);
 			}
+			batch.end();
 		}
-		batch.end();
-		shouldDrawGrid = false;
+
+		//shouldDrawGrid = false;
 	}
 }
