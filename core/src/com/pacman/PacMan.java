@@ -21,14 +21,18 @@ public class PacMan extends ApplicationAdapter {
 	int rows;
 	int columns;
 
-	int appW = 500;
-	int appH = 560;
-	int w = 500/25;
-	int h = 560/28;
+	int appW = 475;
+	int appH = 525;
+	int w = appW/19;
+	int h = appH/21;
 
 	Texture test;
 
+	boolean shouldDrawGrid = true;
+
 	public void create(){
+		Gdx.graphics.setContinuousRendering(false);
+		//Gdx.graphics.requestRendering();
 		//LevelManager.generateLevel("levels/default.txt");
 		grid = LevelManager.loadLevel(Gdx.files.internal("levels/default.txt").file());
 
@@ -37,30 +41,38 @@ public class PacMan extends ApplicationAdapter {
 		rows = Integer.parseInt(parts[0]);
 		columns = Integer.parseInt(parts[1]);
 
-		//w = appW / rows;
-		//h = appH / columns;
-
-		test = new Texture(Gdx.files.internal("test.png"));
 		camera = new OrthographicCamera();
-		camera.setToOrtho(true, 500, 560);
+		camera.setToOrtho(true, appW, appH);
 		batch = new SpriteBatch();
 
 		controller = new PacManController(this);
 		Gdx.input.setInputProcessor(controller);
+
+		redrawGrid();
+		Gdx.graphics.requestRendering();
 	}
 
 	@Override
 	public void render(){
-		ScreenUtils.clear(0, 0, 0.2f, 1);
+		super.render();
 		camera.update();
 		batch.setProjectionMatrix(camera.combined);
-
-		redrawGrid();
-
+		if(shouldDrawGrid){
+			ScreenUtils.clear(0, 0, 0.2f, 1);
+			redrawGrid();
+		}
 	}
 
 	public void dispose(){
 
+	}
+
+	public void resize(int width, int height) {
+		appW = width;
+		appH = height;
+		w = appW/19;
+		h = appH/21;
+		shouldDrawGrid = true;
 	}
 
 	public void redrawGrid(){
@@ -68,17 +80,17 @@ public class PacMan extends ApplicationAdapter {
 		for (int i = 0; i < rows; i++) {
 			for (int j = 0; j < columns; j++) {
 				// Save the current sprite's position and dimensions
-				float x = grid[i][27-j].x;
-				float y = grid[i][27-j].y;
-				float originX = w / 2;
-				float originY = h / 2;
+				float x = grid[i][j].x;
+				float y = grid[i][j].y;
+				float originX = w/2;
+				float originY = h/2;
 				float width = w;
 				float height = h;
 				float scaleX = 1;
 				float scaleY = 1;
 				float rotation = 180; // Rotate 180 degrees
 
-				Texture texture = grid[i][27-j].texture;
+				Texture texture = grid[i][j].texture;
 				TextureRegion textureRegion = new TextureRegion(texture);
 
 				// Draw the sprite with rotation
@@ -86,5 +98,6 @@ public class PacMan extends ApplicationAdapter {
 			}
 		}
 		batch.end();
+		shouldDrawGrid = false;
 	}
 }

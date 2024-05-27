@@ -42,9 +42,9 @@ public class Tile extends Rectangle {
 
     public void setTexture(boolean open){
        if(open){
-           texture = new Texture("test.png");
+           texture = new Texture("open.png");
        } else {
-           texture = new Texture("badlogic.jpg");
+           texture = new Texture("blocked.png");
        }
     }
 }

@@ -50,10 +50,10 @@ public class LevelManager {
 
     public static void generateLevel(String level) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(level))) {
-            for (int i = 0; i < 28; i++) {
-                for (int j = 0; j < 25; j++) {
+            for (int i = 0; i < 21; i++) {
+                for (int j = 0; j < 19; j++) {
                     writer.write("1"); // 1 represents an open tile
-                    if (j < 24) {
+                    if (j < 18) {
                         writer.write(",");
                     }
                 }
