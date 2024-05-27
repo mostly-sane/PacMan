@@ -1,4 +1,5 @@
 package com.pacman;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
 import java.util.ArrayList;
 
@@ -9,12 +10,15 @@ public class Tile extends Rectangle {
     double f = 0;
     double g = 0;
     double h = 0;
+    Texture texture;
+    Tile cameFrom = null;
 
     Tile(int i, int j, int w, int h, boolean open){
         super(i * w, j * h, w, h);
         this.i = i;
         this.j = j;
         this.open = open;
+        setTexture(open);
     }
 
     public ArrayList<Tile> getNeighbors(Tile[][] grid){
@@ -34,5 +38,13 @@ public class Tile extends Rectangle {
             result.add(grid[i][j + 1]);
         }
         return result;
+    }
+
+    public void setTexture(boolean open){
+       if(open){
+           texture = new Texture("test.png");
+       } else {
+           texture = new Texture("badlogic.jpg");
+       }
     }
 }
