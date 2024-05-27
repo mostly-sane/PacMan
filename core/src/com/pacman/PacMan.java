@@ -78,8 +78,8 @@ public class PacMan extends ApplicationAdapter {
 
 	public void redrawGrid(){
 		for (int i = 0; i < rows; i++) {
-			batch.begin();
 			for (int j = 0; j < columns; j++) {
+				batch.begin();
 				// Save the current sprite's position and dimensions
 				float x = grid[i][j].x;
 				float y = grid[i][j].y;
@@ -96,8 +96,8 @@ public class PacMan extends ApplicationAdapter {
 
 				// Draw the sprite with rotation
 				batch.draw(textureRegion, x, y, originX, originY, width, height, scaleX, scaleY, rotation);
+				batch.end();
 			}
-			batch.end();
 		}
 
 		//shouldDrawGrid = false;
