@@ -25,7 +25,7 @@ public class LevelManager {
                 parts = line.split(",");
                 for (int j = 0; j < parts.length; j++) {
                     boolean open = Integer.parseInt(parts[j]) == 1;
-                    grid[i][j] = new Tile(i, j, w, h, open);
+                    grid[j][i] = new Tile(j, i, w, h, open);
                 }
                 i++;
             }
@@ -50,10 +50,10 @@ public class LevelManager {
 
     public static void generateLevel(String level) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(level))) {
-            for (int i = 0; i < 25; i++) {
-                for (int j = 0; j < 28; j++) {
+            for (int i = 0; i < 28; i++) {
+                for (int j = 0; j < 25; j++) {
                     writer.write("1"); // 1 represents an open tile
-                    if (j < 27) {
+                    if (j < 24) {
                         writer.write(",");
                     }
                 }

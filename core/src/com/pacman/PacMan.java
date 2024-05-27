@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 
@@ -41,7 +42,7 @@ public class PacMan extends ApplicationAdapter {
 
 		test = new Texture(Gdx.files.internal("test.png"));
 		camera = new OrthographicCamera();
-		camera.setToOrtho(false, 500, 560);
+		camera.setToOrtho(true, 500, 560);
 		batch = new SpriteBatch();
 
 		controller = new PacManController(this);
@@ -66,7 +67,22 @@ public class PacMan extends ApplicationAdapter {
 		batch.begin();
 		for (int i = 0; i < rows; i++) {
 			for (int j = 0; j < columns; j++) {
-				batch.draw(grid[i][j].texture, grid[i][j].x, grid[i][j].y, w, h);
+				// Save the current sprite's position and dimensions
+				float x = grid[i][27-j].x;
+				float y = grid[i][27-j].y;
+				float originX = w / 2;
+				float originY = h / 2;
+				float width = w;
+				float height = h;
+				float scaleX = 1;
+				float scaleY = 1;
+				float rotation = 180; // Rotate 180 degrees
+
+				Texture texture = grid[i][27-j].texture;
+				TextureRegion textureRegion = new TextureRegion(texture);
+
+				// Draw the sprite with rotation
+				batch.draw(textureRegion, x, y, originX, originY, width, height, scaleX, scaleY, rotation);
 			}
 		}
 		batch.end();
