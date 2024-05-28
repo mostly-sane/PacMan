@@ -37,7 +37,8 @@ public class PacMan extends ApplicationAdapter {
 
 	boolean shouldDrawGrid = true;
 
-	private MovingObject movingObject;
+	public MovingObject movingObject;
+	private Texture pacmantexture;
 
 	public void create(){
 		super.create();
@@ -45,7 +46,7 @@ public class PacMan extends ApplicationAdapter {
 		textureRegion = new TextureRegion(frameBuffer.getColorBufferTexture());
 		textureRegion.flip(false, true);
 
-		movingObject = new MovingObject(0, 0, 50, 50, "badlogic.jpg", 2, 2);
+	movingObject = new MovingObject(0, 0, 50, 50, "badlogic.jpg", 2, 2);
 
 		Gdx.graphics.setContinuousRendering(true);
 		//Gdx.graphics.requestRendering();
@@ -61,8 +62,11 @@ public class PacMan extends ApplicationAdapter {
 		camera.setToOrtho(true, appW, appH);
 		batch = new SpriteBatch();
 
-//		controller = new PacManController(this);
-//		Gdx.input.setInputProcessor(controller);
+		pacmantexture = new Texture(Gdx.files.internal("sprites/pacman/0.png"));
+
+
+	controller = new PacManController(this);
+		Gdx.input.setInputProcessor(controller);
 
 		redrawGrid();
 		//Gdx.graphics.requestRendering();
@@ -78,11 +82,13 @@ public class PacMan extends ApplicationAdapter {
 		batch.begin();
 		batch.draw(textureRegion, 0, 0);
 		batch.end();
-
-		movingObject.update();
+controller.update();
+		//movingObject.update();
 		batch.begin();
-		batch.draw(movingObject.texture, movingObject.x, movingObject.y, movingObject.width, movingObject.height);
+		batch.draw(pacmantexture, movingObject.x, movingObject.y, movingObject.width, movingObject.height); // Намалюйте Pacman
 		batch.end();
+
+		//movingObject.update();
 
 //		String fps = "FPS: " + Gdx.graphics.getFramesPerSecond();
 //		System.out.println(fps);

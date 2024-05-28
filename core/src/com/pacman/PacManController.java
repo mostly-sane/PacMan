@@ -2,19 +2,39 @@ package com.pacman;
 
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputAdapter;
-
+import com.badlogic.gdx.Gdx;
 public class PacManController extends InputAdapter {
     private PacMan pacMan;
+    private final int MOVE_AMOUNT = 5;
 
     public PacManController(PacMan pacMan) {
         this.pacMan = pacMan;
     }
 
+
+
+    public void update() {
+        if (Gdx.input.isKeyPressed(Keys.W)) {
+            // Move PacMan down
+            pacMan.movingObject.y -= MOVE_AMOUNT;
+        } else if (Gdx.input.isKeyPressed(Keys.A)) {
+            // Move PacMan left
+            pacMan.movingObject.x -= MOVE_AMOUNT;
+        } else if (Gdx.input.isKeyPressed(Keys.S)) {
+            // Move PacMan up
+            pacMan.movingObject.y += MOVE_AMOUNT;
+        } else if (Gdx.input.isKeyPressed(Keys.D)) {
+            // Move PacMan right
+            pacMan.movingObject.x += MOVE_AMOUNT;
+        }
+    }
+
+
+/*
     @Override
     public boolean keyDown(int keycode) {
         int currentI = pacMan.grid[0].length;
         int currentJ = pacMan.grid.length;
-
 
         for (int i = 0; i < pacMan.grid.length; i++) {
             for (int j = 0; j < pacMan.grid[0].length; j++) {
@@ -25,7 +45,6 @@ public class PacManController extends InputAdapter {
                 }
             }
         }
-
 
         switch (keycode) {
             case Keys.W:
@@ -55,6 +74,9 @@ public class PacManController extends InputAdapter {
             default:
                 return false;
         }
+        pacMan.movingObject.x = pacMan.currentTile.x;
+        pacMan.movingObject.y = pacMan.currentTile.y;
         return true;
     }
+*/
 }
