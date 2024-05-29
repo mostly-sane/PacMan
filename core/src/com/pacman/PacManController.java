@@ -10,9 +10,9 @@ public class PacManController extends InputAdapter {
     private CollisionChecker collisionChecker;
     private final int MOVE_AMOUNT = 5;
 
-    public PacManController(PacMan pacMan) {
+    public PacManController(PacMan pacMan, CollisionChecker collisionChecker) {
         this.pacMan = pacMan;
-        this.collisionChecker = new CollisionChecker(pacMan.grid, 20, 20);
+this.collisionChecker = pacMan.collisionChecker;
     }
 
 
@@ -32,6 +32,7 @@ public class PacManController extends InputAdapter {
         if (!collisionChecker.checkCollision(newPosition)) {
             pacMan.movingObject.x = newPosition.x;
             pacMan.movingObject.y = newPosition.y;
+            System.out.println("Collision: " + collisionChecker.checkCollision(newPosition));
         }
     }
 

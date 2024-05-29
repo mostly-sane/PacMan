@@ -4,13 +4,10 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
-
 
 public class PacMan extends ApplicationAdapter {
 
@@ -32,7 +29,7 @@ public class PacMan extends ApplicationAdapter {
 	int appH = 525;
 	int w = appW/19;
 	int h = appH/21;
-
+public CollisionChecker collisionChecker;
 	Texture test;
 
 	boolean shouldDrawGrid = true;
@@ -66,6 +63,8 @@ public class PacMan extends ApplicationAdapter {
 
 
 		pacmantexture = new Texture(Gdx.files.internal("sprites/pacman/0.png"));
+		collisionChecker = new CollisionChecker(grid);
+		controller = new PacManController(this, collisionChecker);
 		int middleIndex = columns / 2;
 
 		// Start from the bottom row (index 0), check if the tile at the middle index is open
@@ -79,7 +78,7 @@ public class PacMan extends ApplicationAdapter {
 			}
 		}
 
-	controller = new PacManController(this);
+	controller = new PacManController(this, collisionChecker);
 		Gdx.input.setInputProcessor(controller);
 
 		redrawGrid();

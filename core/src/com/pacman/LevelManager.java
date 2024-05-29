@@ -1,5 +1,7 @@
 package com.pacman;
 
+import com.badlogic.gdx.math.Rectangle;
+
 import java.io.*;
 
 public class LevelManager {
@@ -26,6 +28,9 @@ public class LevelManager {
                 for (int j = 0; j < parts.length; j++) {
                     boolean open = Integer.parseInt(parts[j]) == 1;
                     grid[j][i] = new Tile(j, i, w, h, open);
+                    if (!open) {
+                        grid[j][i].rect = new Rectangle(j * w, i * h, w, h);
+                    }
                 }
                 i++;
             }

@@ -12,6 +12,7 @@ public class Tile extends Rectangle {
     double h = 0;
     Texture texture;
     Tile cameFrom = null;
+    public Rectangle rect;
 
     Tile(int i, int j, int w, int h, boolean open){
         super(i * w, j * h, w, h);
@@ -45,6 +46,7 @@ public class Tile extends Rectangle {
            texture = new Texture("open.png");
        } else {
            texture = new Texture("blocked.png");
+           this.rect = new Rectangle(x, y, 20, 20);
        }
     }
 }
