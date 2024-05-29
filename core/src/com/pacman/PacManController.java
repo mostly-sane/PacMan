@@ -3,31 +3,40 @@ package com.pacman;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.math.Vector2;
+
 public class PacManController extends InputAdapter {
     private PacMan pacMan;
+    private CollisionChecker collisionChecker;
     private final int MOVE_AMOUNT = 5;
 
     public PacManController(PacMan pacMan) {
         this.pacMan = pacMan;
+        this.collisionChecker = new CollisionChecker(pacMan.grid, 20, 20);
     }
 
 
 
     public void update() {
+        Vector2 newPosition = new Vector2(pacMan.movingObject.x, pacMan.movingObject.y);
         if (Gdx.input.isKeyPressed(Keys.W)) {
-            // Move PacMan down
-            pacMan.movingObject.y -= MOVE_AMOUNT;
+            newPosition.y -= MOVE_AMOUNT;
         } else if (Gdx.input.isKeyPressed(Keys.A)) {
-            // Move PacMan left
-            pacMan.movingObject.x -= MOVE_AMOUNT;
+            newPosition.x -= MOVE_AMOUNT;
         } else if (Gdx.input.isKeyPressed(Keys.S)) {
-            // Move PacMan up
-            pacMan.movingObject.y += MOVE_AMOUNT;
+            newPosition.y += MOVE_AMOUNT;
         } else if (Gdx.input.isKeyPressed(Keys.D)) {
-            // Move PacMan right
-            pacMan.movingObject.x += MOVE_AMOUNT;
+            newPosition.x += MOVE_AMOUNT;
+        }
+
+        if (!collisionChecker.checkCollision(newPosition)) {
+            pacMan.movingObject.x = newPosition.x;
+            pacMan.movingObject.y = newPosition.y;
         }
     }
+
+
+
 
 
 /*

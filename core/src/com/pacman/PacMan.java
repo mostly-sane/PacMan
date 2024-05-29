@@ -62,8 +62,22 @@ public class PacMan extends ApplicationAdapter {
 		camera.setToOrtho(true, appW, appH);
 		batch = new SpriteBatch();
 
-		pacmantexture = new Texture(Gdx.files.internal("sprites/pacman/0.png"));
 
+
+
+		pacmantexture = new Texture(Gdx.files.internal("sprites/pacman/0.png"));
+		int middleIndex = columns / 2;
+
+		// Start from the bottom row (index 0), check if the tile at the middle index is open
+		for (int i = middleIndex; i < rows || i >= 0; i += (i >= middleIndex ? 1 : -1)) {
+			Tile tile = grid[5][i];
+			if (tile.open) {
+				// If it's open, set the Pacman's position to this tile's position
+				movingObject.x = tile.x;
+				movingObject.y = tile.y;
+				break;
+			}
+		}
 
 	controller = new PacManController(this);
 		Gdx.input.setInputProcessor(controller);
@@ -86,6 +100,7 @@ controller.update();
 		//movingObject.update();
 		batch.begin();
 		batch.draw(pacmantexture, movingObject.x, movingObject.y, movingObject.width, movingObject.height); // Намалюйте Pacman
+
 		batch.end();
 
 		//movingObject.update();
@@ -105,6 +120,9 @@ controller.update();
 		h = appH/21;
 		shouldDrawGrid = true;
 	}
+
+
+
 
 	@Override
 	public void pause() {
