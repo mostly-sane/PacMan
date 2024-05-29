@@ -98,8 +98,7 @@ public CollisionChecker collisionChecker;
 controller.update();
 		//movingObject.update();
 		batch.begin();
-		batch.draw(pacmantexture, movingObject.x, movingObject.y, movingObject.width, movingObject.height); // Намалюйте Pacman
-
+		batch.draw(pacmantexture, movingObject.x, movingObject.y, w, h); // Draw Pacman
 		batch.end();
 
 		//movingObject.update();
