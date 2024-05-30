@@ -29,6 +29,8 @@ public class PacMan extends ApplicationAdapter {
 	int appH = 525;
 	int w = appW/19;
 	int h = appH/21;
+	private float pacWidth = 18;
+	private float pacHeight = 18;
 public CollisionChecker collisionChecker;
 	Texture test;
 
@@ -98,7 +100,7 @@ public CollisionChecker collisionChecker;
 controller.update();
 		//movingObject.update();
 		batch.begin();
-		batch.draw(pacmantexture, movingObject.x, movingObject.y, w, h); // Draw Pacman
+		batch.draw(pacmantexture, movingObject.x, movingObject.y, pacWidth, pacHeight); // Draw Pacman
 		batch.end();
 
 		//movingObject.update();

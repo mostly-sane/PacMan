@@ -8,7 +8,7 @@ public class CollisionChecker {
 
     public CollisionChecker(Tile[][] grid) {
         this.grid = grid;
-        this.pacManRect = new Rectangle(0, 0, 20, 20);
+        this.pacManRect = new Rectangle(0, 0, 23, 23);
     }
 
     public boolean checkCollision(Vector2 newPosition) {
