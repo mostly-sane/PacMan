@@ -1,17 +1,17 @@
-package com.pacman;
+package com.pacman.Map;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
 import java.util.ArrayList;
 
 public class Tile extends Rectangle {
-    int i = 0;
-    int j = 0;
-    boolean open;
-    double f = 0;
-    double g = 0;
-    double h = 0;
-    Texture texture;
-    Tile cameFrom = null;
+    public int i = 0;
+    public int j = 0;
+    public boolean open;
+    public double f = 0;
+    public double g = 0;
+    public double h = 0;
+    public Texture texture;
+    public Tile cameFrom = null;
     public Rectangle rect;
 
     Tile(int i, int j, int w, int h, boolean open){

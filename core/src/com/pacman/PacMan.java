@@ -8,8 +8,11 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
-
-import java.util.ArrayList;
+import com.pacman.Characters.Player;
+import com.pacman.Components.CollisionComponent;
+import com.pacman.Components.PlayerController;
+import com.pacman.Map.LevelManager;
+import com.pacman.Map.Tile;
 
 public class PacMan extends ApplicationAdapter {
 	private FrameBuffer frameBuffer;
@@ -17,9 +20,11 @@ public class PacMan extends ApplicationAdapter {
 
 	private OrthographicCamera camera;
 	private SpriteBatch batch;
-	private PacManController controller;
+	private PlayerController controller;
+	private Player player;
+	private int playerWidth;
+	private int playerHeight;
 
-	public Tile currentTile;
 	Tile[][] grid;
 
 	String levelParams;
@@ -30,23 +35,23 @@ public class PacMan extends ApplicationAdapter {
 	int appH = 525;
 	int w = appW/19;
 	int h = appH/21;
-	private float pacWidth = 18;
-	private float pacHeight = 18;
-public CollisionChecker collisionChecker;
-	Texture test;
 
 	boolean shouldDrawGrid = true;
 
-	public MovingObject movingObject;
-	private Texture pacmantexture;
-
 	public void create(){
 		super.create();
+
+		initializeLevel();
+
+		initializePlayer();
+
+		redrawGrid();
+	}
+
+	private void initializeLevel() {
 		frameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), false);
 		textureRegion = new TextureRegion(frameBuffer.getColorBufferTexture());
 		textureRegion.flip(false, true);
-
-	movingObject = new MovingObject(0, 0, 50, 50, "badlogic.jpg", 2, 2);
 
 		Gdx.graphics.setContinuousRendering(true);
 		grid = LevelManager.loadLevel(Gdx.files.internal("levels/default.txt").file());
@@ -59,29 +64,25 @@ public CollisionChecker collisionChecker;
 		camera = new OrthographicCamera();
 		camera.setToOrtho(true, appW, appH);
 		batch = new SpriteBatch();
+	}
 
-		pacmantexture = new Texture(Gdx.files.internal("sprites/pacman/0.png"));
-		collisionChecker = new CollisionChecker(grid);
-		controller = new PacManController(this, collisionChecker);
-		int middleIndex = columns / 2;
+	private void initializePlayer() {
+		Texture pacmantexture = new Texture(Gdx.files.internal("sprites/pacman/0.png"));
+		player = new Player(20, 20, pacmantexture);
+		CollisionComponent collisionComponent = new CollisionComponent(grid);
 
-		// Start from the bottom row (index 0), check if the tile at the middle index is open
-		for (int i = middleIndex; i < rows || i >= 0; i += (i >= middleIndex ? 1 : -1)) {
-			Tile tile = grid[5][i];
-			if (tile.open) {
-				// If it's open, set the Pacman's position to this tile's position
-				movingObject.x = tile.x;
-				movingObject.y = tile.y;
-				break;
-			}
-		}
+		player.setCollisionComponent(collisionComponent);
+		controller = new PlayerController(player);
+		player.setController(controller);
 
-		controller = new PacManController(this, collisionChecker);
+		playerWidth = player.getWidth();
+		playerHeight = player.getHeight();
+
+		player.setPosition(Player.getPositionByIndex(1, 1, w, h));
+
+//		int middleIndex = columns / 2; ???
+
 		Gdx.input.setInputProcessor(controller);
-		redrawGrid();
-
-		ArrayList<Tile> path = Utils.getShortestPath(grid, grid[1][1], grid[rows - 1][columns - 1]);
-		System.out.println(path);
 	}
 
 	@Override
@@ -95,15 +96,15 @@ public CollisionChecker collisionChecker;
 		batch.draw(textureRegion, 0, 0);
 		batch.end();
 		controller.update();
+
 		//movingObject.update();
+
 		batch.begin();
-		batch.draw(pacmantexture, movingObject.x, movingObject.y, pacWidth, pacHeight); // Draw Pacman
+		batch.draw(player.getTexture(), player.getPosition().getX(), player.getPosition().getY(),
+				playerWidth, playerHeight); // Draw Pacman
 		batch.end();
 
 		//movingObject.update();
-
-//		String fps = "FPS: " + Gdx.graphics.getFramesPerSecond();
-//		System.out.println(fps);
 	}
 
 	public void dispose(){
@@ -142,7 +143,6 @@ public CollisionChecker collisionChecker;
 				TextureRegion textureRegion = new TextureRegion(texture);
 
 				batch.begin();
-				// Draw the sprite with rotation
 				batch.draw(textureRegion, x, y, originX, originY, width, height, scaleX, scaleY, rotation);
 				batch.end();
 			}

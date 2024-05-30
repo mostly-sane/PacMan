@@ -1,9 +1,9 @@
 package com.pacman;
 
+import com.pacman.Map.Tile;
+
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 
 public class Utils {
     public static ArrayList<Tile> getShortestPath(Tile[][] grid, Tile start, Tile end){
@@ -78,4 +78,5 @@ public class Utils {
         }
         return result;
     }
+
 }

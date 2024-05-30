@@ -1,6 +1,4 @@
-package com.pacman;
-
-import com.badlogic.gdx.math.Rectangle;
+package com.pacman.Map;
 
 import java.io.*;
 

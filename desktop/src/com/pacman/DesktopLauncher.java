@@ -8,9 +8,10 @@ import com.pacman.PacMan;
 public class DesktopLauncher {
 	public static void main (String[] arg) {
 		Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
-		config.setForegroundFPS(60);
+		config.setTransparentFramebuffer(false);
+		config.setForegroundFPS(120);
 		config.setTitle("PacMan");
-		config.setWindowedMode(500, 560);
+		config.setWindowedMode(475, 525);
 		new Lwjgl3Application(new PacMan(), config);
 	}
 }
