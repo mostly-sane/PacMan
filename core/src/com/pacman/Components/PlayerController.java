@@ -6,6 +6,16 @@ import com.badlogic.gdx.math.Vector2;
 import com.pacman.Characters.Player;
 
 public class PlayerController extends InputAdapter {
+
+    public enum movementDirectionEnum{
+        UP,
+        DOWN,
+        LEFT,
+        RIGHT
+    }
+
+    movementDirectionEnum currentDirection = movementDirectionEnum.LEFT;
+
     private Player player;
     private CollisionComponent CollisionComponent;
     private final int MOVE_AMOUNT = 3;
@@ -39,15 +49,19 @@ public class PlayerController extends InputAdapter {
         switch (keycode) {
             case Input.Keys.W:
                 movementDirection.set(0, -1); // Move up
+                currentDirection = movementDirectionEnum.UP;
                 break;
             case Input.Keys.A:
                 movementDirection.set(-1, 0); // Move left
+                currentDirection = movementDirectionEnum.LEFT;
                 break;
             case Input.Keys.S:
                 movementDirection.set(0, 1); // Move down
+                currentDirection = movementDirectionEnum.DOWN;
                 break;
             case Input.Keys.D:
                 movementDirection.set(1, 0); // Move right
+                currentDirection = movementDirectionEnum.RIGHT;
                 break;
         }
         return true;

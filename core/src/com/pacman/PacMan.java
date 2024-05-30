@@ -4,11 +4,13 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.pacman.Characters.Player;
+import com.pacman.Components.AnimationComponent;
 import com.pacman.Components.CollisionComponent;
 import com.pacman.Components.PlayerController;
 import com.pacman.Map.LevelManager;
@@ -18,9 +20,14 @@ public class PacMan extends ApplicationAdapter {
 	private FrameBuffer frameBuffer;
 	private TextureRegion textureRegion;
 
+	float elapsedTime = 0;
+	TextureRegion[] frames = new TextureRegion[3];
+	Animation testAnimation;
+
 	private OrthographicCamera camera;
 	private SpriteBatch batch;
 	private PlayerController controller;
+	private AnimationComponent animationComponent;
 	private Player player;
 	private int playerWidth;
 	private int playerHeight;
@@ -68,25 +75,27 @@ public class PacMan extends ApplicationAdapter {
 
 	private void initializePlayer() {
 		Texture pacmantexture = new Texture(Gdx.files.internal("sprites/pacman/0.png"));
-		player = new Player(20, 20, pacmantexture);
+		player = new Player(20, 20, pacmantexture, this);
 		CollisionComponent collisionComponent = new CollisionComponent(grid);
 
 		player.setCollisionComponent(collisionComponent);
 		controller = new PlayerController(player);
 		player.setController(controller);
 
+		animationComponent = new AnimationComponent(player);
+		player.setAnimationComponent(animationComponent);
+
 		playerWidth = player.getWidth();
 		playerHeight = player.getHeight();
 
 		player.setPosition(Player.getPositionByIndex(1, 1, w, h));
-
-//		int middleIndex = columns / 2; ???
 
 		Gdx.input.setInputProcessor(controller);
 	}
 
 	@Override
 	public void render(){
+		elapsedTime += Gdx.graphics.getDeltaTime();
 		camera.update();
 		batch.setProjectionMatrix(camera.combined);
 
@@ -97,11 +106,12 @@ public class PacMan extends ApplicationAdapter {
 		batch.end();
 		controller.update();
 
-		//movingObject.update();
-
 		batch.begin();
-		batch.draw(player.getTexture(), player.getPosition().getX(), player.getPosition().getY(),
-				playerWidth, playerHeight); // Draw Pacman
+		TextureRegion currentFrame = (TextureRegion) animationComponent.getCurrentAnimation()
+				.getKeyFrame(elapsedTime, true);
+		batch.draw(currentFrame, player.getPosition().getX(), player.getPosition().getY(),
+				playerWidth / 2, playerHeight / 2, playerWidth, playerHeight,
+				1, 1, animationComponent.getRotation());
 		batch.end();
 
 		//movingObject.update();

@@ -2,19 +2,22 @@ package com.pacman.Characters;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.pacman.Components.CollisionComponent;
+import com.pacman.PacMan;
 import com.pacman.Pair;
 
 public class Character {
+    protected PacMan game;
     protected int width;
     protected int height;
     protected CollisionComponent collisionComponent;
     protected Pair<Float, Float> position = new Pair<>(0f, 0f);
     protected Texture texture;
 
-    public Character(int width, int height, Texture texture) {
+    public Character(int width, int height, Texture texture, PacMan game) {
         this.width = width;
         this.height = height;
         this.texture = texture;
+        this.game = game;
     }
 
     public CollisionComponent getCollisionComponent() {
