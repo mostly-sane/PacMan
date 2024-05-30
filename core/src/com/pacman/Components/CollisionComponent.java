@@ -10,7 +10,7 @@ public class CollisionComponent {
 
     public CollisionComponent(Tile[][] grid) {
         this.grid = grid;
-        this.pacManRect = new Rectangle(0, 0, 23, 23);
+        this.pacManRect = new Rectangle(0, 0, 26, 26);
     }
 
     public boolean collides(Vector2 newPosition) {
