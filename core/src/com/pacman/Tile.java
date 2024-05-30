@@ -24,7 +24,7 @@ public class Tile extends Rectangle {
 
     public ArrayList<Tile> getNeighbors(Tile[][] grid){
         ArrayList<Tile> result = new ArrayList<>();
-        int i = this.j;
+        int i = this.i;
         int j = this.j;
         if(i > 0){
             result.add(grid[i - 1][j]);
@@ -48,5 +48,15 @@ public class Tile extends Rectangle {
            texture = new Texture("blocked.png");
            this.rect = new Rectangle(x, y, 20, 20);
        }
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Tile && ((Tile) obj).i == i && ((Tile) obj).j == j;
+    }
+
+    @Override
+    public String toString() {
+        return i + "," + j;
     }
 }

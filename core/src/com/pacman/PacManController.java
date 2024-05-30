@@ -32,7 +32,7 @@ this.collisionChecker = pacMan.collisionChecker;
         if (!collisionChecker.checkCollision(newPosition)) {
             pacMan.movingObject.x = newPosition.x;
             pacMan.movingObject.y = newPosition.y;
-            System.out.println("Collision: " + collisionChecker.checkCollision(newPosition));
+            //System.out.println("Collision: " + collisionChecker.checkCollision(newPosition));
         }
     }
 

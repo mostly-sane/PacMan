@@ -9,8 +9,9 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 
-public class PacMan extends ApplicationAdapter {
+import java.util.ArrayList;
 
+public class PacMan extends ApplicationAdapter {
 	private FrameBuffer frameBuffer;
 	private TextureRegion textureRegion;
 
@@ -29,9 +30,7 @@ public class PacMan extends ApplicationAdapter {
 	int appH = 525;
 	int w = appW/19;
 	int h = appH/21;
-public CollisionChecker collisionChecker;
-	Texture test;
-
+	public CollisionChecker collisionChecker;
 	boolean shouldDrawGrid = true;
 
 	public MovingObject movingObject;
@@ -46,8 +45,6 @@ public CollisionChecker collisionChecker;
 	movingObject = new MovingObject(0, 0, 50, 50, "badlogic.jpg", 2, 2);
 
 		Gdx.graphics.setContinuousRendering(true);
-		//Gdx.graphics.requestRendering();
-		//LevelManager.generateLevel("levels/default.txt");
 		grid = LevelManager.loadLevel(Gdx.files.internal("levels/default.txt").file());
 
 		levelParams = LevelManager.getLevelParams(Gdx.files.internal("levels/default.txt").file());
@@ -58,9 +55,6 @@ public CollisionChecker collisionChecker;
 		camera = new OrthographicCamera();
 		camera.setToOrtho(true, appW, appH);
 		batch = new SpriteBatch();
-
-
-
 
 		pacmantexture = new Texture(Gdx.files.internal("sprites/pacman/0.png"));
 		collisionChecker = new CollisionChecker(grid);
@@ -78,11 +72,12 @@ public CollisionChecker collisionChecker;
 			}
 		}
 
-	controller = new PacManController(this, collisionChecker);
+		controller = new PacManController(this, collisionChecker);
 		Gdx.input.setInputProcessor(controller);
-
 		redrawGrid();
-		//Gdx.graphics.requestRendering();
+
+		ArrayList<Tile> path = Utils.getShortestPath(grid, grid[1][1], grid[rows - 1][columns - 1]);
+		System.out.println(path);
 	}
 
 	@Override
@@ -95,7 +90,7 @@ public CollisionChecker collisionChecker;
 		batch.begin();
 		batch.draw(textureRegion, 0, 0);
 		batch.end();
-controller.update();
+		controller.update();
 		//movingObject.update();
 		batch.begin();
 		batch.draw(pacmantexture, movingObject.x, movingObject.y, w, h); // Draw Pacman
@@ -118,9 +113,6 @@ controller.update();
 		h = appH/21;
 		shouldDrawGrid = true;
 	}
-
-
-
 
 	@Override
 	public void pause() {
@@ -152,6 +144,17 @@ controller.update();
 			}
 		}
 		frameBuffer.end();
-		//shouldDrawGrid = false;
+	}
+
+	public void closeTile(int i, int j){
+		grid[i][j].open = false;
+		grid[i][j].setTexture(false);
+		redrawGrid();
+	}
+
+	public void openTile(int i, int j){
+		grid[i][j].open = true;
+		grid[i][j].setTexture(true);
+		redrawGrid();
 	}
 }
