@@ -37,6 +37,40 @@ public class LevelManager {
         return grid;
     }
 
+    public static Pill[][] loadPills(File level) {
+        Pill[][] grid;
+        String line;
+        int x;
+        int y;
+        int w;
+        int h;
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(level))) {
+            line = reader.readLine();
+            String[] parts = line.split(",");
+            x = Integer.parseInt(parts[0]);
+            y = Integer.parseInt(parts[1]);
+            w = Integer.parseInt(parts[2]);
+            h = Integer.parseInt(parts[3]);
+            grid = new Pill[x][y];
+
+            int i = 0;
+            while ((line = reader.readLine()) != null) {
+                parts = line.split(",");
+                for (int j = 0; j < parts.length; j++) {
+                    boolean active = Integer.parseInt(parts[j]) == 1;
+                    grid[j][i] = new Pill(j * w, i * h, w, h, active);
+                }
+                i++;
+            }
+        }
+        catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        return grid;
+    }
+
     public static String getLevelParams(File level){
         String line;
         try (BufferedReader reader = new BufferedReader(new FileReader(level))) {

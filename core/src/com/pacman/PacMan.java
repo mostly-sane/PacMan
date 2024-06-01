@@ -15,6 +15,7 @@ import com.pacman.Components.CollisionComponent;
 import com.pacman.Components.PlayerController;
 import com.pacman.Map.LevelManager;
 import com.pacman.Map.Tile;
+import com.pacman.Map.Pill;
 
 public class PacMan extends ApplicationAdapter {
 	private FrameBuffer frameBuffer;
@@ -33,6 +34,7 @@ public class PacMan extends ApplicationAdapter {
 	private int playerHeight;
 
 	Tile[][] grid;
+	Pill[][] pillGrid;
 
 	String levelParams;
 	int rows;
@@ -62,6 +64,7 @@ public class PacMan extends ApplicationAdapter {
 
 		Gdx.graphics.setContinuousRendering(true);
 		grid = LevelManager.loadLevel(Gdx.files.internal("levels/default.txt").file());
+		pillGrid = LevelManager.loadPills(Gdx.files.internal("levels/pills.txt").file());
 
 		levelParams = LevelManager.getLevelParams(Gdx.files.internal("levels/default.txt").file());
 		String[] parts = levelParams.split(",");
@@ -112,13 +115,36 @@ public class PacMan extends ApplicationAdapter {
 		batch.draw(currentFrame, player.getPosition().getX(), player.getPosition().getY(),
 				playerWidth / 2, playerHeight / 2, playerWidth, playerHeight,
 				1, 1, animationComponent.getRotation());
+		drawPills();
 		batch.end();
 
 		//movingObject.update();
 	}
 
-	public void dispose(){
+	private void drawPills() {
+		for (int i = 0; i < rows; i++) {
+			for (int j = 0; j < columns; j++) {
+				if (pillGrid[i][j].active) {
+					batch.draw(pillGrid[i][j].texture, pillGrid[i][j].x, pillGrid[i][j].y,
+							pillGrid[i][j].width, pillGrid[i][j].height);
+				}
+			}
+		}
+	}
 
+	public void dispose(){
+		batch.dispose();
+		frameBuffer.dispose();
+		for (Tile[] row : grid) {
+			for (Tile tile : row) {
+				tile.texture.dispose();
+			}
+		}
+		for (Pill[] row : pillGrid) {
+			for (Pill pill : row) {
+				pill.texture.dispose();
+			}
+		}
 	}
 
 	public void resize(int width, int height) {
@@ -170,5 +196,10 @@ public class PacMan extends ApplicationAdapter {
 		grid[i][j].open = true;
 		grid[i][j].setTexture(true);
 		redrawGrid();
+	}
+
+	public void collectPill(int i, int j){
+		pillGrid[i][j].active = false;
+		pillGrid[i][j].setTexture(false);
 	}
 }
