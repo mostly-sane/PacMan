@@ -112,9 +112,18 @@ public class PacMan extends ApplicationAdapter {
 		batch.draw(currentFrame, player.getPosition().getX(), player.getPosition().getY(),
 				playerWidth / 2, playerHeight / 2, playerWidth, playerHeight,
 				1, 1, animationComponent.getRotation());
-		batch.end();
 
-		//movingObject.update();
+		// Draw the pills
+		for (int i = 0; i < rows; i++) {
+			for (int j = 0; j < columns; j++) {
+				Tile tile = grid[i][j];
+				if (tile.open && tile.pillPresent) {
+					batch.draw(tile.pill, tile.x, tile.y, w, h);
+				}
+			}
+		}
+
+		batch.end();
 	}
 
 	public void dispose(){

@@ -12,6 +12,8 @@ public class Tile extends Rectangle {
     public double h = 0;
     public Texture texture;
     public Tile cameFrom = null;
+    public Texture pill;
+    public boolean pillPresent = true;
     public Rectangle rect;
 
     Tile(int i, int j, int w, int h, boolean open){
@@ -44,6 +46,7 @@ public class Tile extends Rectangle {
     public void setTexture(boolean open){
        if(open){
            texture = new Texture("open.png");
+           pill = new Texture("sprites/map/pill.png");
        } else {
            texture = new Texture("blocked.png");
            this.rect = new Rectangle(x, y, 20, 20);
