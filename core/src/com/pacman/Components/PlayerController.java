@@ -46,8 +46,6 @@ public class PlayerController extends InputAdapter {
             // Stop movement
             movementDirection.set(0, 0);
         }
-
-
     }
 
     // Key press events
