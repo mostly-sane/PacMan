@@ -2,6 +2,7 @@ package com.pacman.Characters;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.pacman.Components.CollisionComponent;
+import com.pacman.Map.Tile;
 import com.pacman.PacMan;
 import com.pacman.Pair;
 
@@ -78,5 +79,30 @@ public class Character {
 
     public static Pair<Float, Float> getPositionByIndex(int i, int j, int w, int h) {
         return new Pair<>((float) i * w, (float) j * h);
+    }
+
+    protected Tile getCurrentTile() {
+        int i = (int) (position.getX() / width);
+        int j = (int) (position.getY() / height);
+
+        // Check if the calculated indices are within the grid bounds
+        if (i < 0 || i >= game.grid.length || j < 0 || j >= game.grid[0].length) {
+            // If not, throw an exception or return a default value
+            throw new IllegalArgumentException("Position is out of grid bounds");
+        }
+
+        Tile tile = game.grid[i][j];
+        System.out.println("Current tile: " + tile);
+        return tile;
+    }
+
+    protected Pair<Integer, Integer> getTile() {
+        int i = (int) (position.getX() / width);
+        int j = (int) (position.getY() / height);
+        return new Pair<>(i, j);
+    }
+
+    protected Pair<Integer, Integer> getTileByIndex(int x, int y) {
+        return new Pair<>(x * width, y * height);
     }
 }

@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+import com.pacman.Characters.Ghost;
 import com.pacman.Characters.Player;
 import com.pacman.Components.AnimationComponent;
 import com.pacman.Components.CollisionComponent;
@@ -16,6 +17,9 @@ import com.pacman.Components.PlayerController;
 import com.pacman.Map.LevelManager;
 import com.pacman.Map.Tile;
 import com.pacman.Map.Pill;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class PacMan extends ApplicationAdapter {
 	private FrameBuffer frameBuffer;
@@ -29,11 +33,14 @@ public class PacMan extends ApplicationAdapter {
 	private SpriteBatch batch;
 	private PlayerController controller;
 	private AnimationComponent animationComponent;
-	private Player player;
+	public Player player;
+
+	public Ghost testGhost;
+
 	private int playerWidth;
 	private int playerHeight;
 
-	Tile[][] grid;
+	public Tile[][] grid;
 	Pill[][] pillGrid;
 
 	String levelParams;
@@ -42,8 +49,8 @@ public class PacMan extends ApplicationAdapter {
 
 	int appW = 475;
 	int appH = 525;
-	int w = appW/19;
-	int h = appH/21;
+	public int w = appW/19;
+	public int h = appH/21;
 
 	boolean shouldDrawGrid = true;
 
@@ -53,6 +60,21 @@ public class PacMan extends ApplicationAdapter {
 		initializeLevel();
 
 		initializePlayer();
+
+		testGhost = new Ghost(20, 20, new Texture(Gdx.files.internal("sprites/ghosts/f-3.png")), this);
+		testGhost.setPosition(Player.getPositionByIndex(14, 15, w, h));
+
+//		Timer timer = new Timer();
+//		TimerTask task = new TimerTask() {
+//			@Override
+//			public void run() {
+//				System.out.println("Recalculating path");
+//				testGhost.recalculatePath();
+//			}
+//		};
+
+		// Schedule the task to run every 1 second
+		//timer.scheduleAtFixedRate(task, 0, 1000);
 
 		redrawGrid();
 	}
@@ -108,6 +130,7 @@ public class PacMan extends ApplicationAdapter {
 		batch.draw(textureRegion, 0, 0);
 		batch.end();
 		controller.update();
+		//testGhost.update();
 
 		batch.begin();
 		TextureRegion currentFrame = (TextureRegion) animationComponent.getCurrentAnimation()
@@ -117,6 +140,12 @@ public class PacMan extends ApplicationAdapter {
 				1, 1, animationComponent.getRotation());
 		drawPills();
 		batch.end();
+
+		batch.begin();
+		batch.draw(testGhost.getTexture(), testGhost.getPosition().getX(), testGhost.getPosition().getY(),
+				playerWidth / 2, playerHeight / 2, playerWidth, playerHeight);
+		batch.end();
+
 
 		//movingObject.update();
 	}
