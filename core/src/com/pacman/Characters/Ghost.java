@@ -1,46 +1,53 @@
 package com.pacman.Characters;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.pacman.AI.Node;
 import com.pacman.Map.Tile;
 import com.pacman.PacMan;
 import com.pacman.Pair;
+import com.pacman.Utils;
 
 import java.util.*;
 
 public class Ghost extends Character{
     Float speed = 0.5f;
-    ArrayList<Tile> path;
-    ArrayList<Tile> reversedPath = new ArrayList<>();
-    ArrayList<Tile> result = new ArrayList<>();
+    Node[][] nodes;
+    ArrayList<Node> path = new ArrayList<>();
+    Tile targetTile;
 
     public Ghost(int width, int height, Texture texture, PacMan game) {
         super(width, height, texture, game);
-        Timer timer = new Timer();
-        timer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                recalculatePath();
+        convertToNodes(game.grid);
+    }
+
+    public void convertToNodes(Tile[][] grid){
+        nodes = new Node[grid.length][grid[0].length];
+        for(int i = 0; i < grid.length; i++){
+            for(int j = 0; j < grid[0].length; j++){
+                nodes[i][j] = new Node(new Pair<>(i, j));
+                nodes[i][j].isOpen = grid[i][j].open;
             }
-        }, 0, 100);
+        }
+        for(int i = 0; i < grid.length; i++){
+            for(int j = 0; j < grid[0].length; j++){
+                if(i > 0 && nodes[i-1][j].isOpen){
+                    nodes[i][j].adjacentNodes.add(nodes[i-1][j]);
+                }
+                if(i < grid.length - 1 && nodes[i+1][j].isOpen){
+                    nodes[i][j].adjacentNodes.add(nodes[i+1][j]);
+                }
+                if(j > 0 && nodes[i][j-1].isOpen){
+                    nodes[i][j].adjacentNodes.add(nodes[i][j-1]);
+                }
+                if(j < grid[0].length - 1 && nodes[i][j+1].isOpen){
+                    nodes[i][j].adjacentNodes.add(nodes[i][j+1]);
+                }
+            }
+        }
     }
 
     public void update(){
-        if (path == null || path.isEmpty()) {
-            return;
-        }
-        Tile targetTile = path.get(0);
         Pair<Float, Float> targetPosition = new Pair<>(targetTile.x, targetTile.y);
-
-        if(Math.abs(position.getX() - targetPosition.getX()) < speed){
-            if(Math.abs(position.getY() - targetPosition.getY()) < speed){
-                path.remove(0); // remove the reached tile from the path
-                if(path.isEmpty()){
-                    return; // if there are no more tiles in the path, exit the method
-                }
-                targetTile = path.get(0); // get the next tile in the path
-                targetPosition = new Pair<>(targetTile.x, targetTile.y);
-            }
-        }
 
         if(position.getX() < targetPosition.getX()){
             position.setX(position.getX() + speed);
@@ -54,69 +61,85 @@ public class Ghost extends Character{
     }
 
     public void recalculatePath() {
-        path = getShortestPath(game.grid, getCurrentTile(), game.player.getCurrentTile());
-        System.out.println(game.player.getCurrentTile());
+        findPath(Utils.getCurrentTile(this, game.grid), Utils.getCurrentTile(game.player, game.grid));
+        targetTile = game.grid[path.get(1).location.getX()][path.get(1).location.getY()];
+        System.out.println(targetTile);
     }
 
-    public ArrayList<Tile> getShortestPath(Tile[][] grid, Tile start, Tile end){
-        result.clear();
+    private double heuristic(Node x, Node y) {
+        return Math.abs(x.location.getX()-y.location.getX()) + Math.abs(x.location.getY()-y.location.getY());
+    }
 
-        PriorityQueue<Tile> openSet = new PriorityQueue<>(Comparator.comparingDouble(t -> t.f));
-        Set<Tile> closedSet = new HashSet<>();
+    public void findPath(Tile start, Tile end){
+        Node startNode = nodes[start.i][start.j];
+        Node endNode = nodes[end.i][end.j];
 
-        if(grid == null || start == null || end == null){
-            return result;
-        }
+        Set<Node> exploredNodes = new HashSet<>();
+        //override compare method
+        PriorityQueue<Node> unexploredNodes = new PriorityQueue<>(25, Comparator.comparingDouble(i -> i.pathCost));
+        
+        startNode.gCost = 0;
+        unexploredNodes.add(startNode);
+        boolean isFound = false;
+        
+        while(!unexploredNodes.isEmpty() && !isFound){
+            Node currentNode = unexploredNodes.poll();
+            exploredNodes.add(currentNode);
 
-        if(start.equals(end)){
-            result.add(start);
-            return result;
-        }
-
-        openSet.add(start);
-
-        while(!openSet.isEmpty()){
-            Tile current = openSet.poll();
-
-            if(current.equals(end)){
-                return retracePath(current);
+            if(startNode.location.getX().equals(endNode.location.getX()) && startNode.location.getY().equals(endNode.location.getY())){
+                isFound = true;
             }
 
-            openSet.remove(current);
-            closedSet.add(current);
-
-            for(Tile neighbor : current.getNeighbors(grid)){
-                if(!neighbor.open || closedSet.contains(neighbor)){
+            for(Node childNode : currentNode.adjacentNodes){
+                double cost = childNode.pathCost;
+                double tempGCost = currentNode.fCost + cost;
+                double tempFCost = tempGCost + heuristic(childNode, endNode);
+                if(exploredNodes.contains(childNode) && (tempFCost >= childNode.fCost)){
                     continue;
                 }
-
-                double newG = current.g + 1;
-                if(!openSet.contains(neighbor)){
-                    openSet.add(neighbor);
-                } else if(newG >= neighbor.g){
-                    continue;
+                else if(!unexploredNodes.contains(childNode) || tempFCost < childNode.fCost){
+                    childNode.parent = currentNode;
+                    childNode.gCost = tempGCost;
+                    childNode.fCost = tempFCost;
+                    if(unexploredNodes.contains(childNode)){
+                        unexploredNodes.remove(childNode);
+                    }
+                    unexploredNodes.add(childNode);
                 }
-
-                neighbor.cameFrom = current;
-                neighbor.g = newG;
-                neighbor.h = heuristic(neighbor, end);
-                neighbor.f = neighbor.g + neighbor.h;
-
             }
         }
-        return result;
+        backtrack(endNode);
     }
 
-    private ArrayList<Tile> retracePath(Tile current) {
-        reversedPath.clear();
-        while(current != null){
-            reversedPath.add(0, current);
-            current = current.cameFrom;
+    private void backtrack(Node endNode) {
+        path = new ArrayList<>();
+        Node currentNode = endNode;
+        path.add(currentNode);
+        while(currentNode.parent != null){
+            currentNode = currentNode.parent;
+            path.add(currentNode);
         }
-        return reversedPath;
+        Collections.reverse(path);
+        resetNodes();
     }
 
-    private static double heuristic(Tile neighbor, Tile end) {
-        return Math.abs(neighbor.i - end.i) + Math.abs(neighbor.j - end.j);
+    private void printPath(){
+        if(path == null){
+            System.out.println("No path found");
+            return;
+        }
+        for(Node node : path){
+            System.out.println(node.location);
+        }
+    }
+
+    private void resetNodes(){
+        for(Node[] row : nodes){
+            for(Node node : row){
+                node.parent = null;
+                node.fCost = 0;
+                node.gCost = 0;
+            }
+        }
     }
 }

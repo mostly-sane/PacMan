@@ -77,19 +77,7 @@ public class Character {
         this.collisionComponent = collisionComponent;
     }
 
-    public static Pair<Float, Float> getPositionByIndex(int i, int j, int w, int h) {
+    public Pair<Float, Float> getPositionByIndex(int i, int j, int w, int h) {
         return new Pair<>((float) i * w, (float) j * h);
-    }
-
-    protected Tile getCurrentTile() {
-        int i = ((int) (position.getX() / game.w));
-        int j = (int) (position.getY() / game.h);
-
-        Tile tile = game.grid[i][j];
-        return tile;
-    }
-
-    protected Pair<Integer, Integer> getTileByIndex(int x, int y) {
-        return new Pair<>(x * width, y * height);
     }
 }

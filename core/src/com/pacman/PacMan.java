@@ -10,8 +10,6 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.pacman.Characters.Ghost;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Rectangle;
 import com.pacman.Characters.Player;
 import com.pacman.Components.AnimationComponent;
 import com.pacman.Components.CollisionComponent;
@@ -22,7 +20,6 @@ import com.pacman.Map.Pill;
 
 import java.util.Timer;
 import java.util.TimerTask;
-import java.awt.*;
 
 public class PacMan extends ApplicationAdapter {
 	private FrameBuffer frameBuffer;
@@ -59,24 +56,24 @@ public class PacMan extends ApplicationAdapter {
 
 	public void create() {
 		super.create();
-
 		initializeLevel();
 		initializePlayer();
 
 		testGhost = new Ghost(20, 20, new Texture(Gdx.files.internal("sprites/ghosts/f-3.png")), this);
-		testGhost.setPosition(Player.getPositionByIndex(14, 15, w, h));
+		testGhost.setPosition(Utils.getPositionByIndex(14, 15, w, h));
 
-//		Timer timer = new Timer();
-//		TimerTask task = new TimerTask() {
-//			@Override
-//			public void run() {
-//				System.out.println("Recalculating path");
-//				testGhost.recalculatePath();
-//			}
-//		};
+		Timer timer = new Timer();
+		timer.scheduleAtFixedRate(new TimerTask() {
+			@Override
+			public void run() {
+				try {
+					testGhost.recalculatePath();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}, 5, 100);
 
-		// Schedule the task to run every 1 second
-		//timer.scheduleAtFixedRate(task, 0, 1000);
 
 		redrawGrid();
 	}
@@ -118,7 +115,7 @@ public class PacMan extends ApplicationAdapter {
 		playerWidth = player.getWidth();
 		playerHeight = player.getHeight();
 
-		player.setPosition(Player.getPositionByIndex(1, 1, w, h));
+		player.setPosition(player.getPositionByIndex(1, 1, w, h));
 
 		Gdx.input.setInputProcessor(controller);
 	}
@@ -129,8 +126,6 @@ public class PacMan extends ApplicationAdapter {
 		camera.update();
 		batch.setProjectionMatrix(camera.combined);
 
-		Gdx.gl.glClearColor(0, 0, 0, 1);
-		Gdx.gl.glClear(Gdx.gl.GL_COLOR_BUFFER_BIT);
 		batch.begin();
 		batch.draw(textureRegion, 0, 0);
 		batch.end();
@@ -151,8 +146,6 @@ public class PacMan extends ApplicationAdapter {
 				playerWidth / 2, playerHeight / 2, playerWidth, playerHeight);
 		batch.end();
 	}
-
-
 
 
 	private void drawPills() {
