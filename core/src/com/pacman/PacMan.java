@@ -135,7 +135,7 @@ public class PacMan extends ApplicationAdapter {
 		batch.draw(textureRegion, 0, 0);
 		batch.end();
 		controller.update();
-		//testGhost.update();
+		testGhost.update();
 
 		batch.begin();
 		TextureRegion currentFrame = (TextureRegion) animationComponent.getCurrentAnimation()
@@ -150,9 +150,6 @@ public class PacMan extends ApplicationAdapter {
 		batch.draw(testGhost.getTexture(), testGhost.getPosition().getX(), testGhost.getPosition().getY(),
 				playerWidth / 2, playerHeight / 2, playerWidth, playerHeight);
 		batch.end();
-
-
-		//movingObject.update();
 	}
 
 
