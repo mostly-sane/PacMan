@@ -9,6 +9,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Rectangle;
 import com.pacman.Characters.Player;
 import com.pacman.Components.AnimationComponent;
 import com.pacman.Components.CollisionComponent;
@@ -16,6 +18,8 @@ import com.pacman.Components.PlayerController;
 import com.pacman.Map.LevelManager;
 import com.pacman.Map.Tile;
 import com.pacman.Map.Pill;
+
+import java.awt.*;
 
 public class PacMan extends ApplicationAdapter {
 	private FrameBuffer frameBuffer;
@@ -42,18 +46,16 @@ public class PacMan extends ApplicationAdapter {
 
 	int appW = 475;
 	int appH = 525;
-	int w = appW/19;
-	int h = appH/21;
+	int w = appW / 19;
+	int h = appH / 21;
 
 	boolean shouldDrawGrid = true;
 
-	public void create(){
+	public void create() {
 		super.create();
 
 		initializeLevel();
-
 		initializePlayer();
-
 		redrawGrid();
 	}
 
@@ -77,9 +79,12 @@ public class PacMan extends ApplicationAdapter {
 	}
 
 	private void initializePlayer() {
-		Texture pacmantexture = new Texture(Gdx.files.internal("sprites/pacman/0.png"));
-		player = new Player(20, 20, pacmantexture, this);
-		CollisionComponent collisionComponent = new CollisionComponent(grid);
+		Texture pacmanTexture = new Texture(Gdx.files.internal("sprites/pacman/0.png"));
+		player = new Player(20, 20, pacmanTexture, this);
+		float tileWidth = w;  // Ensure tileWidth matches the actual tile size
+		float tileHeight = h; // Ensure tileHeight matches the actual tile size
+
+		CollisionComponent collisionComponent = new CollisionComponent(grid, tileWidth, tileHeight);
 
 		player.setCollisionComponent(collisionComponent);
 		controller = new PlayerController(player);
@@ -96,8 +101,11 @@ public class PacMan extends ApplicationAdapter {
 		Gdx.input.setInputProcessor(controller);
 	}
 
+
+
+
 	@Override
-	public void render(){
+	public void render() {
 		elapsedTime += Gdx.graphics.getDeltaTime();
 		camera.update();
 		batch.setProjectionMatrix(camera.combined);
@@ -116,10 +124,12 @@ public class PacMan extends ApplicationAdapter {
 				playerWidth / 2, playerHeight / 2, playerWidth, playerHeight,
 				1, 1, animationComponent.getRotation());
 		drawPills();
-		batch.end();
 
-		//movingObject.update();
+		batch.end();
 	}
+
+
+
 
 	private void drawPills() {
 		for (int i = 0; i < rows; i++) {
@@ -132,7 +142,7 @@ public class PacMan extends ApplicationAdapter {
 		}
 	}
 
-	public void dispose(){
+	public void dispose() {
 		batch.dispose();
 		frameBuffer.dispose();
 		for (Tile[] row : grid) {
@@ -145,13 +155,14 @@ public class PacMan extends ApplicationAdapter {
 				pill.texture.dispose();
 			}
 		}
+		player.getTexture().dispose();
 	}
 
 	public void resize(int width, int height) {
 		appW = width;
 		appH = height;
-		w = appW/19;
-		h = appH/21;
+		w = appW / 19;
+		h = appH / 21;
 		shouldDrawGrid = true;
 	}
 
@@ -160,15 +171,15 @@ public class PacMan extends ApplicationAdapter {
 		System.out.println("Paused");
 	}
 
-	public void redrawGrid(){
+	public void redrawGrid() {
 		for (int i = 0; i < rows; i++) {
 			for (int j = 0; j < columns; j++) {
 				frameBuffer.begin();
 				// Save the current sprite's position and dimensions
 				float x = grid[i][j].x;
 				float y = grid[i][j].y;
-				float originX = w/2;
-				float originY = h/2;
+				float originX = w / 2;
+				float originY = h / 2;
 				float width = w;
 				float height = h;
 				float scaleX = 1;
@@ -181,24 +192,24 @@ public class PacMan extends ApplicationAdapter {
 				batch.begin();
 				batch.draw(textureRegion, x, y, originX, originY, width, height, scaleX, scaleY, rotation);
 				batch.end();
+				frameBuffer.end();
 			}
 		}
-		frameBuffer.end();
 	}
 
-	public void closeTile(int i, int j){
+	public void closeTile(int i, int j) {
 		grid[i][j].open = false;
 		grid[i][j].setTexture(false);
 		redrawGrid();
 	}
 
-	public void openTile(int i, int j){
+	public void openTile(int i, int j) {
 		grid[i][j].open = true;
 		grid[i][j].setTexture(true);
 		redrawGrid();
 	}
 
-	public void collectPill(int i, int j){
+	public void collectPill(int i, int j) {
 		pillGrid[i][j].active = false;
 		pillGrid[i][j].setTexture(false);
 	}
