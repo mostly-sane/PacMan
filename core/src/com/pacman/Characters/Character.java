@@ -82,24 +82,18 @@ public class Character {
     }
 
     protected Tile getCurrentTile() {
-        int i = (int) (position.getX() / width);
-        int j = (int) (position.getY() / height);
+        int i = ((int) (position.getX() / game.w));
+        int j = (int) (position.getY() / game.h);
 
-        // Check if the calculated indices are within the grid bounds
-        if (i < 0 || i >= game.grid.length || j < 0 || j >= game.grid[0].length) {
-            // If not, throw an exception or return a default value
-            throw new IllegalArgumentException("Position is out of grid bounds");
-        }
+//        // Check if the calculated indices are within the grid bounds
+//        if (i < 0 || i >= game.grid.length || j < 0 || j >= game.grid[0].length) {
+//            // If not, throw an exception or return a default value
+//            throw new IllegalArgumentException("Position is out of grid bounds");
+//        }
 
         Tile tile = game.grid[i][j];
         System.out.println("Current tile: " + tile);
         return tile;
-    }
-
-    protected Pair<Integer, Integer> getTile() {
-        int i = (int) (position.getX() / width);
-        int j = (int) (position.getY() / height);
-        return new Pair<>(i, j);
     }
 
     protected Pair<Integer, Integer> getTileByIndex(int x, int y) {

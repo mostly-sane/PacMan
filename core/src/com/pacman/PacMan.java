@@ -123,9 +123,6 @@ public class PacMan extends ApplicationAdapter {
 		Gdx.input.setInputProcessor(controller);
 	}
 
-
-
-
 	@Override
 	public void render() {
 		elapsedTime += Gdx.graphics.getDeltaTime();
@@ -147,6 +144,7 @@ public class PacMan extends ApplicationAdapter {
 				playerWidth / 2, playerHeight / 2, playerWidth, playerHeight,
 				1, 1, animationComponent.getRotation());
 		drawPills();
+		batch.end();
 
 		batch.begin();
 		batch.draw(testGhost.getTexture(), testGhost.getPosition().getX(), testGhost.getPosition().getY(),
