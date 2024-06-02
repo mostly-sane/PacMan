@@ -7,66 +7,85 @@ import com.pacman.Characters.Player;
 
 public class PlayerController extends InputAdapter {
 
-    public enum movementDirectionEnum{
+
+
+    public enum MovementDirectionEnum {
         UP,
         DOWN,
         LEFT,
         RIGHT
     }
 
-    movementDirectionEnum currentDirection = movementDirectionEnum.LEFT;
-    movementDirectionEnum desiredDirection = movementDirectionEnum.LEFT;
+    public MovementDirectionEnum currentDirection = MovementDirectionEnum.LEFT;
+    private MovementDirectionEnum desiredDirection = MovementDirectionEnum.LEFT;
 
     private Player player;
-    private CollisionComponent CollisionComponent;
+    private CollisionComponent collisionComponent;
     private final int MOVE_AMOUNT = 1;
-    private Vector2 movementDirection = new Vector2(); // Vector to store movement direction
-    private Vector2 desiredMovementDirection = new Vector2(); // Vector to store desired movement direction
+    private Vector2 movementDirection = new Vector2();
+    private Vector2 desiredMovementDirection = new Vector2();
 
     public PlayerController(Player player) {
         this.player = player;
-        this.CollisionComponent = player.getCollisionComponent();
+        this.collisionComponent = player.getCollisionComponent();
+        movementDirection.set(-MOVE_AMOUNT, 0);
+        desiredMovementDirection.set(-MOVE_AMOUNT, 0);
     }
 
     public void update() {
-        // Check if desired direction is open
-        if (!CollisionComponent.collides(new Vector2(player.getX() + desiredMovementDirection.x * MOVE_AMOUNT, player.getY() + desiredMovementDirection.y * MOVE_AMOUNT))) {
+        Vector2 newPosition = new Vector2(player.getX(), player.getY());
+
+        // Check if the desired direction is free and change direction
+        if (collisionComponent.canMove(new Vector2(player.getX(), player.getY()), desiredMovementDirection)) {
             movementDirection.set(desiredMovementDirection);
             currentDirection = desiredDirection;
         }
 
-        // Update Pacman's position based on the movement direction
-        player.setX((movementDirection.x * MOVE_AMOUNT) + player.getX());
-        player.setY((movementDirection.y * MOVE_AMOUNT) + player.getY());
-
-        // Check collision
-        if (CollisionComponent.collides(new Vector2(player.getX(), player.getY()))) {
-            player.setX(player.getX() - movementDirection.x * MOVE_AMOUNT);
-            player.setY(player.getY() - movementDirection.y * MOVE_AMOUNT);
-            // Stop movement
-            movementDirection.set(0, 0);
+        // Try to move in the current direction
+        if (collisionComponent.canMove(newPosition, movementDirection)) {
+            newPosition.add(movementDirection);
+        } else {
+            // Align Pac-Man with the grid
+            alignWithGrid();
         }
+
+        // Move Pac-Man
+        player.setX(newPosition.x);
+        player.setY(newPosition.y);
     }
 
-    // Key press events
+    private void alignWithGrid() {
+        float x = player.getX();
+        float y = player.getY();
+        float w = player.getWidth();
+        float h = player.getHeight();
+
+        // Align to the nearest grid position
+        int gridX = Math.round(x / w) * (int) w;
+        int gridY = Math.round(y / h) * (int) h;
+
+        player.setX(gridX);
+        player.setY(gridY);
+    }
+
     @Override
     public boolean keyDown(int keycode) {
         switch (keycode) {
             case Input.Keys.W:
-                desiredMovementDirection.set(0, -1); // Move up
-                desiredDirection = movementDirectionEnum.UP;
+                desiredMovementDirection.set(0, -MOVE_AMOUNT);
+                desiredDirection = MovementDirectionEnum.UP;
                 break;
             case Input.Keys.A:
-                desiredMovementDirection.set(-1, 0); // Move left
-                desiredDirection = movementDirectionEnum.LEFT;
+                desiredMovementDirection.set(-MOVE_AMOUNT, 0);
+                desiredDirection = MovementDirectionEnum.LEFT;
                 break;
             case Input.Keys.S:
-                desiredMovementDirection.set(0, 1); // Move down
-                desiredDirection = movementDirectionEnum.DOWN;
+                desiredMovementDirection.set(0, MOVE_AMOUNT);
+                desiredDirection = MovementDirectionEnum.DOWN;
                 break;
             case Input.Keys.D:
-                desiredMovementDirection.set(1, 0); // Move right
-                desiredDirection = movementDirectionEnum.RIGHT;
+                desiredMovementDirection.set(MOVE_AMOUNT, 0);
+                desiredDirection = MovementDirectionEnum.RIGHT;
                 break;
         }
         return true;
