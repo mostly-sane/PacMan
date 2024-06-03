@@ -4,7 +4,6 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -27,8 +26,6 @@ public class PacMan extends ApplicationAdapter {
 	private TextureRegion textureRegion;
 
 	float elapsedTime = 0;
-	TextureRegion[] frames = new TextureRegion[3];
-	Animation testAnimation;
 
 	private OrthographicCamera camera;
 	private SpriteBatch batch;
@@ -57,13 +54,21 @@ public class PacMan extends ApplicationAdapter {
 
 	private BitmapFont font;
 
+	enum State{
+		CHASE,
+		SCATTER,
+		FRIGHTENED
+	}
+
+	public State state = State.SCATTER;
+
 	public void create() {
 		super.create();
 
 		initializeLevel();
 		initializePlayer();
 
-		testGhost = new Ghost(20, 20, new Texture(Gdx.files.internal("sprites/ghosts/f-3.png")), this);
+		testGhost = new Ghost(20, 20, new Texture(Gdx.files.internal("sprites/ghosts/f-3.png")), this, Ghost.Name.BLINKY);
 		testGhost.setPosition(Utils.getPositionByIndex(14, 15, w, h));
 
 		Timer timer = new Timer();
