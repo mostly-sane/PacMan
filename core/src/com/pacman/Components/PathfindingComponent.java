@@ -48,6 +48,7 @@ public class PathfindingComponent {
     }
 
     public void findPath(Tile start, Tile end){
+        resetNodes();
         Node startNode = nodes[start.i][start.j];
         Node endNode = nodes[end.i][end.j];
 

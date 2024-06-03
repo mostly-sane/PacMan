@@ -78,15 +78,14 @@ public class Ghost extends Character{
     private Tile getChaseTile(){
         Tile playerTile = Utils.getCurrentTile(game.player, game.grid);
         Tile result = null;
-        int playerRow = game.player.getRow();
-        int playerColumn = game.player.getColumn();
+        int playerRow = game.player.getColumn();
+        int playerColumn = game.player.getRow();
         switch (name){
             case BLINKY:
                 result = playerTile;
                 break;
             case PINKY:
                 result = calculateTargetPinky(playerRow, playerColumn, result, playerTile);
-                System.out.println(result);
                 break;
             case INKY:
                 result = playerTile;
@@ -102,34 +101,6 @@ public class Ghost extends Character{
         switch (game.player.direction){
             case UP:
                 for (int offset = 4; offset >= 1; offset--) {
-                    if(playerRow - offset < 0){
-                        continue;
-                    }
-
-                    if(pathfindingComponent.nodes[playerRow - offset][playerColumn].isOpen) {
-                        result = Utils.getTileByIndex(playerRow - offset, playerColumn, game.grid);
-                        break;
-                    }
-
-                    result = playerTile;
-                }
-                break;
-            case DOWN:
-                for (int offset = 4; offset >= 1; offset--) {
-                    if(playerRow + offset >= game.grid.length){
-                        continue;
-                    }
-
-                    if (pathfindingComponent.nodes[playerRow + offset][playerColumn].isOpen) {
-                        result = Utils.getTileByIndex(playerRow + offset, playerColumn, game.grid);
-                        break;
-                    }
-
-                    result = playerTile;
-                }
-            break;
-            case LEFT:
-                for (int offset = 4; offset >= 1; offset--) {
                     if(playerColumn - offset < 0){
                         continue;
                     }
@@ -141,15 +112,43 @@ public class Ghost extends Character{
 
                     result = playerTile;
                 }
-            break;
-            case RIGHT:
+                break;
+            case DOWN:
                 for (int offset = 4; offset >= 1; offset--) {
                     if(playerColumn + offset >= game.grid[0].length){
                         continue;
                     }
 
-                    if (pathfindingComponent.nodes[playerRow][playerColumn + offset].isOpen) {
+                    if(pathfindingComponent.nodes[playerRow][playerColumn + offset].isOpen) {
                         result = Utils.getTileByIndex(playerRow, playerColumn + offset, game.grid);
+                        break;
+                    }
+
+                    result = playerTile;
+                }
+            break;
+            case LEFT:
+                for (int offset = 4; offset >= 1; offset--) {
+                    if(playerRow - offset < 0){
+                        continue;
+                    }
+
+                    if(pathfindingComponent.nodes[playerRow - offset][playerColumn].isOpen) {
+                        result = Utils.getTileByIndex(playerRow - offset, playerColumn, game.grid);
+                        break;
+                    }
+
+                    result = playerTile;
+                }
+            break;
+            case RIGHT:
+                for (int offset = 4; offset >= 1; offset--) {
+                    if(playerRow + offset >= game.grid.length){
+                        continue;
+                    }
+
+                    if (pathfindingComponent.nodes[playerRow + offset][offset].isOpen) {
+                        result = Utils.getTileByIndex(playerRow + offset, playerColumn, game.grid);
                         break;
                     }
 
