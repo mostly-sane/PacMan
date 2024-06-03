@@ -62,7 +62,7 @@ public class PathfindingComponent {
             Node currentNode = unexploredNodes.poll();
             exploredNodes.add(currentNode);
 
-            if(currentNode.location.equals(endNode.location)){
+            if(startNode.location.getX().equals(endNode.location.getX()) && startNode.location.getY().equals(endNode.location.getY())){
                 isFound = true;
             }
 
