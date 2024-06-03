@@ -72,14 +72,26 @@ public class PlayerController extends InputAdapter {
         player.setY(gridY);
     }
 
+
+    public Vector2 getCollisionRectangleCenter() {
+        float centerX = collisionComponent.pacManRect.x + collisionComponent.pacManRect.width / 2;
+        float centerY = collisionComponent.pacManRect.y + collisionComponent.pacManRect.height / 2;
+        return new Vector2(centerX, centerY);
+    }
+
     private void checkPillCollision() {
+        Vector2 playerCenter = getCollisionRectangleCenter();
         for (int i = 0; i < pillGrid.length; i++) {
             for (int j = 0; j < pillGrid[i].length; j++) {
                 Pill pill = pillGrid[i][j];
-                if (pill.active && pill.getBoundingRectangle().overlaps(player.getBoundingRectangle())) {
-                    player.increaseScore(10);
-                    pill.active = false;
-                    pill.setTexture(false);
+                if (pill.active) {
+                    Vector2 pillCenter = new Vector2(pill.getX() + pill.getWidth() / 2, pill.getY() + pill.getHeight() / 2);
+                    // Adjust the distance threshold here
+                    if (playerCenter.dst(pillCenter) <= (player.getWidth() / 4 + pill.getWidth() / 4)) {
+                        player.increaseScore(10);
+                        pill.active = false;
+                        pill.setTexture(false);
+                    }
                 }
             }
         }
