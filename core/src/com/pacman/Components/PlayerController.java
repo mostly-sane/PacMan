@@ -4,10 +4,9 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.math.Vector2;
 import com.pacman.Characters.Player;
+import com.pacman.Map.Pill;
 
 public class PlayerController extends InputAdapter {
-
-
 
     public enum MovementDirectionEnum {
         UP,
@@ -24,10 +23,12 @@ public class PlayerController extends InputAdapter {
     private final int MOVE_AMOUNT = 1;
     private Vector2 movementDirection = new Vector2();
     private Vector2 desiredMovementDirection = new Vector2();
+    private Pill[][] pillGrid;  // Add this line
 
-    public PlayerController(Player player) {
+    public PlayerController(Player player, Pill[][] pillGrid) {
         this.player = player;
         this.collisionComponent = player.getCollisionComponent();
+        this.pillGrid = pillGrid;  // Add this line
         movementDirection.set(-MOVE_AMOUNT, 0);
         desiredMovementDirection.set(-MOVE_AMOUNT, 0);
     }
@@ -52,6 +53,9 @@ public class PlayerController extends InputAdapter {
         // Move Pac-Man
         player.setX(newPosition.x);
         player.setY(newPosition.y);
+
+        // Check for pill collision
+        checkPillCollision();
     }
 
     private void alignWithGrid() {
@@ -66,6 +70,19 @@ public class PlayerController extends InputAdapter {
 
         player.setX(gridX);
         player.setY(gridY);
+    }
+
+    private void checkPillCollision() {
+        for (int i = 0; i < pillGrid.length; i++) {
+            for (int j = 0; j < pillGrid[i].length; j++) {
+                Pill pill = pillGrid[i][j];
+                if (pill.active && pill.getBoundingRectangle().overlaps(player.getBoundingRectangle())) {
+                    player.increaseScore(10);
+                    pill.active = false;
+                    pill.setTexture(false);
+                }
+            }
+        }
     }
 
     @Override

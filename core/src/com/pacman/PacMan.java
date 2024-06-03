@@ -5,12 +5,11 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Rectangle;
 import com.pacman.Characters.Player;
 import com.pacman.Components.AnimationComponent;
 import com.pacman.Components.CollisionComponent;
@@ -18,8 +17,6 @@ import com.pacman.Components.PlayerController;
 import com.pacman.Map.LevelManager;
 import com.pacman.Map.Tile;
 import com.pacman.Map.Pill;
-
-import java.awt.*;
 
 public class PacMan extends ApplicationAdapter {
 	private FrameBuffer frameBuffer;
@@ -51,12 +48,16 @@ public class PacMan extends ApplicationAdapter {
 
 	boolean shouldDrawGrid = true;
 
+	private BitmapFont font;
+
 	public void create() {
 		super.create();
 
 		initializeLevel();
 		initializePlayer();
 		redrawGrid();
+
+		font = new BitmapFont();
 	}
 
 	private void initializeLevel() {
@@ -87,7 +88,7 @@ public class PacMan extends ApplicationAdapter {
 		CollisionComponent collisionComponent = new CollisionComponent(grid, tileWidth, tileHeight);
 
 		player.setCollisionComponent(collisionComponent);
-		controller = new PlayerController(player);
+		controller = new PlayerController(player, pillGrid); // Pass pillGrid here
 		player.setController(controller);
 
 		animationComponent = new AnimationComponent(player);
@@ -100,9 +101,6 @@ public class PacMan extends ApplicationAdapter {
 
 		Gdx.input.setInputProcessor(controller);
 	}
-
-
-
 
 	@Override
 	public void render() {
@@ -120,16 +118,15 @@ public class PacMan extends ApplicationAdapter {
 		batch.begin();
 		TextureRegion currentFrame = (TextureRegion) animationComponent.getCurrentAnimation()
 				.getKeyFrame(elapsedTime, true);
-		batch.draw(currentFrame, player.getPosition().getX(), player.getPosition().getY(),
+		batch.draw(currentFrame, player.getX(), player.getY(),
 				playerWidth / 2, playerHeight / 2, playerWidth, playerHeight,
 				1, 1, animationComponent.getRotation());
 		drawPills();
 
+
+
 		batch.end();
 	}
-
-
-
 
 	private void drawPills() {
 		for (int i = 0; i < rows; i++) {
@@ -147,15 +144,20 @@ public class PacMan extends ApplicationAdapter {
 		frameBuffer.dispose();
 		for (Tile[] row : grid) {
 			for (Tile tile : row) {
-				tile.texture.dispose();
+				if (tile.texture != null) {
+					tile.texture.dispose();
+				}
 			}
 		}
 		for (Pill[] row : pillGrid) {
 			for (Pill pill : row) {
-				pill.texture.dispose();
+				if (pill.texture != null) {
+					pill.texture.dispose();
+				}
 			}
 		}
 		player.getTexture().dispose();
+		font.dispose();
 	}
 
 	public void resize(int width, int height) {

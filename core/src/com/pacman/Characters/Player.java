@@ -1,10 +1,13 @@
 package com.pacman.Characters;
+
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Rectangle;
 import com.pacman.Components.AnimationComponent;
 import com.pacman.Components.PlayerController;
 import com.pacman.PacMan;
 
 public class Player extends Character {
+    private int score = 0;
     PlayerController controller;
     AnimationComponent animationComponent;
 
@@ -26,5 +29,17 @@ public class Player extends Character {
 
     public void setAnimationComponent(AnimationComponent animationComponent) {
         this.animationComponent = animationComponent;
+    }
+
+    public void increaseScore(int amount) {
+        score += amount;
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public Rectangle getBoundingRectangle() {
+        return new Rectangle(getX(), getY(), getWidth(), getHeight());
     }
 }

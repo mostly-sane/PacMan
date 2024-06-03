@@ -17,7 +17,14 @@ public class Pill extends Rectangle {
         if (active) {
             texture = new Texture("sprites/map/pill.png");
         } else {
-
+            if (texture != null) {
+                texture.dispose();
+                texture = null;
+            }
         }
+    }
+
+    public Rectangle getBoundingRectangle() {
+        return new Rectangle(x, y, width, height);
     }
 }
