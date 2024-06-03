@@ -1,82 +1,20 @@
 package com.pacman;
 
 import com.pacman.Map.Tile;
-
-import java.util.ArrayList;
-import java.util.Collections;
+import com.pacman.Characters.Character;
 
 public class Utils {
-    public static ArrayList<Tile> getShortestPath(Tile[][] grid, Tile start, Tile end){
-        ArrayList<Tile> result = new ArrayList<>();
-        ArrayList<Tile> openSet = new ArrayList<>();
-        ArrayList<Tile> closedSet = new ArrayList<>();
-
-        if(grid == null || start == null || end == null){
-            return result;
-        }
-
-        if(start.equals(end)){
-            result.add(start);
-            return result;
-        }
-
-        openSet.add(start);
-
-        while(!openSet.isEmpty()){
-            Tile current = getLowestF(openSet);
-
-            if(current.equals(end)){
-                return retracePath(current);
-            }
-
-            openSet.remove(current);
-            closedSet.add(current);
-
-            for(Tile neighbor : current.getNeighbors(grid)){
-                if(!neighbor.open || closedSet.contains(neighbor)){
-                    continue;
-                }
-
-                double newG = current.g + 1;
-                if(!openSet.contains(neighbor)){
-                    openSet.add(neighbor);
-                } else if(newG >= neighbor.g){
-                    continue;
-                }
-
-                neighbor.cameFrom = current;
-                neighbor.g = newG;
-                neighbor.h = heuristic(neighbor, end);
-                neighbor.f = neighbor.g + neighbor.h;
-
-            }
-        }
-        return new ArrayList<>();
+    public static Pair<Float, Float> getPositionByIndex(int i, int j, int w, int h) {
+        return new Pair<>((float) i * w, (float) j * h);
     }
 
-    private static ArrayList<Tile> retracePath(Tile current) {
-        ArrayList<Tile> result = new ArrayList<>();
-        result.add(current);
-        while(current.cameFrom != null){
-            current = current.cameFrom;
-            result.add(current);
-        }
-        Collections.reverse(result);
-        return result;
+    public static Tile getCurrentTile(Character character, Tile[][] grid) {
+        int i = (int) (character.getX() / grid[0][0].width);
+        int j = (int) (character.getY() / grid[0][0].height);
+        return grid[i][j];
     }
 
-    private static double heuristic(Tile neighbor, Tile end) {
-        return Math.abs(neighbor.i - end.i) + Math.abs(neighbor.j - end.j);
+    public static Tile getTileByIndex(int i, int j, Tile[][] grid) {
+        return grid[i][j];
     }
-
-    private static Tile getLowestF(ArrayList<Tile> openSet){
-        Tile result = openSet.get(0);
-        for(Tile t : openSet){
-            if(t.f < result.f){
-                result = t;
-            }
-        }
-        return result;
-    }
-
 }

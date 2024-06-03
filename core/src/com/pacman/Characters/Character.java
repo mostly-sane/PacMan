@@ -2,6 +2,7 @@ package com.pacman.Characters;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.pacman.Components.CollisionComponent;
+import com.pacman.Map.Tile;
 import com.pacman.PacMan;
 import com.pacman.Pair;
 
@@ -76,7 +77,7 @@ public class Character {
         this.collisionComponent = collisionComponent;
     }
 
-    public static Pair<Float, Float> getPositionByIndex(int i, int j, int w, int h) {
+    public Pair<Float, Float> getPositionByIndex(int i, int j, int w, int h) {
         return new Pair<>((float) i * w, (float) j * h);
     }
 }
