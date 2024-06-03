@@ -13,6 +13,13 @@ public class Character {
     protected CollisionComponent collisionComponent;
     protected Pair<Float, Float> position = new Pair<>(0f, 0f);
     protected Texture texture;
+    public enum Direction {
+        UP,
+        DOWN,
+        LEFT,
+        RIGHT
+    }
+    public Direction direction = Direction.LEFT;
 
     public Character(int width, int height, Texture texture, PacMan game) {
         this.width = width;
@@ -75,6 +82,14 @@ public class Character {
 
     public void setCollisionComponent(CollisionComponent collisionComponent) {
         this.collisionComponent = collisionComponent;
+    }
+
+    public int getRow() {
+        return (int) (position.getY() / game.tileHeight);
+    }
+
+    public int getColumn() {
+        return (int) (position.getX() / game.tileWidth);
     }
 
     public Pair<Float, Float> getPositionByIndex(int i, int j, int w, int h) {

@@ -3,20 +3,12 @@ package com.pacman.Components;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.math.Vector2;
+import com.pacman.Characters.Character;
 import com.pacman.Characters.Player;
 import com.pacman.Map.Pill;
 
 public class PlayerController extends InputAdapter {
-
-    public enum MovementDirectionEnum {
-        UP,
-        DOWN,
-        LEFT,
-        RIGHT
-    }
-
-    public MovementDirectionEnum currentDirection = MovementDirectionEnum.LEFT;
-    private MovementDirectionEnum desiredDirection = MovementDirectionEnum.LEFT;
+    private Character.Direction desiredDirection = Character.Direction.LEFT;
 
     private Player player;
     private CollisionComponent collisionComponent;
@@ -39,7 +31,7 @@ public class PlayerController extends InputAdapter {
         // Check if the desired direction is free and change direction
         if (collisionComponent.canMove(new Vector2(player.getX(), player.getY()), desiredMovementDirection)) {
             movementDirection.set(desiredMovementDirection);
-            currentDirection = desiredDirection;
+            player.direction = desiredDirection;
         }
 
         // Try to move in the current direction
@@ -102,19 +94,19 @@ public class PlayerController extends InputAdapter {
         switch (keycode) {
             case Input.Keys.W:
                 desiredMovementDirection.set(0, -MOVE_AMOUNT);
-                desiredDirection = MovementDirectionEnum.UP;
+                desiredDirection = Character.Direction.UP;
                 break;
             case Input.Keys.A:
                 desiredMovementDirection.set(-MOVE_AMOUNT, 0);
-                desiredDirection = MovementDirectionEnum.LEFT;
+                desiredDirection = Character.Direction.LEFT;
                 break;
             case Input.Keys.S:
                 desiredMovementDirection.set(0, MOVE_AMOUNT);
-                desiredDirection = MovementDirectionEnum.DOWN;
+                desiredDirection = Character.Direction.DOWN;
                 break;
             case Input.Keys.D:
                 desiredMovementDirection.set(MOVE_AMOUNT, 0);
-                desiredDirection = MovementDirectionEnum.RIGHT;
+                desiredDirection = Character.Direction.RIGHT;
                 break;
         }
         return true;

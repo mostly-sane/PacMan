@@ -47,20 +47,20 @@ public class PacMan extends ApplicationAdapter {
 
 	int appW = 475;
 	int appH = 525;
-	public int w = appW/19;
-	public int h = appH/21;
+	public int tileWidth = appW/19;
+	public int tileHeight = appH/21;
 
 	boolean shouldDrawGrid = true;
 
 	private BitmapFont font;
 
-	enum State{
+	public enum State{
 		CHASE,
 		SCATTER,
 		FRIGHTENED
 	}
 
-	public State state = State.SCATTER;
+	public State state = State.CHASE;
 
 	public void create() {
 		super.create();
@@ -68,8 +68,8 @@ public class PacMan extends ApplicationAdapter {
 		initializeLevel();
 		initializePlayer();
 
-		testGhost = new Ghost(20, 20, new Texture(Gdx.files.internal("sprites/ghosts/f-3.png")), this, Ghost.Name.BLINKY);
-		testGhost.setPosition(Utils.getPositionByIndex(14, 15, w, h));
+		testGhost = new Ghost(20, 20, new Texture(Gdx.files.internal("sprites/ghosts/f-3.png")), this, Ghost.Name.PINKY);
+		testGhost.setPosition(Utils.getPositionByIndex(14, 15, tileWidth, tileHeight));
 
 		Timer timer = new Timer();
 		timer.scheduleAtFixedRate(new TimerTask() {
@@ -81,7 +81,7 @@ public class PacMan extends ApplicationAdapter {
 					e.printStackTrace();
 				}
 			}
-		}, 5, 100);
+		}, 5, 300);
 
 
 		redrawGrid();
@@ -103,6 +103,7 @@ public class PacMan extends ApplicationAdapter {
 		rows = Integer.parseInt(parts[0]);
 		columns = Integer.parseInt(parts[1]);
 
+
 		camera = new OrthographicCamera();
 		camera.setToOrtho(true, appW, appH);
 		batch = new SpriteBatch();
@@ -111,8 +112,8 @@ public class PacMan extends ApplicationAdapter {
 	private void initializePlayer() {
 		Texture pacmanTexture = new Texture(Gdx.files.internal("sprites/pacman/0.png"));
 		player = new Player(20, 20, pacmanTexture, this);
-		float tileWidth = w;  // Ensure tileWidth matches the actual tile size
-		float tileHeight = h; // Ensure tileHeight matches the actual tile size
+		float tileWidth = this.tileWidth;  // Ensure tileWidth matches the actual tile size
+		float tileHeight = this.tileHeight; // Ensure tileHeight matches the actual tile size
 
 		CollisionComponent collisionComponent = new CollisionComponent(grid, tileWidth, tileHeight);
 
@@ -126,7 +127,7 @@ public class PacMan extends ApplicationAdapter {
 		playerWidth = player.getWidth();
 		playerHeight = player.getHeight();
 
-		player.setPosition(player.getPositionByIndex(1, 1, w, h));
+		player.setPosition(player.getPositionByIndex(1, 1, this.tileWidth, this.tileHeight));
 
 		Gdx.input.setInputProcessor(controller);
 	}
@@ -194,8 +195,8 @@ public class PacMan extends ApplicationAdapter {
 	public void resize(int width, int height) {
 		appW = width;
 		appH = height;
-		w = appW / 19;
-		h = appH / 21;
+		tileWidth = appW / 19;
+		tileHeight = appH / 21;
 		shouldDrawGrid = true;
 	}
 
@@ -211,10 +212,10 @@ public class PacMan extends ApplicationAdapter {
 				// Save the current sprite's position and dimensions
 				float x = grid[i][j].x;
 				float y = grid[i][j].y;
-				float originX = w / 2;
-				float originY = h / 2;
-				float width = w;
-				float height = h;
+				float originX = tileWidth / 2;
+				float originY = tileHeight / 2;
+				float width = tileWidth;
+				float height = tileHeight;
 				float scaleX = 1;
 				float scaleY = 1;
 				float rotation = 180; // Rotate 180 degrees

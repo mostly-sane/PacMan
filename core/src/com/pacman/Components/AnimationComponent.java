@@ -28,7 +28,7 @@ public class AnimationComponent {
         idleFrames[1] = new TextureRegion(texture1);
         idleFrames[2] = new TextureRegion(texture2);
 
-        switch (player.getController().currentDirection){
+        switch (player.direction){
             case UP:
                 rotation = 90;
                 break;

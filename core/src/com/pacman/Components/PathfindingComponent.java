@@ -11,7 +11,7 @@ import java.util.*;
 public class PathfindingComponent {
     PacMan game;
     Ghost parent;
-    Node[][] nodes;
+    public Node[][] nodes;
 
     public PathfindingComponent(PacMan game, Ghost ghost) {
         this.parent = ghost;
@@ -52,7 +52,6 @@ public class PathfindingComponent {
         Node endNode = nodes[end.i][end.j];
 
         Set<Node> exploredNodes = new HashSet<>();
-        //override compare method
         PriorityQueue<Node> unexploredNodes = new PriorityQueue<>(25, Comparator.comparingDouble(i -> i.pathCost));
 
         startNode.gCost = 0;
@@ -63,7 +62,7 @@ public class PathfindingComponent {
             Node currentNode = unexploredNodes.poll();
             exploredNodes.add(currentNode);
 
-            if(startNode.location.getX().equals(endNode.location.getX()) && startNode.location.getY().equals(endNode.location.getY())){
+            if(currentNode.location.equals(endNode.location)){
                 isFound = true;
             }
 

@@ -20,8 +20,8 @@ public class Ghost extends Character{
 
     Name name;
     Float speed = 0.5f;
-    public ArrayList<Node> path = new ArrayList<>();
     PathfindingComponent pathfindingComponent;
+    public ArrayList<Node> path;
     Tile targetTile;
 
     public Ghost(int width, int height, Texture texture, PacMan game, Name name) {
@@ -33,6 +33,9 @@ public class Ghost extends Character{
 
     public void update(){
         Pair<Float, Float> targetPosition = new Pair<>(targetTile.x, targetTile.y);
+        if(position.equals(targetPosition)){
+            return;
+        }
 
         if(position.getX() < targetPosition.getX()){
             position.setX(position.getX() + speed);
@@ -46,10 +49,20 @@ public class Ghost extends Character{
     }
 
     public void recalculatePath() {
-        pathfindingComponent.findPath(Utils.getCurrentTile(this, game.grid),
-                Utils.getCurrentTile(game.player, game.grid));
+        switch(game.state) {
+            case CHASE:
+                pathfindingComponent.findPath(Utils.getCurrentTile(this, game.grid), getChaseTile());
+                break;
+            case SCATTER:
+                pathfindingComponent.findPath(Utils.getCurrentTile(this, game.grid), getScatterTile());
+                break;
+            case FRIGHTENED:
+                pathfindingComponent.findPath(Utils.getCurrentTile(this, game.grid), getFrightenedTile());
+                break;
+        }
+
         targetTile = game.grid[path.get(1).location.getX()][path.get(1).location.getY()];
-        System.out.println(targetTile);
+        //System.out.println(targetTile);
     }
 
     private void printPath(){
@@ -62,17 +75,97 @@ public class Ghost extends Character{
         }
     }
 
-
-
-    private void getChaseTile(){
-
+    private Tile getChaseTile(){
+        Tile playerTile = Utils.getCurrentTile(game.player, game.grid);
+        Tile result = null;
+        int playerRow = game.player.getRow();
+        int playerColumn = game.player.getColumn();
+        switch (name){
+            case BLINKY:
+                result = playerTile;
+                break;
+            case PINKY:
+                result = calculateTargetPinky(playerRow, playerColumn, result, playerTile);
+                System.out.println(result);
+                break;
+            case INKY:
+                result = playerTile;
+                break;
+            case CLYDE:
+                result = playerTile;
+                break;
+        }
+        return result;
     }
 
-    private void getScatterTile(){
+    private Tile calculateTargetPinky(int playerRow, int playerColumn, Tile result, Tile playerTile) {
+        switch (game.player.direction){
+            case UP:
+                for (int offset = 4; offset >= 1; offset--) {
+                    if(playerRow - offset < 0){
+                        continue;
+                    }
 
+                    if(pathfindingComponent.nodes[playerRow - offset][playerColumn].isOpen) {
+                        result = Utils.getTileByIndex(playerRow - offset, playerColumn, game.grid);
+                        break;
+                    }
+
+                    result = playerTile;
+                }
+                break;
+            case DOWN:
+                for (int offset = 4; offset >= 1; offset--) {
+                    if(playerRow + offset >= game.grid.length){
+                        continue;
+                    }
+
+                    if (pathfindingComponent.nodes[playerRow + offset][playerColumn].isOpen) {
+                        result = Utils.getTileByIndex(playerRow + offset, playerColumn, game.grid);
+                        break;
+                    }
+
+                    result = playerTile;
+                }
+            break;
+            case LEFT:
+                for (int offset = 4; offset >= 1; offset--) {
+                    if(playerColumn - offset < 0){
+                        continue;
+                    }
+
+                    if(pathfindingComponent.nodes[playerRow][playerColumn - offset].isOpen) {
+                        result = Utils.getTileByIndex(playerRow, playerColumn - offset, game.grid);
+                        break;
+                    }
+
+                    result = playerTile;
+                }
+            break;
+            case RIGHT:
+                for (int offset = 4; offset >= 1; offset--) {
+                    if(playerColumn + offset >= game.grid[0].length){
+                        continue;
+                    }
+
+                    if (pathfindingComponent.nodes[playerRow][playerColumn + offset].isOpen) {
+                        result = Utils.getTileByIndex(playerRow, playerColumn + offset, game.grid);
+                        break;
+                    }
+
+                    result = playerTile;
+                }
+            break;
+        }
+
+        return result;
     }
 
-    private void getFrightenedTile(){
+    private Tile getScatterTile(){
+        return null;
+    }
 
+    private Tile getFrightenedTile(){
+        return null;
     }
 }

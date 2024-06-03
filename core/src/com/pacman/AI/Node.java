@@ -21,4 +21,16 @@ public class Node {
     public String toString() {
         return location.toString();
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof Node)) {
+            return false;
+        }
+        Node node = (Node) obj;
+        return location.equals(node.location);
+    }
 }
