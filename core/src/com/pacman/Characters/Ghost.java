@@ -76,7 +76,8 @@ public class Ghost extends Character{
     }
 
     private Tile getChaseTile(){
-        Tile playerTile = Utils.getCurrentTile(game.player, game.grid);
+        Player player = game.player;
+        Tile playerTile = Utils.getCurrentTile(player, game.grid);
         Tile result = null;
         int playerRow = game.player.getColumn();
         int playerColumn = game.player.getRow();
@@ -85,7 +86,11 @@ public class Ghost extends Character{
                 result = playerTile;
                 break;
             case PINKY:
-                result = calculateTargetPinky(playerRow, playerColumn, result, playerTile);
+                if(player.controller.isMoving){
+                    result = calculateTargetPinky(playerRow, playerColumn, result, playerTile);
+                } else {
+                    result = playerTile;
+                }
                 break;
             case INKY:
                 result = playerTile;

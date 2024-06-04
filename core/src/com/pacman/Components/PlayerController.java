@@ -16,6 +16,7 @@ public class PlayerController extends InputAdapter {
     private Vector2 movementDirection = new Vector2();
     private Vector2 desiredMovementDirection = new Vector2();
     private Pill[][] pillGrid;  // Add this line
+    public boolean isMoving = false;
 
     public PlayerController(Player player, Pill[][] pillGrid) {
         this.player = player;
@@ -26,7 +27,8 @@ public class PlayerController extends InputAdapter {
     }
 
     public void update() {
-        Vector2 newPosition = new Vector2(player.getX(), player.getY());
+        isMoving = false;
+        Vector2 oldPosition = new Vector2(player.getX(), player.getY());
 
         // Check if the desired direction is free and change direction
         if (collisionComponent.canMove(new Vector2(player.getX(), player.getY()), desiredMovementDirection)) {
@@ -35,19 +37,24 @@ public class PlayerController extends InputAdapter {
         }
 
         // Try to move in the current direction
-        if (collisionComponent.canMove(newPosition, movementDirection)) {
-            newPosition.add(movementDirection);
+        if (collisionComponent.canMove(oldPosition, movementDirection)) {
+            oldPosition.add(movementDirection);
+            isMoving = true;
         } else {
             // Align Pac-Man with the grid
             alignWithGrid();
         }
 
         // Move Pac-Man
-        player.setX(newPosition.x);
-        player.setY(newPosition.y);
+        player.setX(oldPosition.x);
+        player.setY(oldPosition.y);
 
         // Check for pill collision
         checkPillCollision();
+
+        // Update isMoving
+        //isMoving = !new Vector2(player.getX(), player.getY()).equals(oldPosition);
+        System.out.println(isMoving);
     }
 
     private void alignWithGrid() {
