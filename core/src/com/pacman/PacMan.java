@@ -15,15 +15,18 @@ import com.pacman.Components.AnimationComponent;
 import com.pacman.Components.CollisionComponent;
 import com.pacman.Components.PlayerController;
 import com.pacman.Map.LevelManager;
+import com.pacman.Map.StageManager;
 import com.pacman.Map.Tile;
 import com.pacman.Map.Pill;
 
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 public class PacMan extends ApplicationAdapter {
 	private FrameBuffer frameBuffer;
 	private TextureRegion textureRegion;
+
+	//public HashMap<Stage, Double> stageTimes = new HashMap<>();
+	public ArrayList<Pair<Stage, Double>> stageTimes = new ArrayList<>();
 
 	float elapsedTime = 0;
 
@@ -54,19 +57,20 @@ public class PacMan extends ApplicationAdapter {
 
 	private BitmapFont font;
 
-	public enum State{
+	public enum Stage {
 		CHASE,
 		SCATTER,
 		FRIGHTENED
 	}
 
-	public State state = State.CHASE;
+	public Stage stage = Stage.CHASE;
 
 	public void create() {
 		super.create();
 
 		initializeLevel();
 		initializePlayer();
+		initializeStages();
 
 		testGhost = new Ghost(20, 20, new Texture(Gdx.files.internal("sprites/ghosts/f-3.png")), this, Ghost.Name.PINKY);
 		testGhost.setPosition(Utils.getPositionByIndex(14, 15, tileWidth, tileHeight));
@@ -130,6 +134,12 @@ public class PacMan extends ApplicationAdapter {
 		player.setPosition(player.getPositionByIndex(1, 1, this.tileWidth, this.tileHeight));
 
 		Gdx.input.setInputProcessor(controller);
+	}
+
+	private void initializeStages(){
+		LevelManager.loadStages(Gdx.files.internal("levels/default.txt").file(), this);
+		StageManager stageManager = new StageManager(stageTimes);
+		stageManager.start();
 	}
 
 	@Override

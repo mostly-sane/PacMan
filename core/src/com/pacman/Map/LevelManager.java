@@ -1,6 +1,11 @@
 package com.pacman.Map;
 
+import com.pacman.PacMan;
+import com.pacman.Pair;
+
 import java.io.*;
+
+import static java.lang.Double.valueOf;
 
 public class LevelManager {
     public static Tile[][] loadLevel(File level) {
@@ -22,6 +27,9 @@ public class LevelManager {
 
             int i = 0;
             while ((line = reader.readLine()) != null) {
+                if(line.equals("")){
+                    break;
+                }
                 parts = line.split(",");
                 for (int j = 0; j < parts.length; j++) {
                     boolean open = Integer.parseInt(parts[j]) == 1;
@@ -29,8 +37,7 @@ public class LevelManager {
                 }
                 i++;
             }
-        }
-        catch (IOException ex) {
+        } catch (IOException ex) {
             throw new RuntimeException(ex);
         }
 
@@ -63,20 +70,18 @@ public class LevelManager {
                 }
                 i++;
             }
-        }
-        catch (IOException ex) {
+        } catch (IOException ex) {
             throw new RuntimeException(ex);
         }
 
         return grid;
     }
 
-    public static String getLevelParams(File level){
+    public static String getLevelParams(File level) {
         String line;
         try (BufferedReader reader = new BufferedReader(new FileReader(level))) {
             line = reader.readLine();
-        }
-        catch (IOException ex) {
+        } catch (IOException ex) {
             throw new RuntimeException(ex);
         }
         return line;
@@ -96,5 +101,25 @@ public class LevelManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void loadStages(File level, PacMan game) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(level))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if(line.equals("Stages")){
+                    break;
+                }
+            }
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                PacMan.Stage stage = PacMan.Stage.valueOf(parts[0]);
+                Double duration = valueOf(parts[1]);
+                game.stageTimes.add(new Pair<>(stage, duration));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 }

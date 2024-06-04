@@ -54,7 +54,6 @@ public class PlayerController extends InputAdapter {
 
         // Update isMoving
         //isMoving = !new Vector2(player.getX(), player.getY()).equals(oldPosition);
-        System.out.println(isMoving);
     }
 
     private void alignWithGrid() {

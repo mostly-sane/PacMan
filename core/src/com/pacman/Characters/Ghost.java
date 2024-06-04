@@ -49,7 +49,7 @@ public class Ghost extends Character{
     }
 
     public void recalculatePath() {
-        switch(game.state) {
+        switch(game.stage) {
             case CHASE:
                 pathfindingComponent.findPath(Utils.getCurrentTile(this, game.grid), getChaseTile());
                 break;
@@ -61,7 +61,10 @@ public class Ghost extends Character{
                 break;
         }
 
-        targetTile = game.grid[path.get(1).location.getX()][path.get(1).location.getY()];
+        if(path.size() > 1){
+            targetTile = game.grid[path.get(1).location.getX()][path.get(1).location.getY()];
+        }
+
         //System.out.println(targetTile);
     }
 
