@@ -92,7 +92,7 @@ public class PacMan extends ApplicationAdapter {
 		Inky.setPosition(Utils.getPositionByIndex(17, 19, tileWidth, tileHeight));
 		ghosts[2] = Inky;
 
-		Ghost Clyde = new Ghost(20, 20, new Texture(Gdx.files.internal("sprites/ghosts/f-1.png")), this, Ghost.Name.CLYDE);
+		Ghost Clyde = new Ghost(20, 20, new Texture(Gdx.files.internal("sprites/ghosts/y-1.png")), this, Ghost.Name.CLYDE);
 		Clyde.setPosition(Utils.getPositionByIndex(1, 19, tileWidth, tileHeight));
 		ghosts[3] = Clyde;
 

@@ -17,4 +17,8 @@ public class Utils {
     public static Tile getTileByIndex(int i, int j, Tile[][] grid) {
         return grid[i][j];
     }
+
+    public static int getDistance(Tile start, Tile end) {
+        return Math.abs(start.i - end.i) + Math.abs(start.j - end.j);
+    }
 }

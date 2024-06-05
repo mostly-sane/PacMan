@@ -104,7 +104,11 @@ public class Ghost extends Character{
                 result = calculateTargetInky(playerTile);
                 break;
             case CLYDE:
-                result = null;
+                if(Utils.getDistance(Utils.getCurrentTile(this, game.grid), playerTile) > 8){
+                    result = playerTile;
+                } else {
+                    getScatterTile();
+                }
                 break;
         }
         return result;
