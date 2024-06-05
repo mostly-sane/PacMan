@@ -32,6 +32,9 @@ public class Ghost extends Character{
     }
 
     public void update(){
+        if(targetTile == null){
+            return;
+        }
         Pair<Float, Float> targetPosition = new Pair<>(targetTile.x, targetTile.y);
         if(position.equals(targetPosition)){
             return;
@@ -61,11 +64,13 @@ public class Ghost extends Character{
                 break;
         }
 
+        if(path == null){
+            return;
+        }
+
         if(path.size() > 1){
             targetTile = game.grid[path.get(1).location.getX()][path.get(1).location.getY()];
         }
-
-        //System.out.println(targetTile);
     }
 
     private void printPath(){
@@ -96,19 +101,25 @@ public class Ghost extends Character{
                 }
                 break;
             case INKY:
-                result = playerTile;
+                result = calculateTargetInky(playerTile);
                 break;
             case CLYDE:
-                result = playerTile;
+                result = null;
                 break;
         }
         return result;
     }
 
     private Tile calculateTargetPinky(int playerRow, int playerColumn, Tile result, Tile playerTile) {
+        result = getAvailableTileWithOffset(playerRow, playerColumn, result, playerTile, 4);
+
+        return result;
+    }
+
+    private Tile getAvailableTileWithOffset(int playerRow, int playerColumn, Tile result, Tile playerTile, int targetOffset) {
         switch (game.player.direction){
             case UP:
-                for (int offset = 4; offset >= 1; offset--) {
+                for (int offset = targetOffset; offset >= 1; offset--) {
                     if(playerColumn - offset < 0){
                         continue;
                     }
@@ -122,7 +133,7 @@ public class Ghost extends Character{
                 }
                 break;
             case DOWN:
-                for (int offset = 4; offset >= 1; offset--) {
+                for (int offset = targetOffset; offset >= 1; offset--) {
                     if(playerColumn + offset >= game.grid[0].length){
                         continue;
                     }
@@ -136,7 +147,7 @@ public class Ghost extends Character{
                 }
             break;
             case LEFT:
-                for (int offset = 4; offset >= 1; offset--) {
+                for (int offset = targetOffset; offset >= 1; offset--) {
                     if(playerRow - offset < 0){
                         continue;
                     }
@@ -150,7 +161,7 @@ public class Ghost extends Character{
                 }
             break;
             case RIGHT:
-                for (int offset = 4; offset >= 1; offset--) {
+                for (int offset = targetOffset; offset >= 1; offset--) {
                     if(playerRow + offset >= game.grid.length){
                         continue;
                     }
@@ -164,8 +175,21 @@ public class Ghost extends Character{
                 }
             break;
         }
-
         return result;
+    }
+
+    private Tile calculateTargetInky(Tile playerTile) {
+        Tile pacmanFront = getAvailableTileWithOffset(game.player.getRow(), game.player.getColumn(), playerTile, playerTile, 2);
+        Tile blinkyPosition = Utils.getCurrentTile(game.ghosts[0], game.grid);
+        int rowOffset = pacmanFront.i - blinkyPosition.i;
+        int columnOffset = pacmanFront.j - blinkyPosition.j;
+
+        if(blinkyPosition.i + rowOffset * 2 >= game.grid.length || blinkyPosition.j + columnOffset * 2 >= game.grid[0].length ||
+                blinkyPosition.i + rowOffset * 2 < 0 || blinkyPosition.j + columnOffset * 2 < 0){
+            return playerTile;
+        }
+
+        return Utils.getTileByIndex(blinkyPosition.i + rowOffset * 2, blinkyPosition.j + columnOffset * 2, game.grid);
     }
 
     private Tile getScatterTile(){
