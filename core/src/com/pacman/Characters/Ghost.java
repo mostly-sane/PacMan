@@ -117,7 +117,7 @@ public class Ghost extends Character{
                 if(Utils.getDistance(Utils.getCurrentTile(this, game.grid), playerTile) > 8){
                     result = playerTile;
                 } else {
-                    getScatterTile();
+                    result = getScatterTile();
                 }
                 break;
         }

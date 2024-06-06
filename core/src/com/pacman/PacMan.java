@@ -116,17 +116,17 @@ public class PacMan extends ApplicationAdapter {
 		Blinky.setPosition(Utils.getPositionByIndex(17, 1, tileWidth, tileHeight));
 		ghosts[0] = Blinky;
 
-//		Ghost Pinky = new Ghost(20, 20, new Texture(Gdx.files.internal("sprites/ghosts/f-2.png")), this, Ghost.Name.PINKY);
-//		Pinky.setPosition(Utils.getPositionByIndex(1, 1, tileWidth, tileHeight));
-//		ghosts[1] = Pinky;
-//
-//		Ghost Inky = new Ghost(20, 20, new Texture(Gdx.files.internal("sprites/ghosts/f-1.png")), this, Ghost.Name.INKY);
-//		Inky.setPosition(Utils.getPositionByIndex(17, 19, tileWidth, tileHeight));
-//		ghosts[2] = Inky;
-//
-//		Ghost Clyde = new Ghost(20, 20, new Texture(Gdx.files.internal("sprites/ghosts/y-1.png")), this, Ghost.Name.CLYDE);
-//		Clyde.setPosition(Utils.getPositionByIndex(1, 19, tileWidth, tileHeight));
-//		ghosts[3] = Clyde;
+		Ghost Pinky = new Ghost(20, 20, new Texture(Gdx.files.internal("sprites/ghosts/f-2.png")), this, Ghost.Name.PINKY);
+		Pinky.setPosition(Utils.getPositionByIndex(1, 1, tileWidth, tileHeight));
+		ghosts[1] = Pinky;
+
+		Ghost Inky = new Ghost(20, 20, new Texture(Gdx.files.internal("sprites/ghosts/f-1.png")), this, Ghost.Name.INKY);
+		Inky.setPosition(Utils.getPositionByIndex(17, 19, tileWidth, tileHeight));
+		ghosts[2] = Inky;
+
+		Ghost Clyde = new Ghost(20, 20, new Texture(Gdx.files.internal("sprites/ghosts/y-1.png")), this, Ghost.Name.CLYDE);
+		Clyde.setPosition(Utils.getPositionByIndex(1, 19, tileWidth, tileHeight));
+		ghosts[3] = Clyde;
 
 		Timer timer = new Timer();
 		timer.scheduleAtFixedRate(new TimerTask() {
@@ -233,7 +233,7 @@ public class PacMan extends ApplicationAdapter {
 		for(Ghost ghost : ghosts){
 			if(ghost != null){
 				ghost.update();
-				ghost.drawPath(shapeRenderer, pathDrawer);
+				//ghost.drawPath(shapeRenderer, pathDrawer);
 			}
 		}
 
