@@ -1,7 +1,9 @@
 package com.pacman.Characters;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.pacman.AI.Node;
+import com.pacman.AI.PathDrawer;
 import com.pacman.Components.PathfindingComponent;
 import com.pacman.Map.Tile;
 import com.pacman.PacMan;
@@ -41,17 +43,24 @@ public class Ghost extends Character{
         }
 
         if(position.getX() < targetPosition.getX()){
+            direction = Direction.RIGHT;
             position.setX(position.getX() + speed);
         } else if(position.getX() > targetPosition.getX()){
+            direction = Direction.LEFT;
             position.setX(position.getX() - speed);
         } else if(position.getY() < targetPosition.getY()){
+            direction = Direction.DOWN;
             position.setY(position.getY() + speed);
         } else if(position.getY() > targetPosition.getY()){
+            direction = Direction.UP;
             position.setY(position.getY() - speed);
         }
     }
 
     public void recalculatePath() {
+        pathfindingComponent.reopenNodes();
+        pathfindingComponent.blockNodeBehindGhost();
+
         switch(game.stage) {
             case CHASE:
                 pathfindingComponent.findPath(Utils.getCurrentTile(this, game.grid), getChaseTile());
@@ -71,6 +80,7 @@ public class Ghost extends Character{
         if(path.size() > 1){
             targetTile = game.grid[path.get(1).location.getX()][path.get(1).location.getY()];
         }
+        //pathfindingComponent.reopenNodes();
     }
 
     private void printPath(){
@@ -209,6 +219,11 @@ public class Ghost extends Character{
             default:
                 return null;
         }
+    }
+
+    public void drawPath(ShapeRenderer shapeRenderer, PathDrawer pathDrawer) {
+        pathDrawer.drawPath(shapeRenderer, path);
+        pathDrawer.drawBlockedNodes(shapeRenderer, pathfindingComponent.nodes);
     }
 
     private Tile getFrightenedTile(){
