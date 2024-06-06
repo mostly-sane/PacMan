@@ -7,7 +7,6 @@ import com.pacman.AI.PathDrawer;
 import com.pacman.Components.PathfindingComponent;
 import com.pacman.Map.Tile;
 import com.pacman.PacMan;
-import com.pacman.Pair;
 import com.pacman.Utils;
 
 import java.util.*;
@@ -21,7 +20,7 @@ public class Ghost extends Character{
     }
 
     Name name;
-    Float speed = 0.5f;
+    Float speed = 0.75f;
     PathfindingComponent pathfindingComponent;
     public ArrayList<Node> path;
     Tile targetTile;
@@ -34,26 +33,39 @@ public class Ghost extends Character{
     }
 
     public void update(){
-        if(targetTile == null){
-            return;
-        }
-        Pair<Float, Float> targetPosition = new Pair<>(targetTile.x, targetTile.y);
-        if(position.equals(targetPosition)){
+        if(targetTile == null || direction == null){
             return;
         }
 
-        if(position.getX() < targetPosition.getX()){
-            direction = Direction.RIGHT;
-            position.setX(position.getX() + speed);
-        } else if(position.getX() > targetPosition.getX()){
-            direction = Direction.LEFT;
-            position.setX(position.getX() - speed);
-        } else if(position.getY() < targetPosition.getY()){
-            direction = Direction.DOWN;
-            position.setY(position.getY() + speed);
-        } else if(position.getY() > targetPosition.getY()){
-            direction = Direction.UP;
-            position.setY(position.getY() - speed);
+        switch(direction){
+            case UP:
+                position.setY(position.getY() - speed);
+                if(position.getY() <= targetTile.y){
+                    position.setY(targetTile.y);
+                    recalculatePath();
+                }
+                break;
+            case DOWN:
+                position.setY(position.getY() + speed);
+                if(position.getY() >= targetTile.y){
+                    position.setY(targetTile.y);
+                    recalculatePath();
+                }
+                break;
+            case LEFT:
+                position.setX(position.getX() - speed);
+                if(position.getX() <= targetTile.x){
+                    position.setX(targetTile.x);
+                    recalculatePath();
+                }
+                break;
+            case RIGHT:
+                position.setX(position.getX() + speed);
+                if(position.getX() >= targetTile.x){
+                    position.setX(targetTile.x);
+                    recalculatePath();
+                }
+                break;
         }
     }
 
@@ -63,13 +75,13 @@ public class Ghost extends Character{
 
         switch(game.stage) {
             case CHASE:
-                pathfindingComponent.findPath(Utils.getCurrentTile(this, game.grid), getChaseTile());
+                path = pathfindingComponent.findPath(Utils.getCurrentTile(this, game.grid), getChaseTile());
                 break;
             case SCATTER:
-                pathfindingComponent.findPath(Utils.getCurrentTile(this, game.grid), getScatterTile());
+                path = pathfindingComponent.findPath(Utils.getCurrentTile(this, game.grid), getScatterTile());
                 break;
             case FRIGHTENED:
-                pathfindingComponent.findPath(Utils.getCurrentTile(this, game.grid), getFrightenedTile());
+                path = pathfindingComponent.findPath(Utils.getCurrentTile(this, game.grid), getFrightenedTile());
                 break;
         }
 
@@ -79,8 +91,24 @@ public class Ghost extends Character{
 
         if(path.size() > 1){
             targetTile = game.grid[path.get(1).location.getX()][path.get(1).location.getY()];
+            direction = calculatedirection(targetTile);
         }
         //pathfindingComponent.reopenNodes();
+    }
+
+    private Direction calculatedirection(Tile nextTile) {
+        int row = getRow();
+        int column = getColumn();
+        if(nextTile.i == column && nextTile.j == row + 1){
+            return Direction.DOWN;
+        } else if(nextTile.i == column && nextTile.j == row - 1){
+            return Direction.UP;
+        } else if(nextTile.i == column + 1 && nextTile.j == row){
+            return Direction.RIGHT;
+        } else if(nextTile.i == column - 1 && nextTile.j == row){
+            return Direction.LEFT;
+        }
+        return null;
     }
 
     private void printPath(){

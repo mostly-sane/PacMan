@@ -50,10 +50,10 @@ public class PathfindingComponent {
         return Math.abs(x.location.getX()-y.location.getX()) + Math.abs(x.location.getY()-y.location.getY());
     }
 
-    public void findPath(Tile start, Tile end){
+    public ArrayList<Node> findPath(Tile start, Tile end){
         resetNodes();
         if(start == null || end == null){
-            return;
+            return null;
         }
 
         Node startNode = nodes[start.i][start.j];
@@ -97,19 +97,20 @@ public class PathfindingComponent {
                 }
             }
         }
-        backtrack(endNode);
+        return backtrack(endNode);
     }
 
-    private void backtrack(Node endNode) {
-        parent.path = new ArrayList<>();
+    private ArrayList<Node> backtrack(Node endNode) {
+        ArrayList<Node> path = new ArrayList<>();
         Node currentNode = endNode;
-        parent.path.add(currentNode);
+        path.add(currentNode);
         while(currentNode.parent != null){
             currentNode = currentNode.parent;
-            parent.path.add(currentNode);
+            path.add(currentNode);
         }
-        Collections.reverse(parent.path);
+        Collections.reverse(path);
         resetNodes();
+        return path;
     }
 
     public void blockNodeBehindGhost() {
