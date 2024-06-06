@@ -157,7 +157,7 @@ public class PacMan extends ApplicationAdapter {
 	private void initializeStages(){
 		LevelManager.loadStages(Gdx.files.internal("levels/default.txt").file(), this);
 		StageManager stageManager = new StageManager(stageTimes);
-		stageManager.start();
+		stageManager.start(this);
 	}
 
 	@Override

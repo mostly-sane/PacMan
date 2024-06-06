@@ -16,13 +16,14 @@ public class StageManager {
         this.currentStageIndex = 0;
     }
 
-    public void start() {
-        changeStage();
+    public void start(PacMan game) {
+        changeStage(game);
     }
 
-    private void changeStage() {
+    private void changeStage(PacMan game) {
         Pair<PacMan.Stage, Double> currentStagePair = stages.get(currentStageIndex);
         PacMan.Stage currentStage = currentStagePair.getX();
+        game.stage = currentStage;
         System.out.println("Current stage: " + currentStage);
 
         double delay = currentStagePair.getY() * 1000; // Convert to milliseconds
@@ -33,7 +34,7 @@ public class StageManager {
                 @Override
                 public void run() {
                     currentStageIndex = (currentStageIndex + 1) % stages.size(); // Loop back to the start if we've reached the end
-                    changeStage();
+                    changeStage(game);
                 }
             }, (long) delay);
         }

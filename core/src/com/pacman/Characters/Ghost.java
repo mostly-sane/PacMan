@@ -197,7 +197,18 @@ public class Ghost extends Character{
     }
 
     private Tile getScatterTile(){
-        return null;
+        switch(name){
+            case BLINKY:
+                return Utils.getTileByIndex(17, 1, game.grid);
+            case PINKY:
+                return Utils.getTileByIndex(1, 1, game.grid);
+            case INKY:
+                return Utils.getTileByIndex(17, 19, game.grid);
+            case CLYDE:
+                return Utils.getTileByIndex(1, 19, game.grid);
+            default:
+                return null;
+        }
     }
 
     private Tile getFrightenedTile(){
