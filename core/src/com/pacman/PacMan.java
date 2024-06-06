@@ -11,6 +11,8 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.pacman.AI.PathDrawer;
 import com.pacman.Characters.Ghost;
 import com.pacman.Characters.Player;
 import com.pacman.Components.AnimationComponent;
@@ -21,6 +23,7 @@ import com.pacman.Map.StageManager;
 import com.pacman.Map.Tile;
 import com.pacman.Map.Pill;
 
+import java.awt.*;
 import java.util.*;
 
 public class PacMan extends ApplicationAdapter {
@@ -61,6 +64,9 @@ public class PacMan extends ApplicationAdapter {
 
 	private BitmapFont font;
 
+	ShapeRenderer shapeRenderer;
+	PathDrawer pathDrawer = new PathDrawer();
+
 	public enum Stage {
 		CHASE,
 		SCATTER,
@@ -78,6 +84,8 @@ public class PacMan extends ApplicationAdapter {
 
 	public void create() {
 		super.create();
+
+		shapeRenderer = new ShapeRenderer();
 
 		titleScreenTexture = new Texture(Gdx.files.internal("sprites/ui/ready.png")); // Initialize title screen texture
 
@@ -108,17 +116,17 @@ public class PacMan extends ApplicationAdapter {
 		Blinky.setPosition(Utils.getPositionByIndex(17, 1, tileWidth, tileHeight));
 		ghosts[0] = Blinky;
 
-		Ghost Pinky = new Ghost(20, 20, new Texture(Gdx.files.internal("sprites/ghosts/f-2.png")), this, Ghost.Name.PINKY);
-		Pinky.setPosition(Utils.getPositionByIndex(1, 1, tileWidth, tileHeight));
-		ghosts[1] = Pinky;
-
-		Ghost Inky = new Ghost(20, 20, new Texture(Gdx.files.internal("sprites/ghosts/f-1.png")), this, Ghost.Name.INKY);
-		Inky.setPosition(Utils.getPositionByIndex(17, 19, tileWidth, tileHeight));
-		ghosts[2] = Inky;
-
-		Ghost Clyde = new Ghost(20, 20, new Texture(Gdx.files.internal("sprites/ghosts/y-1.png")), this, Ghost.Name.CLYDE);
-		Clyde.setPosition(Utils.getPositionByIndex(1, 19, tileWidth, tileHeight));
-		ghosts[3] = Clyde;
+//		Ghost Pinky = new Ghost(20, 20, new Texture(Gdx.files.internal("sprites/ghosts/f-2.png")), this, Ghost.Name.PINKY);
+//		Pinky.setPosition(Utils.getPositionByIndex(1, 1, tileWidth, tileHeight));
+//		ghosts[1] = Pinky;
+//
+//		Ghost Inky = new Ghost(20, 20, new Texture(Gdx.files.internal("sprites/ghosts/f-1.png")), this, Ghost.Name.INKY);
+//		Inky.setPosition(Utils.getPositionByIndex(17, 19, tileWidth, tileHeight));
+//		ghosts[2] = Inky;
+//
+//		Ghost Clyde = new Ghost(20, 20, new Texture(Gdx.files.internal("sprites/ghosts/y-1.png")), this, Ghost.Name.CLYDE);
+//		Clyde.setPosition(Utils.getPositionByIndex(1, 19, tileWidth, tileHeight));
+//		ghosts[3] = Clyde;
 
 		Timer timer = new Timer();
 		timer.scheduleAtFixedRate(new TimerTask() {
@@ -126,13 +134,15 @@ public class PacMan extends ApplicationAdapter {
 			public void run() {
 				try {
 					for(Ghost ghost : ghosts){
-						ghost.recalculatePath();
+						if(ghost != null){
+							ghost.recalculatePath();
+						}
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
-		}, 5, 100);
+		}, 5, 1000);
 	}
 
 	private void initializeLevel() {
@@ -221,7 +231,10 @@ public class PacMan extends ApplicationAdapter {
 		batch.end();
 		controller.update();
 		for(Ghost ghost : ghosts){
-			ghost.update();
+			if(ghost != null){
+				ghost.update();
+				ghost.drawPath(shapeRenderer, pathDrawer);
+			}
 		}
 
 		batch.begin();
@@ -235,8 +248,11 @@ public class PacMan extends ApplicationAdapter {
 
 		batch.begin();
 		for(int i = 0; i < ghosts.length; i++){
-			batch.draw(ghosts[i].getTexture(), ghosts[i].getPosition().getX(), ghosts[i].getPosition().getY(),
-					playerWidth / 2, playerHeight / 2, playerWidth, playerHeight);
+			if(ghosts[i] != null){
+				batch.draw(ghosts[i].getTexture(), ghosts[i].getPosition().getX(), ghosts[i].getPosition().getY(),
+						playerWidth / 2, playerHeight / 2, playerWidth, playerHeight);
+			}
+			//TODO ці перевірки це костиль. прибрати
 		}
 		batch.end();
 	}
