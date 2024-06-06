@@ -98,7 +98,7 @@ public class PlayerController extends InputAdapter {
     @Override
     public boolean keyDown(int keycode) {
         switch (keycode) {
-            case Input.Keys.W:
+            case Input.Keys.S:
                 desiredMovementDirection.set(0, -MOVE_AMOUNT);
                 desiredDirection = Character.Direction.UP;
                 break;
@@ -106,7 +106,7 @@ public class PlayerController extends InputAdapter {
                 desiredMovementDirection.set(-MOVE_AMOUNT, 0);
                 desiredDirection = Character.Direction.LEFT;
                 break;
-            case Input.Keys.S:
+            case Input.Keys.W:
                 desiredMovementDirection.set(0, MOVE_AMOUNT);
                 desiredDirection = Character.Direction.DOWN;
                 break;
