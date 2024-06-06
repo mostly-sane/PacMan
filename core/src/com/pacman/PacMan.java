@@ -9,6 +9,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.GL20;
 import com.pacman.Characters.Ghost;
 import com.pacman.Characters.Player;
 import com.pacman.Components.AnimationComponent;
@@ -24,8 +26,10 @@ import java.util.*;
 public class PacMan extends ApplicationAdapter {
 	private FrameBuffer frameBuffer;
 	private TextureRegion textureRegion;
+	private Texture titleScreenTexture; // Title screen texture
+	private Animation<TextureRegion> pacmanAnimation;
+	private float stateTime;
 
-	//public HashMap<Stage, Double> stageTimes = new HashMap<>();
 	public ArrayList<Pair<Stage, Double>> stageTimes = new ArrayList<>();
 
 	float elapsedTime = 0;
@@ -65,18 +69,38 @@ public class PacMan extends ApplicationAdapter {
 
 	public Stage stage = Stage.CHASE;
 
+	public enum GameState {
+		TITLE_SCREEN,
+		PLAYING
+	}
+
+	public GameState gameState = GameState.TITLE_SCREEN;
+
 	public void create() {
 		super.create();
 
+		titleScreenTexture = new Texture(Gdx.files.internal("sprites/ui/ready.png")); // Initialize title screen texture
+
+		TextureRegion[] pacmanFrames = new TextureRegion[3];
+		pacmanFrames[0] = new TextureRegion(new Texture(Gdx.files.internal("sprites/pacman/0.png")));
+		pacmanFrames[1] = new TextureRegion(new Texture(Gdx.files.internal("sprites/pacman/1.png")));
+		pacmanFrames[2] = new TextureRegion(new Texture(Gdx.files.internal("sprites/pacman/2.png")));
+		pacmanAnimation = new Animation<TextureRegion>(0.1f, pacmanFrames);
+		stateTime = 0f;
+
+		font = new BitmapFont();
+		camera = new OrthographicCamera();
+		camera.setToOrtho(false, appW, appH);
+		batch = new SpriteBatch();
+	}
+
+	private void initializeGame() {
 		initializeLevel();
 		initializePlayer();
 		initializeStages();
 		initializeGhosts();
 
-
 		redrawGrid();
-
-		font = new BitmapFont();
 	}
 
 	private void initializeGhosts() {
@@ -124,11 +148,6 @@ public class PacMan extends ApplicationAdapter {
 		String[] parts = levelParams.split(",");
 		rows = Integer.parseInt(parts[0]);
 		columns = Integer.parseInt(parts[1]);
-
-
-		camera = new OrthographicCamera();
-		camera.setToOrtho(true, appW, appH);
-		batch = new SpriteBatch();
 	}
 
 	private void initializePlayer() {
@@ -163,9 +182,40 @@ public class PacMan extends ApplicationAdapter {
 	@Override
 	public void render() {
 		elapsedTime += Gdx.graphics.getDeltaTime();
+		stateTime += Gdx.graphics.getDeltaTime();
 		camera.update();
 		batch.setProjectionMatrix(camera.combined);
 
+		if (gameState == GameState.TITLE_SCREEN) {
+			renderTitleScreen();
+		} else if (gameState == GameState.PLAYING) {
+			renderGame();
+		}
+	}
+
+	private void renderTitleScreen() {
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		batch.begin();
+		batch.draw(titleScreenTexture, (appW - titleScreenTexture.getWidth()) / 2, (appH - titleScreenTexture.getHeight()) / 2);
+		TextureRegion currentFrame = pacmanAnimation.getKeyFrame(stateTime, true);
+		batch.draw(currentFrame, (appW - currentFrame.getRegionWidth()) / 2, (appH - titleScreenTexture.getHeight()) / 2 - currentFrame.getRegionHeight() - 10);
+		batch.end();
+
+		if (Gdx.input.isTouched()) {
+			int x = Gdx.input.getX();
+			int y = Gdx.input.getY();
+			y = appH - y;
+
+			if (x >= (appW - titleScreenTexture.getWidth()) / 2 && x <= (appW + titleScreenTexture.getWidth()) / 2
+					&& y >= (appH - titleScreenTexture.getHeight()) / 2 && y <= (appH + titleScreenTexture.getHeight()) / 2) {
+				gameState = GameState.PLAYING;
+				initializeGame();
+			}
+		}
+	}
+
+	private void renderGame() {
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		batch.begin();
 		batch.draw(textureRegion, 0, 0);
 		batch.end();
@@ -191,7 +241,6 @@ public class PacMan extends ApplicationAdapter {
 		batch.end();
 	}
 
-
 	private void drawPills() {
 		for (int i = 0; i < rows; i++) {
 			for (int j = 0; j < columns; j++) {
@@ -206,6 +255,7 @@ public class PacMan extends ApplicationAdapter {
 	public void dispose() {
 		batch.dispose();
 		frameBuffer.dispose();
+		titleScreenTexture.dispose();
 		for (Tile[] row : grid) {
 			for (Tile tile : row) {
 				if (tile.texture != null) {
