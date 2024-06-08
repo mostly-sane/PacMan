@@ -2,6 +2,7 @@ package com.pacman.Components;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
 import com.pacman.Characters.Character;
 import com.pacman.Characters.Player;
@@ -18,10 +19,13 @@ public class PlayerController extends InputAdapter {
     private Pill[][] pillGrid;  // Add this line
     public boolean isMoving = false;
 
-    public PlayerController(Player player, Pill[][] pillGrid) {
+    private Sound wakaWakaSound;
+
+    public PlayerController(Player player, Pill[][] pillGrid, Sound wakaWakaSound) {
         this.player = player;
         this.collisionComponent = player.getCollisionComponent();
         this.pillGrid = pillGrid;  // Add this line
+        this.wakaWakaSound = wakaWakaSound; // Initialize waka waka sound
         movementDirection.set(-MOVE_AMOUNT, 0);
         desiredMovementDirection.set(-MOVE_AMOUNT, 0);
     }
@@ -89,12 +93,12 @@ public class PlayerController extends InputAdapter {
                         player.increaseScore(10);
                         pill.active = false;
                         pill.setTexture(false);
+                        wakaWakaSound.play();
                     }
                 }
             }
         }
     }
-
     @Override
     public boolean keyDown(int keycode) {
         switch (keycode) {

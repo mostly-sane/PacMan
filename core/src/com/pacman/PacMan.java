@@ -2,6 +2,7 @@ package com.pacman;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -32,7 +33,7 @@ public class PacMan extends ApplicationAdapter {
 	private Texture titleScreenTexture; // Title screen texture
 	private Animation<TextureRegion> pacmanAnimation;
 	private float stateTime;
-
+public Sound wakaWakaSound;
 	public ArrayList<Pair<Stage, Double>> stageTimes = new ArrayList<>();
 
 	float elapsedTime = 0;
@@ -100,6 +101,8 @@ public class PacMan extends ApplicationAdapter {
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, appW, appH);
 		batch = new SpriteBatch();
+
+		wakaWakaSound = Gdx.audio.newSound(Gdx.files.internal("sprites/Sounds/wakwaka.mp3"));
 	}
 
 	private void initializeGame() {
@@ -177,7 +180,7 @@ public class PacMan extends ApplicationAdapter {
 		CollisionComponent collisionComponent = new CollisionComponent(grid, tileWidth, tileHeight);
 
 		player.setCollisionComponent(collisionComponent);
-		controller = new PlayerController(player, pillGrid); // Pass pillGrid here
+		controller = new PlayerController(player, pillGrid, wakaWakaSound); // Pass pillGrid and wakaWakaSound here
 		player.setController(controller);
 
 		animationComponent = new AnimationComponent(player);
@@ -296,6 +299,7 @@ public class PacMan extends ApplicationAdapter {
 		}
 		player.getTexture().dispose();
 		font.dispose();
+		wakaWakaSound.dispose();
 	}
 
 	public void resize(int width, int height) {
