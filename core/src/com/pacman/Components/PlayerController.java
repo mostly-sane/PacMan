@@ -95,7 +95,7 @@ public class PlayerController extends InputAdapter {
                                 player.increaseScore(10);
                                 break;
                             case Pill.POWER_PILL:
-//TODO power pill effect
+                                player.game.activatePowerMode();
                                 break;
                             case Pill.CHERRY:
                                 player.increaseScore(200);

@@ -68,6 +68,12 @@ public Sound wakaWakaSound;
 	ShapeRenderer shapeRenderer;
 	PathDrawer pathDrawer = new PathDrawer();
 
+	StageManager stageManager;
+
+	public void activatePowerMode() {
+		stageManager.activatePowerMode(this);
+	}
+
 	public enum Stage {
 		CHASE,
 		SCATTER,
@@ -180,7 +186,7 @@ public Sound wakaWakaSound;
 
 	private void initializeStages(){
 		LevelManager.loadStages(Gdx.files.internal("levels/default.txt").file(), this);
-		StageManager stageManager = new StageManager(stageTimes);
+		stageManager = new StageManager(stageTimes);
 		stageManager.start(this);
 	}
 

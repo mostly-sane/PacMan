@@ -7,7 +7,7 @@ import com.pacman.PacMan;
 import com.pacman.Pair;
 
 public class Character {
-    protected PacMan game;
+    public PacMan game;
     protected int width;
     protected int height;
     protected CollisionComponent collisionComponent;
