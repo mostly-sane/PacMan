@@ -271,9 +271,9 @@ public Sound wakaWakaSound;
 	private void drawPills() {
 		for (int i = 0; i < rows; i++) {
 			for (int j = 0; j < columns; j++) {
-				if (pillGrid[i][j].active) {
-					batch.draw(pillGrid[i][j].texture, pillGrid[i][j].x, pillGrid[i][j].y,
-							pillGrid[i][j].width, pillGrid[i][j].height);
+				Pill pill = pillGrid[i][j];
+				if (pill.texture != null) {
+					batch.draw(pill.texture, pill.x, pill.y, pill.width, pill.height);
 				}
 			}
 		}
@@ -354,7 +354,7 @@ public Sound wakaWakaSound;
 	}
 
 	public void collectPill(int i, int j) {
-		pillGrid[i][j].active = false;
-		pillGrid[i][j].setTexture(false);
+		pillGrid[i][j].type = 0;
+		pillGrid[i][j].setTexture();
 	}
 }

@@ -65,8 +65,8 @@ public class LevelManager {
             while ((line = reader.readLine()) != null) {
                 parts = line.split(",");
                 for (int j = 0; j < parts.length; j++) {
-                    boolean active = Integer.parseInt(parts[j]) == 1;
-                    grid[j][i] = new Pill(j * w, i * h, w, h, active);
+                    int type = Integer.parseInt(parts[j]);
+                    grid[j][i] = new Pill(j * w, i * h, w, h, type);
                 }
                 i++;
             }
@@ -76,6 +76,7 @@ public class LevelManager {
 
         return grid;
     }
+
 
     public static String getLevelParams(File level) {
         String line;

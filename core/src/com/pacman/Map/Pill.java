@@ -4,18 +4,37 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
 
 public class Pill extends Rectangle {
-    public boolean active;
+    public static final int REGULAR_PILL = 1;
+    public static final int POWER_PILL = 2;
+    public static final int CHERRY = 3;
+
+    public int type;
     public Texture texture;
 
-    public Pill(int x, int y, int width, int height, boolean active) {
+    public Pill(int x, int y, int width, int height, int type) {
         super(x, y, width, height);
-        this.active = active;
-        setTexture(active);
+        this.type = type;
+        setTexture();
     }
 
-    public void setTexture(boolean active) {
-        if (active) {
-            texture = new Texture("sprites/map/pill.png");
+    public void setTexture() {
+        String texturePath;
+        switch (type) {
+            case REGULAR_PILL:
+                texturePath = "sprites/map/pill.png";
+                break;
+            case POWER_PILL:
+                texturePath = "sprites/map/big-1.png";
+                break;
+            case CHERRY:
+                texturePath = "sprites/fruits/cherry.png";
+                break;
+            default:
+                texturePath = null;
+                break;
+        }
+        if (texturePath != null) {
+            texture = new Texture(texturePath);
         } else {
             if (texture != null) {
                 texture.dispose();
@@ -28,3 +47,4 @@ public class Pill extends Rectangle {
         return new Rectangle(x, y, width, height);
     }
 }
+

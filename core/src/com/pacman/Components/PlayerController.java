@@ -86,19 +86,31 @@ public class PlayerController extends InputAdapter {
         for (int i = 0; i < pillGrid.length; i++) {
             for (int j = 0; j < pillGrid[i].length; j++) {
                 Pill pill = pillGrid[i][j];
-                if (pill.active) {
+                if (pill.texture != null) { // Check if there's a pill texture
                     Vector2 pillCenter = new Vector2(pill.getX() + pill.getWidth() / 2, pill.getY() + pill.getHeight() / 2);
                     // Adjust the distance threshold here
                     if (playerCenter.dst(pillCenter) <= (player.getWidth() / 4 + pill.getWidth() / 4)) {
-                        player.increaseScore(10);
-                        pill.active = false;
-                        pill.setTexture(false);
+                        switch (pill.type) {
+                            case Pill.REGULAR_PILL:
+                                player.increaseScore(10);
+                                break;
+                            case Pill.POWER_PILL:
+//TODO power pill effect
+                                break;
+                            case Pill.CHERRY:
+                                player.increaseScore(200);
+                                break;
+                        }
+                        // Deactivate the pill
+                        pill.texture.dispose(); // Dispose the texture
+                        pill.texture = null; // Set texture to null to indicate pill is collected
                         wakaWakaSound.play();
                     }
                 }
             }
         }
     }
+
     @Override
     public boolean keyDown(int keycode) {
         switch (keycode) {
