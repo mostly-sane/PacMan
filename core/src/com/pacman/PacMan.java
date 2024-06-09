@@ -138,22 +138,6 @@ public Sound wakaWakaSound;
 		ghosts[3] = Clyde;
 
 		Clyde.recalculatePath();
-
-//		Timer timer = new Timer();
-//		timer.scheduleAtFixedRate(new TimerTask() {
-//			@Override
-//			public void run() {
-//				try {
-//					for(Ghost ghost : ghosts){
-//						if(ghost != null){
-//							ghost.recalculatePath();
-//						}
-//					}
-//				} catch (Exception e) {
-//					e.printStackTrace();
-//				}
-//			}
-//		}, 5, 500);
 	}
 
 	private void initializeLevel() {

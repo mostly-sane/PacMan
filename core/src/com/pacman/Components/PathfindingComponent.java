@@ -113,7 +113,7 @@ public class PathfindingComponent {
         return path;
     }
 
-    public void blockNodeBehindGhost() {
+    public Node blockNodeBehindGhost() {
         // Calculate the node behind the ghost
         Node nodeBehindGhost;
         int row = parent.getRow();
@@ -136,13 +136,25 @@ public class PathfindingComponent {
         }
 
         if(row < 0 || row >= nodes.length || column < 0 || column >= nodes[0].length){
-            return;
+            return null;
         }
 
         nodeBehindGhost = nodes[column][row];
         System.out.println("Blocking node: " + row + ", " + column + " Player: " + parent.getRow() +
                         ", " + parent.getColumn() + " Direction: " + parent.direction);
-        nodeBehindGhost.isOpen = false;
+        nodes[column][row].isOpen = false;
+        return nodeBehindGhost;
+    }
+
+    public ArrayList<Node> getAvailableNodes(Tile tile){
+        Node node = nodes[tile.i][tile.j];
+        ArrayList<Node> availableNodes = new ArrayList<>();
+        for(Node adjacentNode : node.adjacentNodes){
+            if(adjacentNode.isOpen){
+                availableNodes.add(adjacentNode);
+            }
+        }
+        return availableNodes;
     }
 
     public void reopenNodes(){

@@ -24,6 +24,7 @@ public class Ghost extends Character{
     PathfindingComponent pathfindingComponent;
     public ArrayList<Node> path;
     Tile targetTile;
+    Random random = new Random();
 
     public Ghost(int width, int height, Texture texture, PacMan game, Name name) {
         super(width, height, texture, game);
@@ -81,7 +82,11 @@ public class Ghost extends Character{
                 path = pathfindingComponent.findPath(Utils.getCurrentTile(this, game.grid), getScatterTile());
                 break;
             case FRIGHTENED:
-                path = pathfindingComponent.findPath(Utils.getCurrentTile(this, game.grid), getFrightenedTile());
+                ArrayList<Node> nodes = pathfindingComponent.getAvailableNodes(Utils.getCurrentTile(this, game.grid));
+                Node n = nodes.get(random.nextInt(nodes.size()));
+                Tile tile = Utils.getTileByIndex(n.location.getX(), n.location.getY(), game.grid);
+
+                path = pathfindingComponent.findPath(Utils.getCurrentTile(this, game.grid), tile);
                 break;
         }
 
@@ -93,7 +98,6 @@ public class Ghost extends Character{
             targetTile = game.grid[path.get(1).location.getX()][path.get(1).location.getY()];
             direction = calculatedirection(targetTile);
         }
-        //pathfindingComponent.reopenNodes();
     }
 
     private Direction calculatedirection(Tile nextTile) {
@@ -251,7 +255,7 @@ public class Ghost extends Character{
 
     public void drawPath(ShapeRenderer shapeRenderer, PathDrawer pathDrawer) {
         pathDrawer.drawPath(shapeRenderer, path);
-        pathDrawer.drawBlockedNodes(shapeRenderer, pathfindingComponent.nodes);
+        //pathDrawer.drawBlockedNodes(shapeRenderer, pathfindingComponent.nodes);
     }
 
     private Tile getFrightenedTile(){
