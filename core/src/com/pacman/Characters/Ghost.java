@@ -271,6 +271,6 @@ public class Ghost extends Character{
 
     public void drawPath(ShapeRenderer shapeRenderer, PathDrawer pathDrawer) {
         pathDrawer.drawPath(shapeRenderer, path);
-        //pathDrawer.drawBlockedNodes(shapeRenderer, pathfindingComponent.nodes);
+        pathDrawer.drawBlockedNodes(shapeRenderer, pathfindingComponent.grid);
     }
 }

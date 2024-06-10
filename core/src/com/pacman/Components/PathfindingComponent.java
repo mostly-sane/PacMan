@@ -11,7 +11,7 @@ public class PathfindingComponent {
     private PacMan game;
     private Ghost parent;
     public Node[][] grid;
-    ArrayList<Node> path = new ArrayList<>();
+    public ArrayList<Node> path = new ArrayList<>();
     ArrayList<Node> availableNodes = new ArrayList<>();
 
     public PathfindingComponent(PacMan game, Ghost ghost) {
@@ -112,7 +112,7 @@ public class PathfindingComponent {
         return path;
     }
 
-    public Node blockNodeBehindGhost() {
+    public void blockNodeBehindGhost() {
         Node nodeBehindGhost;
         int row = parent.getRow();
         int column = parent.getColumn();
@@ -134,11 +134,10 @@ public class PathfindingComponent {
         }
 
         if(row < 0 || row >= grid.length || column < 0 || column >= grid[0].length){
-            return null;
+            return;
         }
 
-        nodeBehindGhost = grid[column][row];
-        return nodeBehindGhost;
+        grid[column][row].isOpen = false;
     }
 
     public ArrayList<Node> getAvailableNodes(Tile tile){

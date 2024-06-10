@@ -235,7 +235,7 @@ public Sound wakaWakaSound;
 		for(Ghost ghost : ghosts){
 			if(ghost != null){
 				ghost.update();
-				ghost.drawPath(shapeRenderer, pathDrawer);
+				//ghost.drawPath(shapeRenderer, pathDrawer);
 			}
 		}
 		player.update();
