@@ -114,8 +114,8 @@ public Sound wakaWakaSound;
 	private void initializeGame() {
 		initializeLevel();
 		initializePlayer();
-		initializeStages();
 		initializeGhosts();
+		initializeStages();
 
 		redrawGrid();
 	}

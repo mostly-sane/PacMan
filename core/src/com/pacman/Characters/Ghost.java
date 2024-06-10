@@ -82,11 +82,14 @@ public class Ghost extends Character{
                 path = pathfindingComponent.findPath(Utils.getCurrentTile(this, game.grid), getScatterTile());
                 break;
             case FRIGHTENED:
-//                ArrayList<Node> nodes = pathfindingComponent.getAvailableNodes(Utils.getCurrentTile(this, game.grid));
-//                Node n = nodes.get(random.nextInt(nodes.size()));
-//                Tile tile = Utils.getTileByIndex(n.location.getX(), n.location.getY(), game.grid);
-//
-//                path = pathfindingComponent.findPath(Utils.getCurrentTile(this, game.grid), tile);
+                ArrayList<Node> nodes = pathfindingComponent.getAvailableNodes(Utils.getCurrentTile(this, game.grid));
+                if(!nodes.isEmpty()){
+                    Node n = nodes.get(random.nextInt(nodes.size()));
+                    Tile tile = Utils.getTileByIndex(n.location.getX(), n.location.getY(), game.grid);
+                    path = pathfindingComponent.findPath(Utils.getCurrentTile(this, game.grid), tile);
+                } else{
+                   path = null;
+                }
                 break;
         }
 

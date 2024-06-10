@@ -1,5 +1,6 @@
 package com.pacman.Map;
 
+import com.pacman.Characters.Ghost;
 import com.pacman.PacMan;
 import com.pacman.Pair;
 
@@ -26,15 +27,17 @@ public class StageManager {
         PacMan.Stage currentStage = currentStagePair.getX();
         game.stage = currentStage;
         System.out.println("Current stage: " + currentStage);
+        for(Ghost ghost : game.ghosts) {
+            ghost.recalculatePath();
+        }
 
-        double delay = currentStagePair.getY() * 1000; // Convert to milliseconds
+        double delay = currentStagePair.getY() * 1000;
 
-        // Only schedule the next stage change if the duration is not negative
         if (delay >= 0) {
             currentTask = new TimerTask() {
                 @Override
                 public void run() {
-                    currentStageIndex = (currentStageIndex + 1) % stages.size(); // Loop back to the start if we've reached the end
+                    currentStageIndex = (currentStageIndex + 1) % stages.size();
                     changeStage(game);
                 }
             };
@@ -43,23 +46,21 @@ public class StageManager {
     }
 
     public void activatePowerMode(PacMan game) {
-        // Cancel the current timer task
         if (currentTask != null) {
             currentTask.cancel();
+            timer.cancel(); // Cancel the timer
+            timer = new Timer(); // Create a new timer
         }
 
-        // Change the game state to Frightened
         game.stage = PacMan.Stage.FRIGHTENED;
         System.out.println("Current stage: " + game.stage);
 
-        // Start a new timer task that will change the game state back to its previous state after 5 seconds
         currentTask = new TimerTask() {
             @Override
             public void run() {
-                // Change the game state back to its previous state
                 changeStage(game);
             }
         };
-        timer.schedule(currentTask, 5000); // 5 seconds
+        timer.schedule(currentTask, 5000);
     }
 }

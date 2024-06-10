@@ -140,9 +140,9 @@ public class PathfindingComponent {
         }
 
         nodeBehindGhost = nodes[column][row];
-        System.out.println("Blocking node: " + row + ", " + column + " Player: " + parent.getRow() +
-                        ", " + parent.getColumn() + " Direction: " + parent.direction);
-        nodes[column][row].isOpen = false;
+        //System.out.println("Blocking node: " + row + ", " + column + " Player: " + parent.getRow() +
+        //                ", " + parent.getColumn() + " Direction: " + parent.direction);
+        //nodes[column][row].isOpen = false;
         return nodeBehindGhost;
     }
 

@@ -11,6 +11,10 @@ public class PathDrawer {
     public void drawPath(ShapeRenderer shapeRenderer, List<Node> path) {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
         shapeRenderer.setColor(Color.RED); // Set the color of the path
+        if(path == null) {
+            shapeRenderer.end();
+            return;
+        }
 
         for (int i = 0; i < path.size() - 1; i++) {
             Node node1 = path.get(i);
