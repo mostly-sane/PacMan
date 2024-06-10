@@ -14,8 +14,7 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.pacman.AI.PathDrawer;
-import com.pacman.Characters.Ghost;
-import com.pacman.Characters.Player;
+import com.pacman.Characters.*;
 import com.pacman.Components.AnimationComponent;
 import com.pacman.Components.CollisionComponent;
 import com.pacman.Components.PlayerController;
@@ -41,7 +40,6 @@ public Sound wakaWakaSound;
 	private OrthographicCamera camera;
 	private SpriteBatch batch;
 	private PlayerController controller;
-	private AnimationComponent animationComponent;
 	public Player player;
 
 	private int playerWidth;
@@ -121,29 +119,33 @@ public Sound wakaWakaSound;
 	}
 
 	private void initializeGhosts() {
-		Ghost Blinky = new Ghost(20, 20, new Texture(Gdx.files.internal("sprites/ghosts/f-3.png")), this, Ghost.Name.BLINKY);
+		Blinky Blinky = new Blinky(20, 20, new Texture(Gdx.files.internal("sprites/ghosts/f-3.png")), this, Ghost.Name.BLINKY);
 		Blinky.setPosition(Utils.getPositionByIndex(17, 1, tileWidth, tileHeight));
 		ghosts[0] = Blinky;
 
 		Blinky.recalculatePath();
 
-		Ghost Pinky = new Ghost(20, 20, new Texture(Gdx.files.internal("sprites/ghosts/f-2.png")), this, Ghost.Name.PINKY);
+		Pinky Pinky = new Pinky(20, 20, new Texture(Gdx.files.internal("sprites/ghosts/f-2.png")), this, Ghost.Name.PINKY);
 		Pinky.setPosition(Utils.getPositionByIndex(1, 1, tileWidth, tileHeight));
 		ghosts[1] = Pinky;
 
 		Pinky.recalculatePath();
 
-		Ghost Inky = new Ghost(20, 20, new Texture(Gdx.files.internal("sprites/ghosts/f-1.png")), this, Ghost.Name.INKY);
+		Inky Inky = new Inky(20, 20, new Texture(Gdx.files.internal("sprites/ghosts/f-1.png")), this, Ghost.Name.INKY);
 		Inky.setPosition(Utils.getPositionByIndex(17, 19, tileWidth, tileHeight));
 		ghosts[2] = Inky;
 
 		Inky.recalculatePath();
 
-		Ghost Clyde = new Ghost(20, 20, new Texture(Gdx.files.internal("sprites/ghosts/y-1.png")), this, Ghost.Name.CLYDE);
+		Clyde Clyde = new Clyde(20, 20, new Texture(Gdx.files.internal("sprites/ghosts/y-1.png")), this, Ghost.Name.CLYDE);
 		Clyde.setPosition(Utils.getPositionByIndex(1, 19, tileWidth, tileHeight));
 		ghosts[3] = Clyde;
 
 		Clyde.recalculatePath();
+
+		for(Ghost ghost : ghosts){
+			ghost.setAnimationComponent(new AnimationComponent(ghost));
+		}
 	}
 
 	private void initializeLevel() {
@@ -173,8 +175,7 @@ public Sound wakaWakaSound;
 		controller = new PlayerController(player, pillGrid, wakaWakaSound); // Pass pillGrid and wakaWakaSound here
 		player.setController(controller);
 
-		animationComponent = new AnimationComponent(player);
-		player.setAnimationComponent(animationComponent);
+		player.setAnimationComponent(new AnimationComponent(player));
 
 		playerWidth = player.getWidth();
 		playerHeight = player.getHeight();
@@ -237,21 +238,24 @@ public Sound wakaWakaSound;
 				ghost.drawPath(shapeRenderer, pathDrawer);
 			}
 		}
-
+		player.update();
 		batch.begin();
-		TextureRegion currentFrame = (TextureRegion) animationComponent.getCurrentAnimation()
+		TextureRegion currentFrame = (TextureRegion) player.getMovingAnimation()
 				.getKeyFrame(elapsedTime, true);
 		batch.draw(currentFrame, player.getPosition().getX(), player.getPosition().getY(),
 				playerWidth / 2, playerHeight / 2, playerWidth, playerHeight,
-				1, 1, animationComponent.getRotation());
+				1, 1, player.animationComponent.rotation);
 		drawPills();
 		batch.end();
 
 		batch.begin();
 		for(int i = 0; i < ghosts.length; i++){
 			if(ghosts[i] != null){
-				batch.draw(ghosts[i].getTexture(), ghosts[i].getPosition().getX(), ghosts[i].getPosition().getY(),
-						playerWidth / 2, playerHeight / 2, playerWidth, playerHeight);
+				TextureRegion currentGhostFrame = (TextureRegion) ghosts[i].getMovingAnimation()
+						.getKeyFrame(elapsedTime, true);
+
+				batch.draw(currentGhostFrame, ghosts[i].getPosition().getX(), ghosts[i].getPosition().getY(),
+						playerWidth / 2, playerHeight / 2, playerWidth, playerHeight, 1, 1, 0);
 			}
 			//TODO ці перевірки це костиль. прибрати
 		}

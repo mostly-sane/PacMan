@@ -30,7 +30,9 @@ public class StageManager {
         game.stage = currentStage;
         //System.out.println("Current stage: " + currentStage);
         for(Ghost ghost : game.ghosts) {
-            ghost.recalculatePath();
+            if(ghost != null){
+                ghost.recalculatePath();
+            }
         }
 
         double delay = currentStagePair.getY() * 1000;

@@ -1,12 +1,16 @@
 package com.pacman.Characters;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.pacman.Components.AnimationComponent;
 import com.pacman.Components.CollisionComponent;
-import com.pacman.Map.Tile;
 import com.pacman.PacMan;
 import com.pacman.Pair;
 
 public class Character {
+    public AnimationComponent animationComponent;
+
     public enum Direction {
         UP,
         DOWN,
@@ -20,12 +24,18 @@ public class Character {
     protected Pair<Float, Float> position = new Pair<>(0f, 0f);
     protected Texture texture;
     protected Direction direction = Direction.LEFT;
+    protected TextureRegion[] movingFrames;
 
     public Character(int width, int height, Texture texture, PacMan game) {
         this.width = width;
         this.height = height;
         this.texture = texture;
         this.game = game;
+        animationComponent = new AnimationComponent(this);
+    }
+
+    public void update(){
+        animationComponent.updateRotation();
     }
 
     public CollisionComponent getCollisionComponent() {
@@ -84,11 +94,19 @@ public class Character {
         return new Pair<>((float) i * w, (float) j * h);
     }
 
+    public void setAnimationComponent(AnimationComponent animationComponent) {
+        this.animationComponent = animationComponent;
+    }
+
     public Direction getDirection() {
         return direction;
     }
 
     public void setDirection(Direction direction) {
         this.direction = direction;
+    }
+
+    public Animation getMovingAnimation() {
+        return null;
     }
 }

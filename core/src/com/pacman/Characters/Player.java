@@ -1,26 +1,22 @@
 package com.pacman.Characters;
 
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.math.Rectangle;
-import com.pacman.Components.AnimationComponent;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.pacman.Components.PlayerController;
 import com.pacman.PacMan;
 
 public class Player extends Character {
     private int score = 0;
     PlayerController controller;
-    AnimationComponent animationComponent;
 
     public Player(int width, int height, Texture texture, PacMan game) {
         super(width, height, texture, game);
+        movingFrames = new TextureRegion[3];
     }
 
     public void setController(PlayerController controller) {
         this.controller = controller;
-    }
-
-    public void setAnimationComponent(AnimationComponent animationComponent) {
-        this.animationComponent = animationComponent;
     }
 
     public void increaseScore(int amount) {
@@ -29,5 +25,18 @@ public class Player extends Character {
 
     public int getScore() {
         return score;
+    }
+
+    @Override
+    public Animation getMovingAnimation(){
+        Texture texture0 = new Texture("sprites/pacman/0.png");
+        Texture texture1 = new Texture("sprites/pacman/1.png");
+        Texture texture2 = new Texture("sprites/pacman/2.png");
+
+        movingFrames[0] = new TextureRegion(texture0);
+        movingFrames[1] = new TextureRegion(texture1);
+        movingFrames[2] = new TextureRegion(texture2);
+
+        return new Animation(0.1f, movingFrames);
     }
 }

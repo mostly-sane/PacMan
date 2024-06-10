@@ -1,6 +1,7 @@
 package com.pacman.Characters;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.pacman.AI.Node;
 import com.pacman.AI.PathDrawer;
@@ -31,9 +32,11 @@ public class Ghost extends Character{
         this.name = name;
         pathfindingComponent = new PathfindingComponent(game, this);
         pathfindingComponent.convertToNodes(game.grid);
+        movingFrames = new TextureRegion[2];
     }
 
     public void update(){
+        super.update();
         if(targetTile == null || direction == null){
             return;
         }
