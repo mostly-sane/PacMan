@@ -7,19 +7,19 @@ import com.pacman.PacMan;
 import com.pacman.Pair;
 
 public class Character {
-    public PacMan game;
-    protected int width;
-    protected int height;
-    protected CollisionComponent collisionComponent;
-    protected Pair<Float, Float> position = new Pair<>(0f, 0f);
-    protected Texture texture;
     public enum Direction {
         UP,
         DOWN,
         LEFT,
         RIGHT
     }
-    public Direction direction = Direction.LEFT;
+    public PacMan game;
+    protected int width;
+    protected int height;
+    protected CollisionComponent collisionComponent;
+    protected Pair<Float, Float> position = new Pair<>(0f, 0f);
+    protected Texture texture;
+    protected Direction direction = Direction.LEFT;
 
     public Character(int width, int height, Texture texture, PacMan game) {
         this.width = width;
@@ -60,24 +60,12 @@ public class Character {
         return texture;
     }
 
-    public void setTexture(Texture texture) {
-        this.texture = texture;
-    }
-
     public int getWidth() {
         return width;
     }
 
-    public void setWidth(int width) {
-        this.width = width;
-    }
-
     public int getHeight() {
         return height;
-    }
-
-    public void setHeight(int height) {
-        this.height = height;
     }
 
     public void setCollisionComponent(CollisionComponent collisionComponent) {
@@ -94,5 +82,13 @@ public class Character {
 
     public Pair<Float, Float> getPositionByIndex(int i, int j, int w, int h) {
         return new Pair<>((float) i * w, (float) j * h);
+    }
+
+    public Direction getDirection() {
+        return direction;
+    }
+
+    public void setDirection(Direction direction) {
+        this.direction = direction;
     }
 }

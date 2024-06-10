@@ -8,6 +8,8 @@ import java.util.*;
 
 public class StageManager {
     private ArrayList<Pair<PacMan.Stage, Double>> stages;
+    private PacMan.Stage currentStage;
+    private Pair<PacMan.Stage, Double> currentStagePair;
     private Timer timer;
     private TimerTask currentTask;
     private int currentStageIndex;
@@ -23,10 +25,10 @@ public class StageManager {
     }
 
     private void changeStage(PacMan game) {
-        Pair<PacMan.Stage, Double> currentStagePair = stages.get(currentStageIndex);
-        PacMan.Stage currentStage = currentStagePair.getX();
+        currentStagePair = stages.get(currentStageIndex);
+        currentStage = currentStagePair.getX();
         game.stage = currentStage;
-        System.out.println("Current stage: " + currentStage);
+        //System.out.println("Current stage: " + currentStage);
         for(Ghost ghost : game.ghosts) {
             ghost.recalculatePath();
         }
@@ -48,12 +50,12 @@ public class StageManager {
     public void activatePowerMode(PacMan game) {
         if (currentTask != null) {
             currentTask.cancel();
-            timer.cancel(); // Cancel the timer
-            timer = new Timer(); // Create a new timer
+            timer.cancel();
+            timer = new Timer();
         }
 
         game.stage = PacMan.Stage.FRIGHTENED;
-        System.out.println("Current stage: " + game.stage);
+        //System.out.println("Current stage: " + game.stage);
 
         currentTask = new TimerTask() {
             @Override

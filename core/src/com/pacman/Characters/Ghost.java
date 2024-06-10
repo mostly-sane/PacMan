@@ -19,12 +19,12 @@ public class Ghost extends Character{
         CLYDE
     }
 
-    Name name;
-    Float speed = 0.75f;
-    PathfindingComponent pathfindingComponent;
+    private Name name;
+    private Float speed = 0.75f;
+    private PathfindingComponent pathfindingComponent;
     public ArrayList<Node> path;
-    Tile targetTile;
-    Random random = new Random();
+    private Tile targetTile;
+    private Random random = new Random();
 
     public Ghost(int width, int height, Texture texture, PacMan game, Name name) {
         super(width, height, texture, game);
@@ -77,20 +77,20 @@ public class Ghost extends Character{
         switch(game.stage) {
             case CHASE:
                 path = pathfindingComponent.findPath(Utils.getCurrentTile(this, game.grid), getChaseTile());
-                break;
+            break;
             case SCATTER:
                 path = pathfindingComponent.findPath(Utils.getCurrentTile(this, game.grid), getScatterTile());
-                break;
+            break;
             case FRIGHTENED:
-                ArrayList<Node> nodes = pathfindingComponent.getAvailableNodes(Utils.getCurrentTile(this, game.grid));
-                if(!nodes.isEmpty()){
-                    Node n = nodes.get(random.nextInt(nodes.size()));
+                path = pathfindingComponent.getAvailableNodes(Utils.getCurrentTile(this, game.grid));
+                if(!path.isEmpty()){
+                    Node n = path.get(random.nextInt(path.size()));
                     Tile tile = Utils.getTileByIndex(n.location.getX(), n.location.getY(), game.grid);
                     path = pathfindingComponent.findPath(Utils.getCurrentTile(this, game.grid), tile);
                 } else{
                    path = null;
                 }
-                break;
+            break;
         }
 
         if(path == null){
@@ -118,76 +118,64 @@ public class Ghost extends Character{
         return null;
     }
 
-    private void printPath(){
-        if(path == null){
-            System.out.println("No path found");
-            return;
-        }
-        for(Node node : path){
-            System.out.println(node.location);
-        }
-    }
-
     private Tile getChaseTile(){
         Player player = game.player;
         Tile playerTile = Utils.getCurrentTile(player, game.grid);
         Tile result = null;
         int playerRow = game.player.getColumn();
         int playerColumn = game.player.getRow();
-        switch (name){
+        switch(name){
             case BLINKY:
                 result = playerTile;
-                break;
+            break;
             case PINKY:
                 if(player.controller.isMoving){
                     result = calculateTargetPinky(playerRow, playerColumn, result, playerTile);
                 } else {
                     result = playerTile;
                 }
-                break;
+            break;
             case INKY:
                 result = calculateTargetInky(playerTile);
-                break;
+            break;
             case CLYDE:
                 if(Utils.getDistance(Utils.getCurrentTile(this, game.grid), playerTile) > 8){
                     result = playerTile;
                 } else {
                     result = getScatterTile();
                 }
-                break;
+            break;
         }
         return result;
     }
 
     private Tile calculateTargetPinky(int playerRow, int playerColumn, Tile result, Tile playerTile) {
-        result = getAvailableTileWithOffset(playerRow, playerColumn, result, playerTile, 4);
-
-        return result;
+        return getAvailableTileWithOffset(playerRow, playerColumn, result, playerTile, 4);
     }
 
     private Tile getAvailableTileWithOffset(int playerRow, int playerColumn, Tile result, Tile playerTile, int targetOffset) {
         switch (game.player.direction){
             case UP:
-                for (int offset = targetOffset; offset >= 1; offset--) {
+                for(int offset = targetOffset; offset >= 1; offset--) {
                     if(playerColumn - offset < 0){
                         continue;
                     }
 
-                    if(pathfindingComponent.nodes[playerRow][playerColumn - offset].isOpen) {
+                    if(pathfindingComponent.grid[playerRow][playerColumn - offset].isOpen) {
                         result = Utils.getTileByIndex(playerRow, playerColumn - offset, game.grid);
                         break;
                     }
 
                     result = playerTile;
                 }
-                break;
+            break;
             case DOWN:
                 for (int offset = targetOffset; offset >= 1; offset--) {
                     if(playerColumn + offset >= game.grid[0].length){
                         continue;
                     }
 
-                    if(pathfindingComponent.nodes[playerRow][playerColumn + offset].isOpen) {
+                    if(pathfindingComponent.grid[playerRow][playerColumn + offset].isOpen) {
                         result = Utils.getTileByIndex(playerRow, playerColumn + offset, game.grid);
                         break;
                     }
@@ -201,7 +189,7 @@ public class Ghost extends Character{
                         continue;
                     }
 
-                    if(pathfindingComponent.nodes[playerRow - offset][playerColumn].isOpen) {
+                    if(pathfindingComponent.grid[playerRow - offset][playerColumn].isOpen) {
                         result = Utils.getTileByIndex(playerRow - offset, playerColumn, game.grid);
                         break;
                     }
@@ -215,7 +203,7 @@ public class Ghost extends Character{
                         continue;
                     }
 
-                    if (pathfindingComponent.nodes[playerRow + offset][offset].isOpen) {
+                    if (pathfindingComponent.grid[playerRow + offset][offset].isOpen) {
                         result = Utils.getTileByIndex(playerRow + offset, playerColumn, game.grid);
                         break;
                     }
@@ -259,9 +247,5 @@ public class Ghost extends Character{
     public void drawPath(ShapeRenderer shapeRenderer, PathDrawer pathDrawer) {
         pathDrawer.drawPath(shapeRenderer, path);
         //pathDrawer.drawBlockedNodes(shapeRenderer, pathfindingComponent.nodes);
-    }
-
-    private Tile getFrightenedTile(){
-        return null;
     }
 }

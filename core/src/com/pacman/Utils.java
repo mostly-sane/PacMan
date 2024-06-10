@@ -1,7 +1,10 @@
 package com.pacman;
 
+import com.pacman.AI.Node;
 import com.pacman.Map.Tile;
 import com.pacman.Characters.Character;
+
+import java.util.ArrayList;
 
 public class Utils {
     public static Pair<Float, Float> getPositionByIndex(int i, int j, int w, int h) {
@@ -20,5 +23,15 @@ public class Utils {
 
     public static int getDistance(Tile start, Tile end) {
         return Math.abs(start.i - end.i) + Math.abs(start.j - end.j);
+    }
+
+    private void printPath(ArrayList<Node> path){
+        if(path == null){
+            System.out.println("No path found");
+            return;
+        }
+        for(Node node : path){
+            System.out.println(node.location);
+        }
     }
 }

@@ -77,7 +77,6 @@ public class LevelManager {
         return grid;
     }
 
-
     public static String getLevelParams(File level) {
         String line;
         try (BufferedReader reader = new BufferedReader(new FileReader(level))) {

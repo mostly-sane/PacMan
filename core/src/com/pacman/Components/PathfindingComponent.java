@@ -1,19 +1,18 @@
 package com.pacman.Components;
 
 import com.pacman.AI.Node;
-import com.pacman.AI.PathDrawer;
 import com.pacman.Characters.Ghost;
 import com.pacman.Map.Tile;
 import com.pacman.PacMan;
 import com.pacman.Pair;
-
-import java.awt.*;
 import java.util.*;
 
 public class PathfindingComponent {
-    PacMan game;
-    Ghost parent;
-    public Node[][] nodes;
+    private PacMan game;
+    private Ghost parent;
+    public Node[][] grid;
+    ArrayList<Node> path = new ArrayList<>();
+    ArrayList<Node> availableNodes = new ArrayList<>();
 
     public PathfindingComponent(PacMan game, Ghost ghost) {
         this.parent = ghost;
@@ -21,26 +20,26 @@ public class PathfindingComponent {
     }
 
     public void convertToNodes(Tile[][] grid){
-        nodes = new Node[grid.length][grid[0].length];
+        this.grid = new Node[grid.length][grid[0].length];
         for(int i = 0; i < grid.length; i++){
             for(int j = 0; j < grid[0].length; j++){
-                nodes[i][j] = new Node(new Pair<>(i, j));
-                nodes[i][j].isOpen = grid[i][j].open;
+                this.grid[i][j] = new Node(new Pair<>(i, j));
+                this.grid[i][j].isOpen = grid[i][j].open;
             }
         }
         for(int i = 0; i < grid.length; i++){
             for(int j = 0; j < grid[0].length; j++){
-                if(i > 0 && nodes[i-1][j].isOpen){
-                    nodes[i][j].adjacentNodes.add(nodes[i-1][j]);
+                if(i > 0 && this.grid[i-1][j].isOpen){
+                    this.grid[i][j].adjacentNodes.add(this.grid[i-1][j]);
                 }
-                if(i < grid.length - 1 && nodes[i+1][j].isOpen){
-                    nodes[i][j].adjacentNodes.add(nodes[i+1][j]);
+                if(i < grid.length - 1 && this.grid[i+1][j].isOpen){
+                    this.grid[i][j].adjacentNodes.add(this.grid[i+1][j]);
                 }
-                if(j > 0 && nodes[i][j-1].isOpen){
-                    nodes[i][j].adjacentNodes.add(nodes[i][j-1]);
+                if(j > 0 && this.grid[i][j-1].isOpen){
+                    this.grid[i][j].adjacentNodes.add(this.grid[i][j-1]);
                 }
-                if(j < grid[0].length - 1 && nodes[i][j+1].isOpen){
-                    nodes[i][j].adjacentNodes.add(nodes[i][j+1]);
+                if(j < grid[0].length - 1 && this.grid[i][j+1].isOpen){
+                    this.grid[i][j].adjacentNodes.add(this.grid[i][j+1]);
                 }
             }
         }
@@ -56,8 +55,8 @@ public class PathfindingComponent {
             return null;
         }
 
-        Node startNode = nodes[start.i][start.j];
-        Node endNode = nodes[end.i][end.j];
+        Node startNode = grid[start.i][start.j];
+        Node endNode = grid[end.i][end.j];
 
         Set<Node> exploredNodes = new HashSet<>();
         PriorityQueue<Node> unexploredNodes = new PriorityQueue<>(25, Comparator.comparingDouble(i -> i.pathCost));
@@ -101,7 +100,7 @@ public class PathfindingComponent {
     }
 
     private ArrayList<Node> backtrack(Node endNode) {
-        ArrayList<Node> path = new ArrayList<>();
+        path.clear();
         Node currentNode = endNode;
         path.add(currentNode);
         while(currentNode.parent != null){
@@ -114,11 +113,10 @@ public class PathfindingComponent {
     }
 
     public Node blockNodeBehindGhost() {
-        // Calculate the node behind the ghost
         Node nodeBehindGhost;
         int row = parent.getRow();
         int column = parent.getColumn();
-        switch(parent.direction){
+        switch(parent.getDirection()){
             case UP:
                 row++;
                 break;
@@ -132,23 +130,20 @@ public class PathfindingComponent {
                 column--;
                 break;
             default:
-                throw new IllegalStateException("Unexpected value: " + parent.direction);
+                throw new IllegalStateException("Unexpected value: " + parent.getDirection());
         }
 
-        if(row < 0 || row >= nodes.length || column < 0 || column >= nodes[0].length){
+        if(row < 0 || row >= grid.length || column < 0 || column >= grid[0].length){
             return null;
         }
 
-        nodeBehindGhost = nodes[column][row];
-        //System.out.println("Blocking node: " + row + ", " + column + " Player: " + parent.getRow() +
-        //                ", " + parent.getColumn() + " Direction: " + parent.direction);
-        //nodes[column][row].isOpen = false;
+        nodeBehindGhost = grid[column][row];
         return nodeBehindGhost;
     }
 
     public ArrayList<Node> getAvailableNodes(Tile tile){
-        Node node = nodes[tile.i][tile.j];
-        ArrayList<Node> availableNodes = new ArrayList<>();
+        availableNodes.clear();
+        Node node = grid[tile.i][tile.j];
         for(Node adjacentNode : node.adjacentNodes){
             if(adjacentNode.isOpen){
                 availableNodes.add(adjacentNode);
@@ -160,13 +155,13 @@ public class PathfindingComponent {
     public void reopenNodes(){
         for(int i = 0; i < game.grid.length; i++){
             for(int j = 0; j < game.grid[0].length; j++){
-                nodes[i][j].isOpen = game.grid[i][j].open;
+                grid[i][j].isOpen = game.grid[i][j].open;
             }
         }
     }
 
     private void resetNodes(){
-        for(Node[] row : nodes){
+        for(Node[] row : grid){
             for(Node node : row){
                 node.parent = null;
                 node.fCost = 0;

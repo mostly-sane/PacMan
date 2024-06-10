@@ -8,8 +8,8 @@ import com.pacman.Characters.Player;
 
 public class AnimationComponent {
     private Player player;
-    TextureRegion[] idleFrames = new TextureRegion[3];
-    float rotation = 0;
+    private TextureRegion[] idleFrames = new TextureRegion[3];
+    private float rotation = 0;
 
     public AnimationComponent(Player player){
         this.player = player;
@@ -28,7 +28,7 @@ public class AnimationComponent {
         idleFrames[1] = new TextureRegion(texture1);
         idleFrames[2] = new TextureRegion(texture2);
 
-        switch (player.direction){
+        switch (player.getDirection()){
             case UP:
                 rotation = 90;
                 break;

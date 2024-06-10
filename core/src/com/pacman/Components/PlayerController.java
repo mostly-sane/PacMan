@@ -16,7 +16,7 @@ public class PlayerController extends InputAdapter {
     private final int MOVE_AMOUNT = 1;
     private Vector2 movementDirection = new Vector2();
     private Vector2 desiredMovementDirection = new Vector2();
-    private Pill[][] pillGrid;  // Add this line
+    private Pill[][] pillGrid;
     public boolean isMoving = false;
 
     private Sound wakaWakaSound;
@@ -24,8 +24,8 @@ public class PlayerController extends InputAdapter {
     public PlayerController(Player player, Pill[][] pillGrid, Sound wakaWakaSound) {
         this.player = player;
         this.collisionComponent = player.getCollisionComponent();
-        this.pillGrid = pillGrid;  // Add this line
-        this.wakaWakaSound = wakaWakaSound; // Initialize waka waka sound
+        this.pillGrid = pillGrid;
+        this.wakaWakaSound = wakaWakaSound;
         movementDirection.set(-MOVE_AMOUNT, 0);
         desiredMovementDirection.set(-MOVE_AMOUNT, 0);
     }
@@ -34,30 +34,22 @@ public class PlayerController extends InputAdapter {
         isMoving = false;
         Vector2 oldPosition = new Vector2(player.getX(), player.getY());
 
-        // Check if the desired direction is free and change direction
         if (collisionComponent.canMove(new Vector2(player.getX(), player.getY()), desiredMovementDirection)) {
             movementDirection.set(desiredMovementDirection);
-            player.direction = desiredDirection;
+            player.setDirection(desiredDirection);
         }
 
-        // Try to move in the current direction
         if (collisionComponent.canMove(oldPosition, movementDirection)) {
             oldPosition.add(movementDirection);
             isMoving = true;
         } else {
-            // Align Pac-Man with the grid
             alignWithGrid();
         }
 
-        // Move Pac-Man
         player.setX(oldPosition.x);
         player.setY(oldPosition.y);
 
-        // Check for pill collision
         checkPillCollision();
-
-        // Update isMoving
-        //isMoving = !new Vector2(player.getX(), player.getY()).equals(oldPosition);
     }
 
     private void alignWithGrid() {
@@ -66,14 +58,12 @@ public class PlayerController extends InputAdapter {
         float w = player.getWidth();
         float h = player.getHeight();
 
-        // Align to the nearest grid position
         int gridX = Math.round(x / w) * (int) w;
         int gridY = Math.round(y / h) * (int) h;
 
         player.setX(gridX);
         player.setY(gridY);
     }
-
 
     public Vector2 getCollisionRectangleCenter() {
         float centerX = collisionComponent.pacManRect.x + collisionComponent.pacManRect.width / 2;
@@ -86,24 +76,22 @@ public class PlayerController extends InputAdapter {
         for (int i = 0; i < pillGrid.length; i++) {
             for (int j = 0; j < pillGrid[i].length; j++) {
                 Pill pill = pillGrid[i][j];
-                if (pill.texture != null) { // Check if there's a pill texture
+                if (pill.texture != null) {
                     Vector2 pillCenter = new Vector2(pill.getX() + pill.getWidth() / 2, pill.getY() + pill.getHeight() / 2);
-                    // Adjust the distance threshold here
                     if (playerCenter.dst(pillCenter) <= (player.getWidth() / 4 + pill.getWidth() / 4)) {
                         switch (pill.type) {
                             case Pill.REGULAR_PILL:
                                 player.increaseScore(10);
-                                break;
+                            break;
                             case Pill.POWER_PILL:
                                 player.game.activatePowerMode();
-                                break;
+                            break;
                             case Pill.CHERRY:
                                 player.increaseScore(200);
-                                break;
+                            break;
                         }
-                        // Deactivate the pill
-                        pill.texture.dispose(); // Dispose the texture
-                        pill.texture = null; // Set texture to null to indicate pill is collected
+                        pill.texture.dispose();
+                        pill.texture = null;
                         wakaWakaSound.play();
                     }
                 }
@@ -117,19 +105,19 @@ public class PlayerController extends InputAdapter {
             case Input.Keys.S:
                 desiredMovementDirection.set(0, -MOVE_AMOUNT);
                 desiredDirection = Character.Direction.UP;
-                break;
+            break;
             case Input.Keys.A:
                 desiredMovementDirection.set(-MOVE_AMOUNT, 0);
                 desiredDirection = Character.Direction.LEFT;
-                break;
+            break;
             case Input.Keys.W:
                 desiredMovementDirection.set(0, MOVE_AMOUNT);
                 desiredDirection = Character.Direction.DOWN;
-                break;
+            break;
             case Input.Keys.D:
                 desiredMovementDirection.set(MOVE_AMOUNT, 0);
                 desiredDirection = Character.Direction.RIGHT;
-                break;
+            break;
         }
         return true;
     }

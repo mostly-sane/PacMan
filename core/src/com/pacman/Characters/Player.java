@@ -15,16 +15,8 @@ public class Player extends Character {
         super(width, height, texture, game);
     }
 
-    public PlayerController getController() {
-        return controller;
-    }
-
     public void setController(PlayerController controller) {
         this.controller = controller;
-    }
-
-    public AnimationComponent getAnimationComponent() {
-        return animationComponent;
     }
 
     public void setAnimationComponent(AnimationComponent animationComponent) {
@@ -37,9 +29,5 @@ public class Player extends Character {
 
     public int getScore() {
         return score;
-    }
-
-    public Rectangle getBoundingRectangle() {
-        return new Rectangle(getX(), getY(), getWidth(), getHeight());
     }
 }
