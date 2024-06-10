@@ -11,7 +11,7 @@ public class DesktopLauncher {
 		config.setTransparentFramebuffer(false);
 		config.setForegroundFPS(120);
 		config.setTitle("PacMan");
-		config.setWindowedMode(475, 525);
+		config.setWindowedMode(475, 550);
 		new Lwjgl3Application(new PacMan(), config);
 	}
 }

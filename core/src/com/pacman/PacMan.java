@@ -57,9 +57,9 @@ public Sound wakaWakaSound;
 	int columns;
 
 	int appW = 475;
-	int appH = 525;
+	int appH = 550;
 	public int tileWidth = appW/19;
-	public int tileHeight = appH/21;
+	public int tileHeight = appH/22;
 
 	boolean shouldDrawGrid = true;
 
@@ -109,6 +109,7 @@ public Sound wakaWakaSound;
 		batch = new SpriteBatch();
 
 		wakaWakaSound = Gdx.audio.newSound(Gdx.files.internal("sprites/Sounds/wakwaka.mp3"));
+
 	}
 
 	private void initializeGame() {
@@ -122,13 +123,13 @@ public Sound wakaWakaSound;
 
 	private void initializeGhosts() {
 		Ghost Blinky = new Ghost(20, 20, new Texture(Gdx.files.internal("sprites/ghosts/f-3.png")), this, Ghost.Name.BLINKY);
-		Blinky.setPosition(Utils.getPositionByIndex(17, 1, tileWidth, tileHeight));
+		Blinky.setPosition(Utils.getPositionByIndex(17, 2, tileWidth, tileHeight));
 		ghosts[0] = Blinky;
 
 		Blinky.recalculatePath();
 
 		Ghost Pinky = new Ghost(20, 20, new Texture(Gdx.files.internal("sprites/ghosts/f-2.png")), this, Ghost.Name.PINKY);
-		Pinky.setPosition(Utils.getPositionByIndex(1, 1, tileWidth, tileHeight));
+		Pinky.setPosition(Utils.getPositionByIndex(2, 2, tileWidth, tileHeight));
 		ghosts[1] = Pinky;
 
 		Pinky.recalculatePath();
@@ -179,7 +180,7 @@ public Sound wakaWakaSound;
 		playerWidth = player.getWidth();
 		playerHeight = player.getHeight();
 
-		player.setPosition(player.getPositionByIndex(9, 11, this.tileWidth, this.tileHeight));
+		player.setPosition(player.getPositionByIndex(6, 10, this.tileWidth, this.tileHeight));
 
 		Gdx.input.setInputProcessor(controller);
 	}
@@ -234,7 +235,7 @@ public Sound wakaWakaSound;
 		for(Ghost ghost : ghosts){
 			if(ghost != null){
 				ghost.update();
-				ghost.drawPath(shapeRenderer, pathDrawer);
+				//ghost.drawPath(shapeRenderer, pathDrawer);
 			}
 		}
 
@@ -246,7 +247,9 @@ public Sound wakaWakaSound;
 				1, 1, animationComponent.getRotation());
 		drawPills();
 		batch.end();
-
+		batch.begin();
+		font.draw(batch, "Score: " + player.getScore(), 10, appH - 10); 
+		batch.end();
 		batch.begin();
 		for(int i = 0; i < ghosts.length; i++){
 			if(ghosts[i] != null){

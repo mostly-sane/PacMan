@@ -21,7 +21,7 @@ public class CollisionComponent {
         for (int i = 0; i < grid.length; i++) {
             for (int j = 0; j < grid[0].length; j++) {
                 if (!grid[i][j].open) {
-                    tileRect.set(grid[i][j].x, grid[i][j].y, grid[i][j].width, grid[i][j].height);
+                    tileRect.set(grid[i][j].x, grid[i][j].y, grid[i][j].width, grid[i][j].height - 1);
                     if (pacManRect.overlaps(tileRect)) {
                         return true;
                     }
@@ -36,7 +36,7 @@ public class CollisionComponent {
         for (int i = 0; i < grid.length; i++) {
             for (int j = 0; j < grid[0].length; j++) {
                 if (!grid[i][j].open) {
-                    tileRect.set(grid[i][j].x, grid[i][j].y, grid[i][j].width, grid[i][j].height);
+                     tileRect.set(grid[i][j].x, grid[i][j].y, grid[i][j].width, grid[i][j].height -1);
                     if (pacManRect.overlaps(tileRect)) {
                         return false;
                     }
