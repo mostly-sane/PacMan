@@ -1,5 +1,6 @@
 package com.pacman.Characters;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -26,6 +27,7 @@ public class Ghost extends Character{
     public ArrayList<Node> path;
     private Tile targetTile;
     private Random random = new Random();
+    public int eyeXOffset = 0;
 
     public Ghost(int width, int height, Texture texture, PacMan game, Name name) {
         super(width, height, texture, game);
@@ -242,6 +244,26 @@ public class Ghost extends Character{
                 return Utils.getTileByIndex(17, 19, game.grid);
             case CLYDE:
                 return Utils.getTileByIndex(1, 19, game.grid);
+            default:
+                return null;
+        }
+    }
+
+    public Texture getEyeTexture(){
+        switch(direction){
+            case UP:
+                eyeXOffset = 0;
+                return new Texture(Gdx.files.internal("sprites/eyes/d.png"));
+
+            case DOWN:
+                eyeXOffset = 0;
+                return new Texture(Gdx.files.internal("sprites/eyes/u.png"));
+            case LEFT:
+                eyeXOffset = -1;
+                return new Texture(Gdx.files.internal("sprites/eyes/l.png"));
+            case RIGHT:
+                eyeXOffset = 1;
+                return new Texture(Gdx.files.internal("sprites/eyes/r.png"));
             default:
                 return null;
         }

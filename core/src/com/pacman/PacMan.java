@@ -256,6 +256,7 @@ public Sound wakaWakaSound;
 
 				batch.draw(currentGhostFrame, ghosts[i].getPosition().getX(), ghosts[i].getPosition().getY(),
 						playerWidth / 2, playerHeight / 2, playerWidth, playerHeight, 1, 1, 0);
+				batch.draw(ghosts[i].getEyeTexture(), ghosts[i].getPosition().getX() + ghosts[i].eyeXOffset, ghosts[i].getPosition().getY() + 1, playerWidth, playerHeight);
 			}
 			//TODO ці перевірки це костиль. прибрати
 		}
