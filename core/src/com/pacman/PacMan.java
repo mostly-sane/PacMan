@@ -13,6 +13,9 @@ import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.pacman.AI.PathDrawer;
 import com.pacman.Characters.*;
 import com.pacman.Components.AnimationComponent;
@@ -22,15 +25,22 @@ import com.pacman.Map.LevelManager;
 import com.pacman.Map.StageManager;
 import com.pacman.Map.Tile;
 import com.pacman.Map.Pill;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+
 
 import java.awt.*;
+import java.awt.event.InputEvent;
 import java.util.*;
 
 public class PacMan extends ApplicationAdapter {
 	private FrameBuffer frameBuffer;
 	private TextureRegion textureRegion;
-	private Texture titleScreenTexture; // Title screen texture
+	private Texture titleScreenTexture;
 	private Animation<TextureRegion> pacmanAnimation;
+	private Animation<TextureRegion> ghostAnimation;
 	private float stateTime;
 public Sound wakaWakaSound;
 	public ArrayList<Pair<Stage, Double>> stageTimes = new ArrayList<>();
@@ -63,6 +73,8 @@ public Sound wakaWakaSound;
 
 	private BitmapFont font;
 
+private Texture ghostEyeTexture;
+
 	ShapeRenderer shapeRenderer;
 	PathDrawer pathDrawer = new PathDrawer();
 
@@ -92,13 +104,20 @@ public Sound wakaWakaSound;
 
 		shapeRenderer = new ShapeRenderer();
 
-		titleScreenTexture = new Texture(Gdx.files.internal("sprites/ui/ready.png")); // Initialize title screen texture
-
+		ghostEyeTexture = new Texture(Gdx.files.internal("sprites/eyes/l.png"));
+titleScreenTexture = new Texture(Gdx.files.internal("sprites/ui/ready.png"));
 		TextureRegion[] pacmanFrames = new TextureRegion[3];
 		pacmanFrames[0] = new TextureRegion(new Texture(Gdx.files.internal("sprites/pacman/0.png")));
 		pacmanFrames[1] = new TextureRegion(new Texture(Gdx.files.internal("sprites/pacman/1.png")));
 		pacmanFrames[2] = new TextureRegion(new Texture(Gdx.files.internal("sprites/pacman/2.png")));
-		pacmanAnimation = new Animation<TextureRegion>(0.1f, pacmanFrames);
+		pacmanAnimation = new Animation<TextureRegion>(0.3f, pacmanFrames);
+		stateTime = 0f;
+
+		TextureRegion[] ghostFrames = new TextureRegion[2];
+		ghostFrames[0] = new TextureRegion(new Texture(Gdx.files.internal("sprites/ghosts/b-0.png")));
+		ghostFrames[1] = new TextureRegion(new Texture(Gdx.files.internal("sprites/ghosts/b-1.png")));
+		ghostAnimation = new Animation<TextureRegion>(0.5f, ghostFrames);
+
 		stateTime = 0f;
 
 		font = new BitmapFont();
@@ -206,24 +225,76 @@ public Sound wakaWakaSound;
 	}
 
 	private void renderTitleScreen() {
+		Skin skin = new Skin(Gdx.files.internal("sprites/skin/uiskin.json"));
+
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		batch.begin();
-		batch.draw(titleScreenTexture, (appW - titleScreenTexture.getWidth()) / 2, (appH - titleScreenTexture.getHeight()) / 2);
-		TextureRegion currentFrame = pacmanAnimation.getKeyFrame(stateTime, true);
-		batch.draw(currentFrame, (appW - currentFrame.getRegionWidth()) / 2, (appH - titleScreenTexture.getHeight()) / 2 - currentFrame.getRegionHeight() - 10);
-		batch.end();
+
+		stateTime += Gdx.graphics.getDeltaTime();
+		TextureRegion currentPacmanFrame = pacmanAnimation.getKeyFrame(stateTime, true);
+		batch.draw(currentPacmanFrame, appW / 2 - 100, appH / 2 + 100);
+
+
+		TextureRegion currentGhostFrame = ghostAnimation.getKeyFrame(stateTime, true);
+		batch.draw(currentGhostFrame, appW / 2 + 100, appH / 2 + 100);
+		batch.draw(ghostEyeTexture, appW / 2 + 100, appH / 2 + 100);
+batch.end();
+		com.badlogic.gdx.scenes.scene2d.Stage stage = new com.badlogic.gdx.scenes.scene2d.Stage();
+		Gdx.input.setInputProcessor(stage);
+
+		BitmapFont font = new BitmapFont();
+		TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
+		textButtonStyle.font = font;
+		textButtonStyle.fontColor = Color.WHITE;
+
+		TextButton level1Button = new TextButton("Level 1", skin);
+		level1Button.addListener(new ClickListener() {
+			@Override
+			public void clicked(com.badlogic.gdx.scenes.scene2d.InputEvent event, float x, float y) {
+				// TODO: Implement level 1 logic
+			}
+		});
+
+		TextButton level2Button = new TextButton("Level 2", skin);
+		level2Button.addListener(new ClickListener() {
+			@Override
+			public void clicked(com.badlogic.gdx.scenes.scene2d.InputEvent event, float x, float y) {
+				// TODO: Implement level 2 logic
+			}
+		});
+
+		TextButton level3Button = new TextButton("Level 3", skin);
+		if (Gdx.input.isTouched()) {
+			int x = Gdx.input.getX();
+			int y = Gdx.input.getY();
+			y = appH - y; // Adjust the y-coordinate to match the screen coordinates
+
+			if (x >= appW / 2 - level3Button.getWidth() / 2 && x <= appW / 2 + level3Button.getWidth() / 2
+					&& y >= appH / 2 - 50 && y <= appH / 2 - 50 + level3Button.getHeight()) {
+				// If the touch is within the level3Button bounds
+				gameState = GameState.PLAYING;
+				titleScreenTexture.dispose(); // Dispose of the title screen texture
+				initializeGame();
+			}
+		}
+
+		stage.addActor(level1Button);
+		stage.addActor(level2Button);
+		stage.addActor(level3Button);
+
+		// Position the buttons
+		level1Button.setPosition(appW / 2 - level1Button.getWidth() / 2, appH / 2 + 50);
+		level2Button.setPosition(appW / 2 - level2Button.getWidth() / 2, appH / 2);
+		level3Button.setPosition(appW / 2 - level3Button.getWidth() / 2, appH / 2 - 50);
+
+		stage.draw();
 
 		if (Gdx.input.isTouched()) {
 			int x = Gdx.input.getX();
 			int y = Gdx.input.getY();
 			y = appH - y;
-
-			if (x >= (appW - titleScreenTexture.getWidth()) / 2 && x <= (appW + titleScreenTexture.getWidth()) / 2
-					&& y >= (appH - titleScreenTexture.getHeight()) / 2 && y <= (appH + titleScreenTexture.getHeight()) / 2) {
-				gameState = GameState.PLAYING;
-				initializeGame();
-			}
 		}
+		titleScreenTexture.dispose();
 	}
 
 	private void renderGame() {
@@ -280,7 +351,7 @@ public Sound wakaWakaSound;
 	public void dispose() {
 		batch.dispose();
 		frameBuffer.dispose();
-		titleScreenTexture.dispose();
+		//titleScreenTexture.dispose();
 		for (Tile[] row : grid) {
 			for (Tile tile : row) {
 				if (tile.texture != null) {
