@@ -19,6 +19,7 @@ public class PlayerController extends InputAdapter {
     private Pill[][] pillGrid;
     public boolean isMoving = false;
     public boolean canMove = true;
+    public int pillsConsumed = 0;
 
     private Sound wakaWakaSound;
 
@@ -94,9 +95,13 @@ public class PlayerController extends InputAdapter {
                                 player.increaseScore(200);
                             break;
                         }
+                        pillsConsumed++;
                         pill.texture.dispose();
                         pill.texture = null;
                         wakaWakaSound.play();
+                        if(pillsConsumed >= player.game.totalPills) {
+                            player.game.win();
+                        }
                     }
                 }
             }

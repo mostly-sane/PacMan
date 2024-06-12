@@ -43,6 +43,7 @@ public class PacMan extends ApplicationAdapter {
 	public Sound scaredSound;
 	public Sound startupSound;
 	public ArrayList<Pair<Stage, Double>> stageTimes = new ArrayList<>();
+	public int totalPills = 0;
 
 	float elapsedTime = 0;
 
@@ -196,10 +197,20 @@ private Texture ghostEyeTexture;
 		grid = LevelManager.loadLevel(Gdx.files.internal("levels/default.txt").file());
 		pillGrid = LevelManager.loadPills(Gdx.files.internal("levels/pills.txt").file());
 
+
+
 		levelParams = LevelManager.getLevelParams(Gdx.files.internal("levels/default.txt").file());
 		String[] parts = levelParams.split(",");
 		rows = Integer.parseInt(parts[0]);
 		columns = Integer.parseInt(parts[1]);
+
+		for(int i = 0; i < rows; i++){
+			for(int j = 0; j < columns; j++){
+				if(pillGrid[i][j].texture != null){
+					totalPills++;
+				}
+			}
+		}
 	}
 
 	private void initializePlayer() {
@@ -463,5 +474,11 @@ batch.end();
 				redrawGrid();
 			}
 		});
+	}
+
+	public void win(){
+		player.controller.canMove = false;
+		Sound winSound = Gdx.audio.newSound(Gdx.files.internal("sprites/Sounds/win.mp3"));
+		winSound.play();
 	}
 }
