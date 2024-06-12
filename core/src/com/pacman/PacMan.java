@@ -331,8 +331,7 @@ batch.end();
 		}
 		player.update();
 		batch.begin();
-		TextureRegion currentFrame = (TextureRegion) player.getMovingAnimation()
-				.getKeyFrame(elapsedTime, true);
+		TextureRegion currentFrame = player.animationToPlay().getKeyFrame(elapsedTime, true);
 		batch.draw(currentFrame, player.getPosition().getX(), player.getPosition().getY(),
 				playerWidth / 2, playerHeight / 2, playerWidth, playerHeight,
 				1, 1, player.animationComponent.rotation);
@@ -343,7 +342,7 @@ batch.end();
 		for(int i = 0; i < ghosts.length; i++){
 			if(ghosts[i] != null){
 				TextureRegion currentGhostFrame = (TextureRegion) ghosts[i].getMovingAnimation()
-						.getKeyFrame(elapsedTime, true);
+						.getKeyFrame(stateTime, true);
 
 				batch.draw(currentGhostFrame, ghosts[i].getPosition().getX(), ghosts[i].getPosition().getY(),
 						playerWidth / 2, playerHeight / 2, playerWidth, playerHeight, 1, 1, 0);
@@ -431,6 +430,9 @@ batch.end();
 	}
 
 	public void playerDeath(){
+		stateTime = 0;
+		player.isDying = true;
+		player.controller.canMove = false;
 		for(Ghost ghost : ghosts){
 			ghost.canMove = false;
 		}
