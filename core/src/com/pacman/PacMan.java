@@ -39,6 +39,8 @@ public class PacMan extends ApplicationAdapter {
 	private float stateTime;
 	public Sound wakaWakaSound;
 	public Sound deathSound;
+	public Sound ghostSound;
+	public Sound scaredSound;
 	public ArrayList<Pair<Stage, Double>> stageTimes = new ArrayList<>();
 
 	float elapsedTime = 0;
@@ -130,6 +132,11 @@ private Texture ghostEyeTexture;
 		initializePlayer();
 		initializeGhosts();
 		initializeStages();
+
+		ghostSound = Gdx.audio.newSound(Gdx.files.internal("sprites/Sounds/ghost.mp3"));
+		scaredSound = Gdx.audio.newSound(Gdx.files.internal("sprites/Sounds/scared.mp3"));
+		ghostSound.loop();
+		ghostSound.setVolume((long) 1.5, 1.5f);
 
 		redrawGrid();
 	}

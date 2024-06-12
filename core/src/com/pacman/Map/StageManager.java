@@ -57,12 +57,16 @@ public class StageManager {
         }
 
         game.stage = PacMan.Stage.FRIGHTENED;
+        game.ghostSound.stop();
+        game.scaredSound.loop();
         //System.out.println("Current stage: " + game.stage);
 
         currentTask = new TimerTask() {
             @Override
             public void run() {
                 changeStage(game);
+                game.scaredSound.stop();
+                game.ghostSound.loop();
             }
         };
         timer.schedule(currentTask, 5000);
