@@ -237,7 +237,7 @@ private Texture ghostEyeTexture;
 
 	private void initializeStages(){
 		LevelManager.loadStages(Gdx.files.internal("levels/default.txt").file(), this);
-		stageManager = new StageManager(stageTimes);
+		stageManager = new StageManager(stageTimes, player.getCollisionComponent());
 		stageManager.start(this);
 	}
 
@@ -441,24 +441,46 @@ batch.end();
 	}
 
 	public void playerDeath(){
-		stateTime = 0;
-		player.isDying = true;
-		player.controller.canMove = false;
-		for(Ghost ghost : ghosts){
-			ghost.canMove = false;
+		if (stage == Stage.CHASE) { // Check if the game stage is CHASE
+			stateTime = 0;
+			player.isDying = true;
+			player.controller.canMove = false;
+			for(Ghost ghost : ghosts){
+				ghost.canMove = false;
+			}
+			deathSound.play();
+			player.lives--;
+			player.score = 0;
+			Timer timer = new Timer();
+			timer.schedule(new TimerTask() {
+				@Override
+				public void run() {
+					restartLevel();
+				}
+			}, 2000);
 		}
+	}
+
+
+	public void ghostDeath(Ghost ghost) {
+		ghost.isDying = true;
+		ghost.canMove = false;
+		Sound deathSound = Gdx.audio.newSound(Gdx.files.internal("sprites/Sounds/death.mp3"));
 		deathSound.play();
-		player.lives--;
-		player.score = 0;
+
 		Timer timer = new Timer();
 		timer.schedule(new TimerTask() {
 			@Override
 			public void run() {
-				restartLevel();
+
+				ghost.setPosition(ghost.getPositionByIndex(ghost.startingLocation.getX(), ghost.startingLocation.getY(), tileWidth, tileHeight));
+				ghost.isDying = false;
+				ghost.canMove = true;
 			}
 		}, 2000);
-
 	}
+
+
 
 	private void restartLevel() {
 		Gdx.app.postRunnable(new Runnable() {

@@ -33,6 +33,7 @@ public class Ghost extends Character{
     public int eyeXOffset = 0;
     public boolean canMove = true;
     public Pair<Integer, Integer> startingLocation;
+    public boolean isDying = false;
 
     public Ghost(int width, int height, Texture texture, PacMan game, Name name, Pair<Integer, Integer> startingLocation) {
         super(width, height, texture, game);
