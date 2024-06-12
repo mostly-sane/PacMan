@@ -9,10 +9,15 @@ import com.pacman.PacMan;
 public class Player extends Character {
     private int score = 0;
     PlayerController controller;
+    public int lives = 3;
 
     public Player(int width, int height, Texture texture, PacMan game) {
         super(width, height, texture, game);
         movingFrames = new TextureRegion[3];
+    }
+
+    public void update(){
+        super.update();
     }
 
     public void setController(PlayerController controller) {

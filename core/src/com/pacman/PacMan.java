@@ -188,7 +188,7 @@ titleScreenTexture = new Texture(Gdx.files.internal("sprites/ui/ready.png"));
 		float tileWidth = this.tileWidth;  // Ensure tileWidth matches the actual tile size
 		float tileHeight = this.tileHeight; // Ensure tileHeight matches the actual tile size
 
-		CollisionComponent collisionComponent = new CollisionComponent(grid, tileWidth, tileHeight);
+		CollisionComponent collisionComponent = new CollisionComponent(this, player);
 
 		player.setCollisionComponent(collisionComponent);
 		controller = new PlayerController(player, pillGrid, wakaWakaSound); // Pass pillGrid and wakaWakaSound here

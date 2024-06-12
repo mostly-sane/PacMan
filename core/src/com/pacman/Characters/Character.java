@@ -32,6 +32,7 @@ public class Character {
         this.texture = texture;
         this.game = game;
         animationComponent = new AnimationComponent(this);
+        collisionComponent = new CollisionComponent(game, this);
     }
 
     public void update(){

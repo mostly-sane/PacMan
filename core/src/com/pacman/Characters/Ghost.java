@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector2;
 import com.pacman.AI.Node;
 import com.pacman.AI.PathDrawer;
 import com.pacman.Components.PathfindingComponent;
@@ -72,6 +73,10 @@ public class Ghost extends Character{
                     recalculatePath();
                 }
                 break;
+        }
+
+        if(collisionComponent.isGhostCollidingWithPlayer(game.player, this)){
+            System.out.println("Player collided with ghost");
         }
     }
 
@@ -155,7 +160,12 @@ public class Ghost extends Character{
     }
 
     private Tile calculateTargetPinky(int playerRow, int playerColumn, Tile result, Tile playerTile) {
-        return getAvailableTileWithOffset(playerRow, playerColumn, result, playerTile, 4);
+        Tile playerFront = getAvailableTileWithOffset(playerRow, playerColumn, playerTile, playerTile, 4);
+        if(playerFront == null){
+            turnAround();
+            recalculatePath();
+        }
+        return playerFront;
     }
 
     private Tile getAvailableTileWithOffset(int playerRow, int playerColumn, Tile result, Tile playerTile, int targetOffset) {
@@ -272,5 +282,22 @@ public class Ghost extends Character{
     public void drawPath(ShapeRenderer shapeRenderer, PathDrawer pathDrawer) {
         pathDrawer.drawPath(shapeRenderer, path);
         pathDrawer.drawBlockedNodes(shapeRenderer, pathfindingComponent.grid);
+    }
+
+    public void turnAround(){
+        switch(direction){
+            case UP:
+                direction = Direction.DOWN;
+                break;
+            case DOWN:
+                direction = Direction.UP;
+                break;
+            case LEFT:
+                direction = Direction.RIGHT;
+                break;
+            case RIGHT:
+                direction = Direction.LEFT;
+                break;
+        }
     }
 }
