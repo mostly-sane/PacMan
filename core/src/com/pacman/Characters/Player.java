@@ -8,7 +8,7 @@ import com.pacman.PacMan;
 
 public class Player extends Character {
     public int score = 0;
-    PlayerController controller;
+    public PlayerController controller;
     public int lives = 3;
 
     public Player(int width, int height, Texture texture, PacMan game) {

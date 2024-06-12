@@ -41,6 +41,7 @@ public class PacMan extends ApplicationAdapter {
 	public Sound deathSound;
 	public Sound ghostSound;
 	public Sound scaredSound;
+	public Sound startupSound;
 	public ArrayList<Pair<Stage, Double>> stageTimes = new ArrayList<>();
 
 	float elapsedTime = 0;
@@ -125,13 +126,13 @@ private Texture ghostEyeTexture;
 
 		wakaWakaSound = Gdx.audio.newSound(Gdx.files.internal("sprites/Sounds/wakwaka.mp3"));
 		deathSound = Gdx.audio.newSound(Gdx.files.internal("sprites/Sounds/death.mp3"));
+		startupSound = Gdx.audio.newSound(Gdx.files.internal("sprites/Sounds/startup.mp3"));
 	}
 
 	private void initializeGame() {
 		initializeLevel();
 		initializePlayer();
 		initializeGhosts();
-		initializeStages();
 
 		ghostSound = Gdx.audio.newSound(Gdx.files.internal("sprites/Sounds/ghost.mp3"));
 		scaredSound = Gdx.audio.newSound(Gdx.files.internal("sprites/Sounds/scared.mp3"));
@@ -139,6 +140,25 @@ private Texture ghostEyeTexture;
 		ghostSound.setVolume((long) 1.5, 1.5f);
 
 		redrawGrid();
+
+		startupSound.play();
+		player.controller.canMove = false;
+		for(Ghost ghost : ghosts){
+			ghost.canMove = false;
+		}
+
+		Timer startupTimer = new Timer();
+		startupTimer.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				player.controller.canMove = true;
+				for(Ghost ghost : ghosts){
+					ghost.canMove = true;
+				}
+				elapsedTime = 0;
+				initializeStages();
+			}
+		}, 4500);
 	}
 
 	private void initializeGhosts() {

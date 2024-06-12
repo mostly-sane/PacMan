@@ -18,6 +18,7 @@ public class PlayerController extends InputAdapter {
     private Vector2 desiredMovementDirection = new Vector2();
     private Pill[][] pillGrid;
     public boolean isMoving = false;
+    public boolean canMove = true;
 
     private Sound wakaWakaSound;
 
@@ -32,6 +33,9 @@ public class PlayerController extends InputAdapter {
 
     public void update() {
         isMoving = false;
+        if(!canMove) {
+            return;
+        }
         Vector2 oldPosition = new Vector2(player.getX(), player.getY());
 
         if (collisionComponent.canMove(new Vector2(player.getX(), player.getY()), desiredMovementDirection)) {
