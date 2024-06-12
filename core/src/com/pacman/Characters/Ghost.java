@@ -10,11 +10,13 @@ import com.pacman.AI.PathDrawer;
 import com.pacman.Components.PathfindingComponent;
 import com.pacman.Map.Tile;
 import com.pacman.PacMan;
+import com.pacman.Pair;
 import com.pacman.Utils;
 
 import java.util.*;
 
 public class Ghost extends Character{
+
     public enum Name {
         BLINKY,
         PINKY,
@@ -29,18 +31,26 @@ public class Ghost extends Character{
     private Tile targetTile;
     private Random random = new Random();
     public int eyeXOffset = 0;
+    public boolean canMove = true;
+    public Pair<Integer, Integer> startingLocation;
 
-    public Ghost(int width, int height, Texture texture, PacMan game, Name name) {
+    public Ghost(int width, int height, Texture texture, PacMan game, Name name, Pair<Integer, Integer> startingLocation) {
         super(width, height, texture, game);
         this.name = name;
+        this.startingLocation = startingLocation;
         pathfindingComponent = new PathfindingComponent(game, this);
         pathfindingComponent.convertToNodes(game.grid);
         movingFrames = new TextureRegion[2];
+        setPosition(Utils.getPositionByIndex(startingLocation, game.tileWidth, game.tileHeight));
     }
 
     public void update(){
         super.update();
         if(targetTile == null || direction == null){
+            return;
+        }
+
+        if(!canMove){
             return;
         }
 
@@ -76,7 +86,7 @@ public class Ghost extends Character{
         }
 
         if(collisionComponent.isGhostCollidingWithPlayer(game.player, this)){
-            System.out.println("Player collided with ghost");
+            game.playerDeath();
         }
     }
 

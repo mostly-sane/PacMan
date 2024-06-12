@@ -7,7 +7,7 @@ import com.pacman.Components.PlayerController;
 import com.pacman.PacMan;
 
 public class Player extends Character {
-    private int score = 0;
+    public int score = 0;
     PlayerController controller;
     public int lives = 3;
 
@@ -18,6 +18,7 @@ public class Player extends Character {
 
     public void update(){
         super.update();
+        System.out.println(score);
     }
 
     public void setController(PlayerController controller) {

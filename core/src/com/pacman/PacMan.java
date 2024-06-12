@@ -25,14 +25,9 @@ import com.pacman.Map.LevelManager;
 import com.pacman.Map.StageManager;
 import com.pacman.Map.Tile;
 import com.pacman.Map.Pill;
-import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 
-import java.awt.*;
-import java.awt.event.InputEvent;
 import java.util.*;
 
 public class PacMan extends ApplicationAdapter {
@@ -42,7 +37,8 @@ public class PacMan extends ApplicationAdapter {
 	private Animation<TextureRegion> pacmanAnimation;
 	private Animation<TextureRegion> ghostAnimation;
 	private float stateTime;
-public Sound wakaWakaSound;
+	public Sound wakaWakaSound;
+	public Sound deathSound;
 	public ArrayList<Pair<Stage, Double>> stageTimes = new ArrayList<>();
 
 	float elapsedTime = 0;
@@ -105,18 +101,18 @@ private Texture ghostEyeTexture;
 		shapeRenderer = new ShapeRenderer();
 
 		ghostEyeTexture = new Texture(Gdx.files.internal("sprites/eyes/l.png"));
-titleScreenTexture = new Texture(Gdx.files.internal("sprites/ui/ready.png"));
+		titleScreenTexture = new Texture(Gdx.files.internal("sprites/ui/ready.png"));
 		TextureRegion[] pacmanFrames = new TextureRegion[3];
 		pacmanFrames[0] = new TextureRegion(new Texture(Gdx.files.internal("sprites/pacman/0.png")));
 		pacmanFrames[1] = new TextureRegion(new Texture(Gdx.files.internal("sprites/pacman/1.png")));
 		pacmanFrames[2] = new TextureRegion(new Texture(Gdx.files.internal("sprites/pacman/2.png")));
-		pacmanAnimation = new Animation<TextureRegion>(0.3f, pacmanFrames);
+		pacmanAnimation = new Animation<>(0.3f, pacmanFrames);
 		stateTime = 0f;
 
 		TextureRegion[] ghostFrames = new TextureRegion[2];
 		ghostFrames[0] = new TextureRegion(new Texture(Gdx.files.internal("sprites/ghosts/b-0.png")));
 		ghostFrames[1] = new TextureRegion(new Texture(Gdx.files.internal("sprites/ghosts/b-1.png")));
-		ghostAnimation = new Animation<TextureRegion>(0.5f, ghostFrames);
+		ghostAnimation = new Animation<>(0.5f, ghostFrames);
 
 		stateTime = 0f;
 
@@ -126,6 +122,7 @@ titleScreenTexture = new Texture(Gdx.files.internal("sprites/ui/ready.png"));
 		batch = new SpriteBatch();
 
 		wakaWakaSound = Gdx.audio.newSound(Gdx.files.internal("sprites/Sounds/wakwaka.mp3"));
+		deathSound = Gdx.audio.newSound(Gdx.files.internal("sprites/Sounds/death.mp3"));
 	}
 
 	private void initializeGame() {
@@ -138,26 +135,22 @@ titleScreenTexture = new Texture(Gdx.files.internal("sprites/ui/ready.png"));
 	}
 
 	private void initializeGhosts() {
-		Blinky Blinky = new Blinky(20, 20, new Texture(Gdx.files.internal("sprites/ghosts/f-3.png")), this, Ghost.Name.BLINKY);
-		Blinky.setPosition(Utils.getPositionByIndex(17, 1, tileWidth, tileHeight));
+		Blinky Blinky = new Blinky(20, 20, new Texture(Gdx.files.internal("sprites/ghosts/f-3.png")), this, Ghost.Name.BLINKY, new Pair<>(17, 1));
 		ghosts[0] = Blinky;
 
 		Blinky.recalculatePath();
 
-		Pinky Pinky = new Pinky(20, 20, new Texture(Gdx.files.internal("sprites/ghosts/f-2.png")), this, Ghost.Name.PINKY);
-		Pinky.setPosition(Utils.getPositionByIndex(1, 1, tileWidth, tileHeight));
+		Pinky Pinky = new Pinky(20, 20, new Texture(Gdx.files.internal("sprites/ghosts/f-2.png")), this, Ghost.Name.PINKY, new Pair<>(1, 1));
 		ghosts[1] = Pinky;
 
 		Pinky.recalculatePath();
 
-		Inky Inky = new Inky(20, 20, new Texture(Gdx.files.internal("sprites/ghosts/f-1.png")), this, Ghost.Name.INKY);
-		Inky.setPosition(Utils.getPositionByIndex(17, 19, tileWidth, tileHeight));
+		Inky Inky = new Inky(20, 20, new Texture(Gdx.files.internal("sprites/ghosts/f-1.png")), this, Ghost.Name.INKY, new Pair<>(17, 19));
 		ghosts[2] = Inky;
 
 		Inky.recalculatePath();
 
-		Clyde Clyde = new Clyde(20, 20, new Texture(Gdx.files.internal("sprites/ghosts/y-1.png")), this, Ghost.Name.CLYDE);
-		Clyde.setPosition(Utils.getPositionByIndex(1, 19, tileWidth, tileHeight));
+		Clyde Clyde = new Clyde(20, 20, new Texture(Gdx.files.internal("sprites/ghosts/y-1.png")), this, Ghost.Name.CLYDE, new Pair<>(1, 19));
 		ghosts[3] = Clyde;
 
 		Clyde.recalculatePath();
@@ -410,20 +403,36 @@ batch.end();
 		}
 	}
 
-	public void closeTile(int i, int j) {
-		grid[i][j].open = false;
-		grid[i][j].setTexture(false);
-		redrawGrid();
+	public void playerDeath(){
+		for(Ghost ghost : ghosts){
+			ghost.canMove = false;
+		}
+		deathSound.play();
+		player.lives--;
+		player.score = 0;
+		Timer timer = new Timer();
+		timer.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				restartLevel();
+			}
+		}, 2000);
+
 	}
 
-	public void openTile(int i, int j) {
-		grid[i][j].open = true;
-		grid[i][j].setTexture(true);
-		redrawGrid();
-	}
-
-	public void collectPill(int i, int j) {
-		pillGrid[i][j].type = 0;
-		pillGrid[i][j].setTexture();
+	private void restartLevel() {
+		Gdx.app.postRunnable(new Runnable() {
+			@Override
+			public void run() {
+				for(Ghost ghost : ghosts){
+					ghost.canMove = true;
+					ghost.setPosition(ghost.getPositionByIndex(ghost.startingLocation.getX(), ghost.startingLocation.getY(), tileWidth, tileHeight));
+				}
+				initializeLevel();
+				initializePlayer();
+				initializeStages();
+				redrawGrid();
+			}
+		});
 	}
 }

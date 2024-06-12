@@ -5,10 +5,11 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.pacman.PacMan;
+import com.pacman.Pair;
 
 public class Blinky extends Ghost{
-    public Blinky(int width, int height, Texture texture, PacMan game, Name name) {
-        super(width, height, texture, game, name);
+    public Blinky(int width, int height, Texture texture, PacMan game, Name name, Pair<Integer, Integer> startingLocation) {
+        super(width, height, texture, game, name, startingLocation);
     }
 
     @Override
