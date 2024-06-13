@@ -4,10 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Vector2;
 import com.pacman.AI.Node;
-import com.pacman.AI.PathDrawer;
 import com.pacman.Components.PathfindingComponent;
 import com.pacman.Map.Tile;
 import com.pacman.PacMan;
@@ -17,15 +14,6 @@ import com.pacman.Utils;
 import java.util.*;
 
 public class Ghost extends Character{
-
-    public enum Name {
-        BLINKY,
-        PINKY,
-        INKY,
-        CLYDE
-    }
-
-    private Name name;
     private Float speed = 0.75f;
     private PathfindingComponent pathfindingComponent;
     public ArrayList<Node> path;
@@ -43,9 +31,8 @@ public class Ghost extends Character{
     private float pointsElapsed = 0f;
 
 
-    public Ghost(int width, int height, Texture texture, PacMan game, Name name, Pair<Integer, Integer> startingLocation) {
+    public Ghost(int width, int height, Texture texture, PacMan game, Pair<Integer, Integer> startingLocation) {
         super(width, height, texture, game);
-        this.name = name;
         this.startingLocation = startingLocation;
         pathfindingComponent = new PathfindingComponent(game, this);
         pathfindingComponent.convertToNodes(game.grid);
@@ -68,10 +55,6 @@ public class Ghost extends Character{
                 canMove = true;
             }
         }
-
-//        if (isVisible) {
-//            super.update();
-//        }
 
         if(!canMove){
             return;
@@ -165,47 +148,11 @@ public class Ghost extends Character{
         return null;
     }
 
-    private Tile getChaseTile(){
-        Player player = game.player;
-        Tile playerTile = Utils.getCurrentTile(player, game.grid);
-        Tile result = null;
-        int playerRow = game.player.getColumn();
-        int playerColumn = game.player.getRow();
-        switch(name){
-            case BLINKY:
-                result = playerTile;
-            break;
-            case PINKY:
-                if(player.controller.isMoving){
-                    result = calculateTargetPinky(playerRow, playerColumn, result, playerTile);
-                } else {
-                    result = playerTile;
-                }
-            break;
-            case INKY:
-                result = calculateTargetInky(playerTile);
-            break;
-            case CLYDE:
-                if(Utils.getDistance(Utils.getCurrentTile(this, game.grid), playerTile) > 8){
-                    result = playerTile;
-                } else {
-                    result = getScatterTile();
-                }
-            break;
-        }
-        return result;
+    protected Tile getChaseTile(){
+        return null;
     }
 
-    private Tile calculateTargetPinky(int playerRow, int playerColumn, Tile result, Tile playerTile) {
-        Tile playerFront = getAvailableTileWithOffset(playerRow, playerColumn, playerTile, playerTile, 4);
-        if(playerFront == null){
-            turnAround();
-            recalculatePath();
-        }
-        return playerFront;
-    }
-
-    private Tile getAvailableTileWithOffset(int playerRow, int playerColumn, Tile result, Tile playerTile, int targetOffset) {
+    protected Tile getAvailableTileWithOffset(int playerRow, int playerColumn, Tile result, Tile playerTile, int targetOffset) {
         playerRow--;
         playerColumn--;
         switch (game.player.direction){
@@ -269,33 +216,8 @@ public class Ghost extends Character{
         return result;
     }
 
-    private Tile calculateTargetInky(Tile playerTile) {
-        Tile pacmanFront = getAvailableTileWithOffset(game.player.getRow(), game.player.getColumn(), playerTile, playerTile, 2);
-        Tile blinkyPosition = Utils.getCurrentTile(game.ghosts[0], game.grid);
-        int rowOffset = pacmanFront.i - blinkyPosition.i;
-        int columnOffset = pacmanFront.j - blinkyPosition.j;
-
-        if(blinkyPosition.i + rowOffset * 2 >= game.grid.length || blinkyPosition.j + columnOffset * 2 >= game.grid[0].length ||
-                blinkyPosition.i + rowOffset * 2 < 0 || blinkyPosition.j + columnOffset * 2 < 0){
-            return playerTile;
-        }
-
-        return Utils.getTileByIndex(blinkyPosition.i + rowOffset * 2, blinkyPosition.j + columnOffset * 2, game.grid);
-    }
-
-    private Tile getScatterTile(){
-        switch(name){
-            case BLINKY:
-                return Utils.getTileByIndex(17, 1, game.grid);
-            case PINKY:
-                return Utils.getTileByIndex(1, 1, game.grid);
-            case INKY:
-                return Utils.getTileByIndex(17, 19, game.grid);
-            case CLYDE:
-                return Utils.getTileByIndex(1, 19, game.grid);
-            default:
-                return null;
-        }
+    protected Tile getScatterTile(){
+        return Utils.getTileByIndex(startingLocation.getX(), startingLocation.getY(), game.grid);
     }
 
     public Texture getEyeTexture(){
@@ -306,7 +228,6 @@ public class Ghost extends Character{
             case UP:
                 eyeXOffset = 0;
                 return new Texture(Gdx.files.internal("sprites/eyes/d.png"));
-
             case DOWN:
                 eyeXOffset = 0;
                 return new Texture(Gdx.files.internal("sprites/eyes/u.png"));
@@ -319,11 +240,6 @@ public class Ghost extends Character{
             default:
                 return null;
         }
-    }
-
-    public void drawPath(ShapeRenderer shapeRenderer, PathDrawer pathDrawer) {
-        pathDrawer.drawPath(shapeRenderer, path);
-        pathDrawer.drawBlockedNodes(shapeRenderer, pathfindingComponent.grid);
     }
 
     public void turnAround(){

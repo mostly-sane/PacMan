@@ -201,24 +201,24 @@ private Texture ghostEyeTexture;
 	}
 
 	private void initializeGhosts() {
-		Blinky Blinky = new Blinky(20, 20, new Texture(Gdx.files.internal("sprites/ghosts/f-3.png")), this, Ghost.Name.BLINKY, new Pair<>(17, 1));
+		Blinky Blinky = new Blinky(20, 20, new Texture(Gdx.files.internal("sprites/ghosts/f-3.png")), this, new Pair<>(17, 1));
 		Blinky.setDirection(Character.Direction.LEFT);
 		ghosts[0] = Blinky;
 
 		Blinky.recalculatePath();
 
-		Pinky Pinky = new Pinky(20, 20, new Texture(Gdx.files.internal("sprites/ghosts/f-2.png")), this, Ghost.Name.PINKY, new Pair<>(1, 1));
+		Pinky Pinky = new Pinky(20, 20, new Texture(Gdx.files.internal("sprites/ghosts/f-2.png")), this, new Pair<>(1, 1));
 		ghosts[1] = Pinky;
 
 		Pinky.recalculatePath();
 
-		Inky Inky = new Inky(20, 20, new Texture(Gdx.files.internal("sprites/ghosts/f-1.png")), this, Ghost.Name.INKY, new Pair<>(17, 19));
+		Inky Inky = new Inky(20, 20, new Texture(Gdx.files.internal("sprites/ghosts/f-1.png")), this, new Pair<>(17, 19));
 		ghosts[2] = Inky;
 		Inky.setDirection(Character.Direction.LEFT);
 
 		Inky.recalculatePath();
 
-		Clyde Clyde = new Clyde(20, 20, new Texture(Gdx.files.internal("sprites/ghosts/y-1.png")), this, Ghost.Name.CLYDE, new Pair<>(1, 19));
+		Clyde Clyde = new Clyde(20, 20, new Texture(Gdx.files.internal("sprites/ghosts/y-1.png")), this, new Pair<>(1, 19));
 		ghosts[3] = Clyde;
 
 		Clyde.recalculatePath();
