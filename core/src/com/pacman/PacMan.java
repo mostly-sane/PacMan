@@ -167,6 +167,39 @@ private Texture ghostEyeTexture;
 		}, 4500);
 	}
 
+
+	private void initializeGame1() {
+		initializeLevel1();
+		initializePlayerLvl1();
+		initializeGhosts();
+
+		ghostSound = Gdx.audio.newSound(Gdx.files.internal("sprites/Sounds/ghost.mp3"));
+		scaredSound = Gdx.audio.newSound(Gdx.files.internal("sprites/Sounds/scared.mp3"));
+		ghostSound.loop();
+		ghostSound.setVolume((long) 1.5, 1.5f);
+
+		redrawGrid();
+
+		startupSound.play();
+		player.controller.canMove = false;
+		for(Ghost ghost : ghosts){
+			ghost.canMove = false;
+		}
+
+		Timer startupTimer = new Timer();
+		startupTimer.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				player.controller.canMove = true;
+				for(Ghost ghost : ghosts){
+					ghost.canMove = true;
+				}
+				elapsedTime = 0;
+				initializeStages();
+			}
+		}, 4500);
+	}
+
 	private void initializeGhosts() {
 		Blinky Blinky = new Blinky(20, 20, new Texture(Gdx.files.internal("sprites/ghosts/f-3.png")), this, Ghost.Name.BLINKY, new Pair<>(17, 1));
 		Blinky.setDirection(Character.Direction.LEFT);
@@ -218,6 +251,51 @@ private Texture ghostEyeTexture;
 				}
 			}
 		}
+	}
+
+	private void initializeLevel1() {
+		frameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), false);
+		textureRegion = new TextureRegion(frameBuffer.getColorBufferTexture());
+		textureRegion.flip(false, true);
+
+		Gdx.graphics.setContinuousRendering(true);
+		grid = LevelManager.loadLevel(Gdx.files.internal("levels/level1.txt").file());
+		pillGrid = LevelManager.loadPills(Gdx.files.internal("levels/pillslvl1.txt").file());
+
+		levelParams = LevelManager.getLevelParams(Gdx.files.internal("levels/level1.txt").file());
+		String[] parts = levelParams.split(",");
+		rows = Integer.parseInt(parts[0]);
+		columns = Integer.parseInt(parts[1]);
+
+		for(int i = 0; i < rows; i++){
+			for(int j = 0; j < columns; j++){
+				if(pillGrid[i][j].texture != null){
+					totalPills++;
+				}
+			}
+		}
+	}
+
+	private void initializePlayerLvl1() {
+		Texture pacmanTexture = new Texture(Gdx.files.internal("sprites/pacman/0.png"));
+		player = new Player(20, 20, pacmanTexture, this);
+		float tileWidth = this.tileWidth;  // Ensure tileWidth matches the actual tile size
+		float tileHeight = this.tileHeight; // Ensure tileHeight matches the actual tile size
+
+		CollisionComponent collisionComponent = new CollisionComponent(this, player);
+
+		player.setCollisionComponent(collisionComponent);
+		controller = new PlayerController(player, pillGrid, wakaWakaSound); // Pass pillGrid and wakaWakaSound here
+		player.setController(controller);
+
+		player.setAnimationComponent(new AnimationComponent(player));
+
+		playerWidth = player.getWidth();
+		playerHeight = player.getHeight();
+
+		player.setPosition(player.getPositionByIndex(9, 8, this.tileWidth, this.tileHeight));
+
+		Gdx.input.setInputProcessor(controller);
 	}
 
 	private void initializePlayer() {
@@ -286,12 +364,19 @@ batch.end();
 		textButtonStyle.fontColor = Color.WHITE;
 
 		TextButton level1Button = new TextButton("Level 1", skin);
-		level1Button.addListener(new ClickListener() {
-			@Override
-			public void clicked(com.badlogic.gdx.scenes.scene2d.InputEvent event, float x, float y) {
-				// TODO: Implement level 1 logic
+		if (Gdx.input.isTouched()) {
+			int x = Gdx.input.getX();
+			int y = Gdx.input.getY();
+			y = appH - y;
+
+			if (x >= appW / 2 - level1Button.getWidth() / 2 && x <= appW / 2 + level1Button.getWidth() / 2
+					&& y >= appH / 2 + 50 && y <= appH / 2 + 50 + level1Button.getHeight()) {
+
+				gameState = GameState.PLAYING;
+				titleScreenTexture.dispose();
+				initializeGame1();
 			}
-		});
+		}
 
 		TextButton level2Button = new TextButton("Level 2", skin);
 		level2Button.addListener(new ClickListener() {
@@ -344,7 +429,7 @@ batch.end();
 		for(Ghost ghost : ghosts){
 			if(ghost != null){
 				ghost.update();
-				ghost.drawPath(shapeRenderer, pathDrawer);
+				//ghost.drawPath(shapeRenderer, pathDrawer);
 			}
 		}
 		player.update();
