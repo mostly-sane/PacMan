@@ -18,6 +18,10 @@ public class AnimationComponent {
             throw new IllegalStateException("Player is not initialized");
         }
 
+        if(character.getDirection() == null){
+            return;
+        }
+
         switch (character.getDirection()){
             case UP:
                 rotation = 90;

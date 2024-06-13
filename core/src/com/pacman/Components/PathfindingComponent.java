@@ -100,14 +100,16 @@ public class PathfindingComponent {
     }
 
     private ArrayList<Node> backtrack(Node endNode) {
-        path.clear();
-        Node currentNode = endNode;
-        path.add(currentNode);
-        while(currentNode.parent != null){
-            currentNode = currentNode.parent;
+        synchronized(path) {
+            path.clear();
+            Node currentNode = endNode;
             path.add(currentNode);
+            while(currentNode.parent != null){
+                currentNode = currentNode.parent;
+                path.add(currentNode);
+            }
+            Collections.reverse(path);
         }
-        Collections.reverse(path);
         resetNodes();
         return path;
     }
@@ -116,6 +118,9 @@ public class PathfindingComponent {
         Node nodeBehindGhost;
         int row = parent.getRow();
         int column = parent.getColumn();
+        if(parent.getDirection() == null){
+            return;
+        }
         switch(parent.getDirection()){
             case UP:
                 row++;

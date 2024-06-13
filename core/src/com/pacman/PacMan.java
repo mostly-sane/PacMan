@@ -18,6 +18,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.pacman.AI.PathDrawer;
 import com.pacman.Characters.*;
+import com.pacman.Characters.Character;
 import com.pacman.Components.AnimationComponent;
 import com.pacman.Components.CollisionComponent;
 import com.pacman.Components.PlayerController;
@@ -168,6 +169,7 @@ private Texture ghostEyeTexture;
 
 	private void initializeGhosts() {
 		Blinky Blinky = new Blinky(20, 20, new Texture(Gdx.files.internal("sprites/ghosts/f-3.png")), this, Ghost.Name.BLINKY, new Pair<>(17, 1));
+		Blinky.setDirection(Character.Direction.LEFT);
 		ghosts[0] = Blinky;
 
 		Blinky.recalculatePath();
@@ -179,6 +181,7 @@ private Texture ghostEyeTexture;
 
 		Inky Inky = new Inky(20, 20, new Texture(Gdx.files.internal("sprites/ghosts/f-1.png")), this, Ghost.Name.INKY, new Pair<>(17, 19));
 		ghosts[2] = Inky;
+		Inky.setDirection(Character.Direction.LEFT);
 
 		Inky.recalculatePath();
 
@@ -241,7 +244,7 @@ private Texture ghostEyeTexture;
 
 	private void initializeStages(){
 		LevelManager.loadStages(Gdx.files.internal("levels/default.txt").file(), this);
-		stageManager = new StageManager(stageTimes, player.getCollisionComponent());
+		stageManager = new StageManager(stageTimes);
 		stageManager.start(this);
 	}
 
@@ -341,7 +344,7 @@ batch.end();
 		for(Ghost ghost : ghosts){
 			if(ghost != null){
 				ghost.update();
-				//ghost.drawPath(shapeRenderer, pathDrawer);
+				ghost.drawPath(shapeRenderer, pathDrawer);
 			}
 		}
 		player.update();
@@ -372,7 +375,6 @@ batch.end();
 		}
 		batch.end();
 	}
-
 
 	private void drawPills() {
 		for (int i = 0; i < rows; i++) {
@@ -435,7 +437,7 @@ batch.end();
 				float height = tileHeight;
 				float scaleX = 1;
 				float scaleY = 1;
-				float rotation = 180; // Rotate 180 degrees
+				float rotation = 180;
 
 				Texture texture = grid[i][j].texture;
 				TextureRegion textureRegion = new TextureRegion(texture);
@@ -449,10 +451,11 @@ batch.end();
 	}
 
 	public void playerDeath(){
-		if (stage == Stage.CHASE) { // Check if the game stage is CHASE
+		if (stage == Stage.CHASE) {
 			stateTime = 0;
 			player.isDying = true;
 			player.controller.canMove = false;
+			ghostSound.stop();
 			for(Ghost ghost : ghosts){
 				ghost.canMove = false;
 			}
@@ -469,47 +472,13 @@ batch.end();
 		}
 	}
 
-
-	public void ghostDeath(Ghost ghost) {
-		ghost.isDying = true;
-		ghost.canMove = false;
-		ghost.isVisible = false;
-		ghost.showPoints = true;
-		Sound deathSound = Gdx.audio.newSound(Gdx.files.internal("sprites/Sounds/ghostdeath.mp3"));
-		deathSound.play();
-		player.increaseScore(200);
-
-		Timer timer = new Timer();
-		timer.schedule(new TimerTask() {
-			@Override
-			public void run() {
-				Gdx.app.postRunnable(new Runnable() {
-					@Override
-					public void run() {
-						ghost.setPosition(ghost.getPositionByIndex(ghost.startingLocation.getX(), ghost.startingLocation.getY(), tileWidth, tileHeight));
-						ghost.isDying = false;
-						ghost.isVisible = true;
-						ghost.showPoints = false;
-						ghost.canMove = true;
-					}
-				});
-			}
-		}, (long) (ghost.pointsDisplayTime * 1000));
-	}
-
-
-
-
 	private void restartLevel() {
 		Gdx.app.postRunnable(new Runnable() {
 			@Override
 			public void run() {
-				for(Ghost ghost : ghosts){
-					ghost.canMove = true;
-					ghost.setPosition(ghost.getPositionByIndex(ghost.startingLocation.getX(), ghost.startingLocation.getY(), tileWidth, tileHeight));
-				}
 				initializeLevel();
 				initializePlayer();
+				initializeGhosts();
 				initializeStages();
 				redrawGrid();
 			}

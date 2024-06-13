@@ -23,7 +23,6 @@ public class Player extends Character {
 
     public void update(){
         super.update();
-        System.out.println(score);
     }
 
     public void setController(PlayerController controller) {

@@ -14,13 +14,10 @@ public class StageManager {
     private Timer timer;
     private TimerTask currentTask;
     private int currentStageIndex;
-    private Timer powerPillTimer;
-    private static final int POWER_PILL_DURATION = 5000; // Duration of the power pill effect in milliseconds
-    private CollisionComponent collisionComponent;
+    private static final int POWER_PILL_DURATION = 5000;
 
-    public StageManager(ArrayList<Pair<PacMan.Stage, Double>> stageTimes, CollisionComponent collisionComponent) {
+    public StageManager(ArrayList<Pair<PacMan.Stage, Double>> stageTimes) {
         this.stages = stageTimes;
-        this.collisionComponent = collisionComponent;
         this.timer = new Timer();
         this.currentStageIndex = 0;
     }
@@ -33,9 +30,10 @@ public class StageManager {
         currentStagePair = stages.get(currentStageIndex);
         currentStage = currentStagePair.getX();
         game.stage = currentStage;
-        //System.out.println("Current stage: " + currentStage);
+        System.out.println("Current stage: " + currentStage);
         for (Ghost ghost : game.ghosts) {
             if (ghost != null) {
+                ghost.turnAround();
                 ghost.recalculatePath();
             }
         }
@@ -75,27 +73,5 @@ public class StageManager {
             }
         };
         timer.schedule(currentTask, POWER_PILL_DURATION);
-
-        startGhostDeathCheck(game);
-    }
-
-    private void startGhostDeathCheck(PacMan game) {
-        powerPillTimer = new Timer();
-
-        powerPillTimer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-
-                for (Ghost ghost : game.ghosts) {
-                    if (ghost.isDying) {
-                        continue;
-                    }
-
-                    if (collisionComponent.isGhostCollidingWithPlayer(game.player, ghost)) {
-                        game.ghostDeath(ghost);
-                    }
-                }
-            }
-        }, 0, 100);
     }
 }

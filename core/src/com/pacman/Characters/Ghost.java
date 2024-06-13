@@ -1,6 +1,7 @@
 package com.pacman.Characters;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -34,10 +35,11 @@ public class Ghost extends Character{
     public boolean canMove = true;
     public Pair<Integer, Integer> startingLocation;
     public boolean isDying = false;
+    Sound deathSound = Gdx.audio.newSound(Gdx.files.internal("sprites/Sounds/ghostdeath.mp3"));
 
     public boolean isVisible = true;
     public boolean showPoints = false;
-    public float pointsDisplayTime = 2.0f; // Display points for 2 seconds
+    public float pointsDisplayTime = 2.0f;
     private float pointsElapsed = 0f;
 
 
@@ -66,10 +68,10 @@ public class Ghost extends Character{
                 canMove = true;
             }
         }
-        if (isVisible) {
-            super.update();
-        }
 
+//        if (isVisible) {
+//            super.update();
+//        }
 
         if(!canMove){
             return;
@@ -107,7 +109,11 @@ public class Ghost extends Character{
         }
 
         if(collisionComponent.isGhostCollidingWithPlayer(game.player, this)){
-            game.playerDeath();
+            if(game.stage == PacMan.Stage.FRIGHTENED){
+                die();
+            } else{
+                game.playerDeath();
+            }
         }
     }
 
@@ -200,6 +206,8 @@ public class Ghost extends Character{
     }
 
     private Tile getAvailableTileWithOffset(int playerRow, int playerColumn, Tile result, Tile playerTile, int targetOffset) {
+        playerRow--;
+        playerColumn--;
         switch (game.player.direction){
             case UP:
                 for(int offset = targetOffset; offset >= 1; offset--) {
@@ -291,6 +299,9 @@ public class Ghost extends Character{
     }
 
     public Texture getEyeTexture(){
+        if(direction == null){
+            return null;
+        }
         switch(direction){
             case UP:
                 eyeXOffset = 0;
@@ -316,6 +327,9 @@ public class Ghost extends Character{
     }
 
     public void turnAround(){
+        if(direction == null){
+            return;
+        }
         switch(direction){
             case UP:
                 direction = Direction.DOWN;
@@ -330,5 +344,31 @@ public class Ghost extends Character{
                 direction = Direction.LEFT;
                 break;
         }
+    }
+
+    public void die(){
+        isDying = true;
+        canMove = false;
+        isVisible = false;
+        showPoints = true;
+        deathSound.play();
+        game.player.increaseScore(200);
+
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                Gdx.app.postRunnable(new Runnable() {
+                    @Override
+                    public void run() {
+                        setPosition(getPositionByIndex(startingLocation.getX(), startingLocation.getY(), game.tileWidth, game.tileHeight));
+                        isDying = false;
+                        isVisible = true;
+                        showPoints = false;
+                        canMove = true;
+                    }
+                });
+            }
+        }, (long) (pointsDisplayTime * 1000));
     }
 }
