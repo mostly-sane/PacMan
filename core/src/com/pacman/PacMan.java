@@ -58,6 +58,8 @@ public class PacMan extends ApplicationAdapter {
 	public Tile[][] grid;
 	Pill[][] pillGrid;
 
+	private Texture point200;
+
 	public Ghost[] ghosts = new Ghost[4];
 
 	String levelParams;
@@ -124,6 +126,8 @@ private Texture ghostEyeTexture;
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, appW, appH);
 		batch = new SpriteBatch();
+
+		point200 = new Texture(Gdx.files.internal("sprites/ui/200.png"));
 
 		wakaWakaSound = Gdx.audio.newSound(Gdx.files.internal("sprites/Sounds/wakwaka.mp3"));
 		deathSound = Gdx.audio.newSound(Gdx.files.internal("sprites/Sounds/death.mp3"));
@@ -350,22 +354,25 @@ batch.end();
 		batch.end();
 
 		batch.begin();
-		for(int i = 0; i < ghosts.length; i++){
-			if(ghosts[i] != null){
-				TextureRegion currentGhostFrame = (TextureRegion) ghosts[i].getMovingAnimation()
-						.getKeyFrame(stateTime, true);
-
-				batch.draw(currentGhostFrame, ghosts[i].getPosition().getX(), ghosts[i].getPosition().getY(),
-						playerWidth / 2, playerHeight / 2, playerWidth, playerHeight, 1, 1, 0);
-				if(stage != Stage.FRIGHTENED){
-					batch.draw(ghosts[i].getEyeTexture(), ghosts[i].getPosition().getX() + ghosts[i].eyeXOffset, ghosts[i].getPosition().getY() + 1,
-							playerWidth, playerHeight);
+		for (Ghost ghost : ghosts) {
+			if (ghost != null) {
+				if (ghost.showPoints) {
+					batch.draw(point200, ghost.getPosition().getX(), ghost.getPosition().getY(), playerWidth, playerHeight);
+				} else if (ghost.isVisible) {
+					TextureRegion currentGhostFrame = (TextureRegion) ghost.getMovingAnimation().getKeyFrame(stateTime, true);
+					batch.draw(currentGhostFrame, ghost.getPosition().getX(), ghost.getPosition().getY(),
+							playerWidth / 2, playerHeight / 2, playerWidth, playerHeight, 1, 1, 0);
+					if (stage != Stage.FRIGHTENED) {
+						batch.draw(ghost.getEyeTexture(), ghost.getPosition().getX() + ghost.eyeXOffset, ghost.getPosition().getY() + 1,
+								playerWidth, playerHeight);
+					}
 				}
 			}
 			//TODO ці перевірки це костиль. прибрати
 		}
 		batch.end();
 	}
+
 
 	private void drawPills() {
 		for (int i = 0; i < rows; i++) {
@@ -399,6 +406,7 @@ batch.end();
 		player.getTexture().dispose();
 		font.dispose();
 		wakaWakaSound.dispose();
+		point200.dispose();
 	}
 
 	public void resize(int width, int height) {
@@ -465,20 +473,30 @@ batch.end();
 	public void ghostDeath(Ghost ghost) {
 		ghost.isDying = true;
 		ghost.canMove = false;
-		Sound deathSound = Gdx.audio.newSound(Gdx.files.internal("sprites/Sounds/death.mp3"));
+		ghost.isVisible = false;
+		ghost.showPoints = true;
+		Sound deathSound = Gdx.audio.newSound(Gdx.files.internal("sprites/Sounds/ghostdeath.mp3"));
 		deathSound.play();
+		player.increaseScore(200);
 
 		Timer timer = new Timer();
 		timer.schedule(new TimerTask() {
 			@Override
 			public void run() {
-
-				ghost.setPosition(ghost.getPositionByIndex(ghost.startingLocation.getX(), ghost.startingLocation.getY(), tileWidth, tileHeight));
-				ghost.isDying = false;
-				ghost.canMove = true;
+				Gdx.app.postRunnable(new Runnable() {
+					@Override
+					public void run() {
+						ghost.setPosition(ghost.getPositionByIndex(ghost.startingLocation.getX(), ghost.startingLocation.getY(), tileWidth, tileHeight));
+						ghost.isDying = false;
+						ghost.isVisible = true;
+						ghost.showPoints = false;
+						ghost.canMove = true;
+					}
+				});
 			}
-		}, 2000);
+		}, (long) (ghost.pointsDisplayTime * 1000));
 	}
+
 
 
 

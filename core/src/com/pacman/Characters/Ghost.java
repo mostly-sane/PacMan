@@ -35,6 +35,12 @@ public class Ghost extends Character{
     public Pair<Integer, Integer> startingLocation;
     public boolean isDying = false;
 
+    public boolean isVisible = true;
+    public boolean showPoints = false;
+    public float pointsDisplayTime = 2.0f; // Display points for 2 seconds
+    private float pointsElapsed = 0f;
+
+
     public Ghost(int width, int height, Texture texture, PacMan game, Name name, Pair<Integer, Integer> startingLocation) {
         super(width, height, texture, game);
         this.name = name;
@@ -50,6 +56,20 @@ public class Ghost extends Character{
         if(targetTile == null || direction == null){
             return;
         }
+
+        if (showPoints) {
+            pointsElapsed += Gdx.graphics.getDeltaTime();
+            if (pointsElapsed >= pointsDisplayTime) {
+                showPoints = false;
+                pointsElapsed = 0f;
+                isVisible = true;
+                canMove = true;
+            }
+        }
+        if (isVisible) {
+            super.update();
+        }
+
 
         if(!canMove){
             return;
