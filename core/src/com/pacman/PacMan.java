@@ -65,6 +65,8 @@ public class PacMan extends ApplicationAdapter {
 	private SpriteBatch batch;
 	private PlayerController controller;
 	public Player player;
+	private BitmapFont scoreFont;
+	private int score;
 
 	private int playerWidth;
 	private int playerHeight;
@@ -115,6 +117,8 @@ public class PacMan extends ApplicationAdapter {
 
 		initializeMenuAssets();
 		initializeSound();
+		scoreFont = new BitmapFont();
+		score = 0;
 	}
 
 	private void initializeSound() {
@@ -148,6 +152,7 @@ public class PacMan extends ApplicationAdapter {
 		batch = new SpriteBatch();
 
 		point200 = new Texture(Gdx.files.internal("sprites/ui/200.png"));
+
 	}
 
 	private void initializeGame(Pair<Integer, Integer> startingLocation, String levelFile, String pillFile) {
@@ -378,6 +383,10 @@ batch.end();
 				playerWidth / 2, playerHeight / 2, playerWidth, playerHeight,
 				1, 1, player.animationComponent.rotation);
 		drawPills();
+
+
+		scoreFont.draw(batch, "Score: " + player.getScore(), 10, appH - 10);
+
 		batch.end();
 
 		batch.begin();
@@ -399,6 +408,7 @@ batch.end();
 		}
 		batch.end();
 	}
+
 
 	private void drawPills() {
 		for (int i = 0; i < rows; i++) {
@@ -430,6 +440,7 @@ batch.end();
 		}
 		player.getTexture().dispose();
 		font.dispose();
+		scoreFont.dispose();
 		wakaWakaSound.dispose();
 		point200.dispose();
 	}
