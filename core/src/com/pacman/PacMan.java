@@ -68,9 +68,9 @@ public class PacMan extends ApplicationAdapter {
 	int columns;
 
 	int appW = 475;
-	int appH = 525;
-	public int tileWidth = appW/19;
-	public int tileHeight = appH/21;
+	int appH = 575;
+	public int tileWidth = 25;
+	public int tileHeight = 25;
 
 	boolean shouldDrawGrid = true;
 
@@ -494,14 +494,6 @@ batch.end();
 		font.dispose();
 		wakaWakaSound.dispose();
 		point200.dispose();
-	}
-
-	public void resize(int width, int height) {
-		appW = width;
-		appH = height;
-		tileWidth = appW / 19;
-		tileHeight = appH / 21;
-		shouldDrawGrid = true;
 	}
 
 	@Override

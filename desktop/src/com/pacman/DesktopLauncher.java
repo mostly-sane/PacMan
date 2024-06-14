@@ -9,9 +9,10 @@ public class DesktopLauncher {
 	public static void main (String[] arg) {
 		Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
 		config.setTransparentFramebuffer(false);
+		config.setResizable(false);
 		config.setForegroundFPS(120);
 		config.setTitle("PacMan");
-		config.setWindowedMode(475, 525);
+		config.setWindowedMode(475, 575);
 		new Lwjgl3Application(new PacMan(), config);
 	}
 }
