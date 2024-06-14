@@ -3,6 +3,7 @@ package com.pacman;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -58,6 +59,8 @@ public class PacMan extends ApplicationAdapter {
 	public Sound startupSound;
 	public ArrayList<Pair<Stage, Double>> stageTimes = new ArrayList<>();
 	public int totalPills = 0;
+	private int highScore = 0;
+	private FileHandle highScoreFile;
 
 	float elapsedTime = 0;
 
@@ -117,6 +120,7 @@ public class PacMan extends ApplicationAdapter {
 
 		initializeMenuAssets();
 		initializeSound();
+		loadHighScore();
 		scoreFont = new BitmapFont();
 		score = 0;
 	}
@@ -384,8 +388,8 @@ batch.end();
 				1, 1, player.animationComponent.rotation);
 		drawPills();
 
-
-		scoreFont.draw(batch, "Score: " + player.getScore(), 10, appH - 10);
+		font.draw(batch, "Score: " + player.getScore(), 10, appH - 20);
+		font.draw(batch, "High Score: " + highScore, 340, appH - 20);
 
 		batch.end();
 
@@ -404,10 +408,16 @@ batch.end();
 					}
 				}
 			}
-			//TODO ці перевірки це костиль. прибрати
 		}
 		batch.end();
+
+
+		if (player.getScore() > highScore) {
+			highScore = player.getScore();
+			saveHighScore();
+		}
 	}
+
 
 
 	private void drawPills() {
@@ -443,6 +453,7 @@ batch.end();
 		scoreFont.dispose();
 		wakaWakaSound.dispose();
 		point200.dispose();
+		saveHighScore();
 	}
 
 	@Override
@@ -515,4 +526,32 @@ batch.end();
 		Sound winSound = Gdx.audio.newSound(Gdx.files.internal("sprites/Sounds/win.mp3"));
 		winSound.play();
 	}
+
+
+	private void loadHighScore() {
+		highScoreFile = Gdx.files.local("levels/highscore.txt");
+		if (highScoreFile.exists()) {
+			String highScoreStr = highScoreFile.readString();
+			try {
+				highScore = Integer.parseInt(highScoreStr);
+			} catch (NumberFormatException e) {
+				highScore = 0;
+			}
+		}
+	}
+
+	private void saveHighScore() {
+		highScoreFile.writeString(Integer.toString(highScore), false);
+	}
+
+	public void updateScore(int score) {
+		this.score += score;
+		if (score > highScore) {
+			highScore = score;
+			saveHighScore();
+		}
+	}
+
+
+
 }
