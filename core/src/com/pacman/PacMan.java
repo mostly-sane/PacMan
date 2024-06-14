@@ -60,8 +60,9 @@ public class PacMan extends ApplicationAdapter {
 	public ArrayList<Pair<Stage, Double>> stageTimes = new ArrayList<>();
 	public int totalPills = 0;
 	private int highScore = 0;
+	private int playerLives = 3;
 	private FileHandle highScoreFile;
-
+private Texture lifeTexture;
 	float elapsedTime = 0;
 
 	private OrthographicCamera camera;
@@ -156,6 +157,7 @@ public class PacMan extends ApplicationAdapter {
 		batch = new SpriteBatch();
 
 		point200 = new Texture(Gdx.files.internal("sprites/ui/200.png"));
+		lifeTexture = new Texture(Gdx.files.internal("sprites/ui/life.png"));
 
 	}
 
@@ -247,7 +249,7 @@ public class PacMan extends ApplicationAdapter {
 		CollisionComponent collisionComponent = new CollisionComponent(this, player);
 
 		player.setCollisionComponent(collisionComponent);
-		controller = new PlayerController(player, pillGrid, wakaWakaSound); // Pass pillGrid and wakaWakaSound here
+		controller = new PlayerController(player, pillGrid, wakaWakaSound);
 		player.setController(controller);
 
 		player.setAnimationComponent(new AnimationComponent(player));
@@ -390,6 +392,9 @@ batch.end();
 
 		font.draw(batch, "Score: " + player.getScore(), 10, appH - 20);
 		font.draw(batch, "High Score: " + highScore, 340, appH - 20);
+		for (int i = 0; i < playerLives; i++) {
+			batch.draw(lifeTexture, 200 + i * 20, appH - 40, 30, 30);
+		}
 
 		batch.end();
 
@@ -454,6 +459,7 @@ batch.end();
 		wakaWakaSound.dispose();
 		point200.dispose();
 		saveHighScore();
+		lifeTexture.dispose();
 	}
 
 	@Override
@@ -496,7 +502,7 @@ batch.end();
 				ghost.canMove = false;
 			}
 			deathSound.play();
-			player.lives--;
+			playerLives--;
 			player.score = 0;
 			Timer timer = new Timer();
 			timer.schedule(new TimerTask() {

@@ -9,7 +9,6 @@ import com.pacman.PacMan;
 public class Player extends Character {
     public int score = 0;
     public PlayerController controller;
-    public int lives = 3;
     public Animation<TextureRegion> dyingAnimation;
     public Animation<TextureRegion> movingAnimation;
     public boolean isDying = false;
