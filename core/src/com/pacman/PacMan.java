@@ -12,11 +12,9 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.pacman.AI.PathDrawer;
 import com.pacman.Characters.*;
 import com.pacman.Characters.Character;
 import com.pacman.Components.AnimationComponent;
@@ -32,6 +30,21 @@ import com.badlogic.gdx.graphics.Color;
 import java.util.*;
 
 public class PacMan extends ApplicationAdapter {
+
+	public class LevelStruct{
+		public int rows;
+		public int columns;
+		public String levelFile;
+		public String pillFile;
+		public Pair<Integer, Integer> startingLocation;
+
+		public LevelStruct(String levelFile, String pillFile, Pair<Integer, Integer> startingLocation){
+			this.levelFile = levelFile;
+			this.pillFile = pillFile;
+			this.startingLocation = startingLocation;
+		}
+	}
+	LevelStruct currentLevel = new LevelStruct("", "", new Pair<>(0, 0));
 	private FrameBuffer frameBuffer;
 	private TextureRegion textureRegion;
 	private Texture titleScreenTexture;
@@ -72,14 +85,9 @@ public class PacMan extends ApplicationAdapter {
 	public int tileWidth = 25;
 	public int tileHeight = 25;
 
-	boolean shouldDrawGrid = true;
-
 	private BitmapFont font;
 
-private Texture ghostEyeTexture;
-
-	ShapeRenderer shapeRenderer;
-	PathDrawer pathDrawer = new PathDrawer();
+	private Texture ghostEyeTexture;
 
 	StageManager stageManager;
 
@@ -105,8 +113,19 @@ private Texture ghostEyeTexture;
 	public void create() {
 		super.create();
 
-		shapeRenderer = new ShapeRenderer();
+		initializeMenuAssets();
+		initializeSound();
+	}
 
+	private void initializeSound() {
+		wakaWakaSound = Gdx.audio.newSound(Gdx.files.internal("sprites/Sounds/wakwaka.mp3"));
+		deathSound = Gdx.audio.newSound(Gdx.files.internal("sprites/Sounds/death.mp3"));
+		startupSound = Gdx.audio.newSound(Gdx.files.internal("sprites/Sounds/startup.mp3"));
+		ghostSound = Gdx.audio.newSound(Gdx.files.internal("sprites/Sounds/ghost.mp3"));
+		scaredSound = Gdx.audio.newSound(Gdx.files.internal("sprites/Sounds/scared.mp3"));
+	}
+
+	private void initializeMenuAssets() {
 		ghostEyeTexture = new Texture(Gdx.files.internal("sprites/eyes/l.png"));
 		titleScreenTexture = new Texture(Gdx.files.internal("sprites/ui/ready.png"));
 		TextureRegion[] pacmanFrames = new TextureRegion[3];
@@ -129,52 +148,13 @@ private Texture ghostEyeTexture;
 		batch = new SpriteBatch();
 
 		point200 = new Texture(Gdx.files.internal("sprites/ui/200.png"));
-
-		wakaWakaSound = Gdx.audio.newSound(Gdx.files.internal("sprites/Sounds/wakwaka.mp3"));
-		deathSound = Gdx.audio.newSound(Gdx.files.internal("sprites/Sounds/death.mp3"));
-		startupSound = Gdx.audio.newSound(Gdx.files.internal("sprites/Sounds/startup.mp3"));
 	}
 
-	private void initializeGame() {
-		initializeLevel();
-		initializePlayer();
+	private void initializeGame(Pair<Integer, Integer> startingLocation, String levelFile, String pillFile) {
+		initializeLevel(levelFile, pillFile);
+		initializePlayer(startingLocation);
 		initializeGhosts();
 
-		ghostSound = Gdx.audio.newSound(Gdx.files.internal("sprites/Sounds/ghost.mp3"));
-		scaredSound = Gdx.audio.newSound(Gdx.files.internal("sprites/Sounds/scared.mp3"));
-		ghostSound.loop();
-		ghostSound.setVolume((long) 1.5, 1.5f);
-
-		redrawGrid();
-
-		startupSound.play();
-		player.controller.canMove = false;
-		for(Ghost ghost : ghosts){
-			ghost.canMove = false;
-		}
-
-		Timer startupTimer = new Timer();
-		startupTimer.schedule(new TimerTask() {
-			@Override
-			public void run() {
-				player.controller.canMove = true;
-				for(Ghost ghost : ghosts){
-					ghost.canMove = true;
-				}
-				elapsedTime = 0;
-				initializeStages();
-			}
-		}, 4500);
-	}
-
-
-	private void initializeGame1() {
-		initializeLevel1();
-		initializePlayerLvl1();
-		initializeGhosts();
-
-		ghostSound = Gdx.audio.newSound(Gdx.files.internal("sprites/Sounds/ghost.mp3"));
-		scaredSound = Gdx.audio.newSound(Gdx.files.internal("sprites/Sounds/scared.mp3"));
 		ghostSound.loop();
 		ghostSound.setVolume((long) 1.5, 1.5f);
 
@@ -228,18 +208,16 @@ private Texture ghostEyeTexture;
 		}
 	}
 
-	private void initializeLevel() {
+	private void initializeLevel(String levelFile, String pillFile) {
 		frameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), false);
 		textureRegion = new TextureRegion(frameBuffer.getColorBufferTexture());
 		textureRegion.flip(false, true);
 
 		Gdx.graphics.setContinuousRendering(true);
-		grid = LevelManager.loadLevel(Gdx.files.internal("levels/default.txt").file());
-		pillGrid = LevelManager.loadPills(Gdx.files.internal("levels/pills.txt").file());
+		grid = LevelManager.loadLevel(Gdx.files.internal("levels/" + levelFile + ".txt").file());
+		pillGrid = LevelManager.loadPills(Gdx.files.internal("levels/" + pillFile + ".txt").file());
 
-
-
-		levelParams = LevelManager.getLevelParams(Gdx.files.internal("levels/default.txt").file());
+		levelParams = LevelManager.getLevelParams(Gdx.files.internal("levels/" + levelFile + ".txt").file());
 		String[] parts = levelParams.split(",");
 		rows = Integer.parseInt(parts[0]);
 		columns = Integer.parseInt(parts[1]);
@@ -253,34 +231,9 @@ private Texture ghostEyeTexture;
 		}
 	}
 
-	private void initializeLevel1() {
-		frameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), false);
-		textureRegion = new TextureRegion(frameBuffer.getColorBufferTexture());
-		textureRegion.flip(false, true);
-
-		Gdx.graphics.setContinuousRendering(true);
-		grid = LevelManager.loadLevel(Gdx.files.internal("levels/level1.txt").file());
-		pillGrid = LevelManager.loadPills(Gdx.files.internal("levels/pillslvl1.txt").file());
-
-		levelParams = LevelManager.getLevelParams(Gdx.files.internal("levels/level1.txt").file());
-		String[] parts = levelParams.split(",");
-		rows = Integer.parseInt(parts[0]);
-		columns = Integer.parseInt(parts[1]);
-
-		for(int i = 0; i < rows; i++){
-			for(int j = 0; j < columns; j++){
-				if(pillGrid[i][j].texture != null){
-					totalPills++;
-				}
-			}
-		}
-	}
-
-	private void initializePlayerLvl1() {
+	private void initializePlayer(Pair<Integer, Integer> startingLocation) {
 		Texture pacmanTexture = new Texture(Gdx.files.internal("sprites/pacman/0.png"));
 		player = new Player(20, 20, pacmanTexture, this);
-		float tileWidth = this.tileWidth;  // Ensure tileWidth matches the actual tile size
-		float tileHeight = this.tileHeight; // Ensure tileHeight matches the actual tile size
 
 		CollisionComponent collisionComponent = new CollisionComponent(this, player);
 
@@ -293,29 +246,7 @@ private Texture ghostEyeTexture;
 		playerWidth = player.getWidth();
 		playerHeight = player.getHeight();
 
-		player.setPosition(player.getPositionByIndex(9, 8, this.tileWidth, this.tileHeight));
-
-		Gdx.input.setInputProcessor(controller);
-	}
-
-	private void initializePlayer() {
-		Texture pacmanTexture = new Texture(Gdx.files.internal("sprites/pacman/0.png"));
-		player = new Player(20, 20, pacmanTexture, this);
-		float tileWidth = this.tileWidth;  // Ensure tileWidth matches the actual tile size
-		float tileHeight = this.tileHeight; // Ensure tileHeight matches the actual tile size
-
-		CollisionComponent collisionComponent = new CollisionComponent(this, player);
-
-		player.setCollisionComponent(collisionComponent);
-		controller = new PlayerController(player, pillGrid, wakaWakaSound); // Pass pillGrid and wakaWakaSound here
-		player.setController(controller);
-
-		player.setAnimationComponent(new AnimationComponent(player));
-
-		playerWidth = player.getWidth();
-		playerHeight = player.getHeight();
-
-		player.setPosition(player.getPositionByIndex(9, 11, this.tileWidth, this.tileHeight));
+		player.setPosition(player.getPositionByIndex(startingLocation.getX(), startingLocation.getY(), this.tileWidth, this.tileHeight));
 
 		Gdx.input.setInputProcessor(controller);
 	}
@@ -374,7 +305,11 @@ batch.end();
 
 				gameState = GameState.PLAYING;
 				titleScreenTexture.dispose();
-				initializeGame1();
+				currentLevel.startingLocation = new Pair<>(8, 8);
+				currentLevel.levelFile = "level1";
+				currentLevel.pillFile = "pills1";
+
+				initializeGame(currentLevel.startingLocation, currentLevel.levelFile, currentLevel.pillFile);
 			}
 		}
 
@@ -397,7 +332,12 @@ batch.end();
 				// If the touch is within the level3Button bounds
 				gameState = GameState.PLAYING;
 				titleScreenTexture.dispose(); // Dispose of the title screen texture
-				initializeGame();
+
+				currentLevel.startingLocation = new Pair<>(9, 11);
+				currentLevel.levelFile = "default";
+				currentLevel.pillFile = "pills";
+
+				initializeGame(currentLevel.startingLocation, currentLevel.levelFile, currentLevel.pillFile);
 			}
 		}
 
@@ -405,7 +345,6 @@ batch.end();
 		stage.addActor(level2Button);
 		stage.addActor(level3Button);
 
-		// Position the buttons
 		level1Button.setPosition(appW / 2 - level1Button.getWidth() / 2, appH / 2 + 50);
 		level2Button.setPosition(appW / 2 - level2Button.getWidth() / 2, appH / 2);
 		level3Button.setPosition(appW / 2 - level3Button.getWidth() / 2, appH / 2 - 50);
@@ -475,7 +414,6 @@ batch.end();
 	public void dispose() {
 		batch.dispose();
 		frameBuffer.dispose();
-		//titleScreenTexture.dispose();
 		for (Tile[] row : grid) {
 			for (Tile tile : row) {
 				if (tile.texture != null) {
@@ -505,7 +443,6 @@ batch.end();
 		for (int i = 0; i < rows; i++) {
 			for (int j = 0; j < columns; j++) {
 				frameBuffer.begin();
-				// Save the current sprite's position and dimensions
 				float x = grid[i][j].x;
 				float y = grid[i][j].y;
 				float originX = tileWidth / 2;
@@ -553,8 +490,8 @@ batch.end();
 		Gdx.app.postRunnable(new Runnable() {
 			@Override
 			public void run() {
-				initializeLevel();
-				initializePlayer();
+				initializeLevel(currentLevel.levelFile, currentLevel.pillFile);
+				initializePlayer(currentLevel.startingLocation);
 				initializeGhosts();
 				initializeStages();
 				redrawGrid();
