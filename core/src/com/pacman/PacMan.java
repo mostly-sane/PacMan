@@ -332,24 +332,35 @@ batch.end();
 		}
 
 		TextButton level2Button = new TextButton("Level 2", skin);
-		level2Button.addListener(new ClickListener() {
-			@Override
-			public void clicked(com.badlogic.gdx.scenes.scene2d.InputEvent event, float x, float y) {
-				// TODO: Implement level 2 logic
+		if (Gdx.input.isTouched()) {
+			int x = Gdx.input.getX();
+			int y = Gdx.input.getY();
+			y = appH - y;
+
+			if (x >= appW / 2 - level2Button.getWidth() / 2 && x <= appW / 2 + level2Button.getWidth() / 2
+					&& y >= appH / 2 && y <= appH / 2 + level2Button.getHeight()) {
+				gameState = GameState.PLAYING;
+				titleScreenTexture.dispose();
+
+				currentLevel.startingLocation = new Pair<>(6, 8);
+				currentLevel.levelFile = "level2";
+				currentLevel.pillFile = "pills2";
+
+				initializeGame(currentLevel.startingLocation, currentLevel.levelFile, currentLevel.pillFile);
 			}
-		});
+		}
 
 		TextButton level3Button = new TextButton("Level 3", skin);
 		if (Gdx.input.isTouched()) {
 			int x = Gdx.input.getX();
 			int y = Gdx.input.getY();
-			y = appH - y; // Adjust the y-coordinate to match the screen coordinates
+			y = appH - y;
 
 			if (x >= appW / 2 - level3Button.getWidth() / 2 && x <= appW / 2 + level3Button.getWidth() / 2
 					&& y >= appH / 2 - 50 && y <= appH / 2 - 50 + level3Button.getHeight()) {
-				// If the touch is within the level3Button bounds
+
 				gameState = GameState.PLAYING;
-				titleScreenTexture.dispose(); // Dispose of the title screen texture
+				titleScreenTexture.dispose();
 
 				currentLevel.startingLocation = new Pair<>(9, 11);
 				currentLevel.levelFile = "default";
@@ -544,6 +555,7 @@ batch.end();
 								gameState = GameState.TITLE_SCREEN;
 								isGameOver = false;
 								gameOverTime = 0;
+								playerLives = 3;
 							}
 						});
 					}
