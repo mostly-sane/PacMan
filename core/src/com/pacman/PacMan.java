@@ -72,6 +72,10 @@ private Texture lifeTexture;
 	private BitmapFont scoreFont;
 	private int score;
 
+	private Texture gameOverTexture;
+	private boolean isGameOver = false;
+	private float gameOverTime = 0;
+
 	private int playerWidth;
 	private int playerHeight;
 
@@ -111,7 +115,8 @@ private Texture lifeTexture;
 
 	public enum GameState {
 		TITLE_SCREEN,
-		PLAYING
+		PLAYING,
+		GAME_OVER
 	}
 
 	public GameState gameState = GameState.TITLE_SCREEN;
@@ -158,6 +163,8 @@ private Texture lifeTexture;
 
 		point200 = new Texture(Gdx.files.internal("sprites/ui/200.png"));
 		lifeTexture = new Texture(Gdx.files.internal("sprites/ui/life.png"));
+		gameOverTexture = new Texture(Gdx.files.internal("sprites/ui/gameover.png"));
+
 
 	}
 
@@ -277,7 +284,7 @@ private Texture lifeTexture;
 
 		if (gameState == GameState.TITLE_SCREEN) {
 			renderTitleScreen();
-		} else if (gameState == GameState.PLAYING) {
+		} else if (gameState == GameState.PLAYING || gameState == GameState.GAME_OVER) {
 			renderGame();
 		}
 	}
@@ -396,6 +403,7 @@ batch.end();
 			batch.draw(lifeTexture, 200 + i * 20, appH - 40, 30, 30);
 		}
 
+
 		batch.end();
 
 		batch.begin();
@@ -414,6 +422,17 @@ batch.end();
 				}
 			}
 		}
+
+		if (isGameOver) {
+			batch.draw(gameOverTexture, (appW - gameOverTexture.getWidth()) / 2, (appH - gameOverTexture.getHeight()) / 2);
+			gameOverTime += Gdx.graphics.getDeltaTime();
+			if (gameOverTime > 5) {
+				gameState = GameState.TITLE_SCREEN;
+				isGameOver = false;
+				gameOverTime = 0;
+			}
+		}
+
 		batch.end();
 
 
@@ -492,27 +511,47 @@ batch.end();
 		}
 	}
 
-	public void playerDeath(){
+	public void playerDeath() {
 		if (stage == Stage.CHASE) {
 			stateTime = 0;
 			player.isDying = true;
 			player.controller.canMove = false;
 			ghostSound.stop();
-			for(Ghost ghost : ghosts){
+			for (Ghost ghost : ghosts) {
 				ghost.canMove = false;
 			}
 			deathSound.play();
 			playerLives--;
 			player.score = 0;
-			Timer timer = new Timer();
-			timer.schedule(new TimerTask() {
-				@Override
-				public void run() {
-					restartLevel();
-				}
-			}, 2000);
+
+			if (playerLives > 0) {
+				Timer timer = new Timer();
+				timer.schedule(new TimerTask() {
+					@Override
+					public void run() {
+						restartLevel();
+					}
+				}, 2000);
+			} else {
+				isGameOver = true;
+				Timer timer = new Timer();
+				timer.schedule(new TimerTask() {
+					@Override
+					public void run() {
+						Gdx.app.postRunnable(new Runnable() {
+							@Override
+							public void run() {
+								gameState = GameState.TITLE_SCREEN;
+								isGameOver = false;
+								gameOverTime = 0;
+							}
+						});
+					}
+				}, 5000);
+			}
 		}
 	}
+
 
 	private void restartLevel() {
 		Gdx.app.postRunnable(new Runnable() {
