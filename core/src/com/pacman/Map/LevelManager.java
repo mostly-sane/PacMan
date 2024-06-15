@@ -8,7 +8,7 @@ import java.io.*;
 import static java.lang.Double.valueOf;
 
 public class LevelManager {
-    public static Tile[][] loadLevel(File level) {
+    public static Tile[][] loadLevel(File level, PacMan game) {
         Tile[][] grid;
         String line;
         int x;
@@ -33,7 +33,7 @@ public class LevelManager {
                 parts = line.split(",");
                 for (int j = 0; j < parts.length; j++) {
                     boolean open = Integer.parseInt(parts[j]) == 1;
-                    grid[j][i] = new Tile(j, i, w, h, open);
+                    grid[j][i] = new Tile(j, i, w, h, open, game);
                 }
                 i++;
             }

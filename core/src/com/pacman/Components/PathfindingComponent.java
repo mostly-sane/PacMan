@@ -13,6 +13,8 @@ public class PathfindingComponent {
     public Node[][] grid;
     public ArrayList<Node> path = new ArrayList<>();
     ArrayList<Node> availableNodes = new ArrayList<>();
+    Set<Node> exploredNodes = new HashSet<>();
+    PriorityQueue<Node> unexploredNodes = new PriorityQueue<>(25, Comparator.comparingDouble(i -> i.pathCost));
 
     public PathfindingComponent(PacMan game, Ghost ghost) {
         this.parent = ghost;
@@ -58,8 +60,8 @@ public class PathfindingComponent {
         Node startNode = grid[start.i][start.j];
         Node endNode = grid[end.i][end.j];
 
-        Set<Node> exploredNodes = new HashSet<>();
-        PriorityQueue<Node> unexploredNodes = new PriorityQueue<>(25, Comparator.comparingDouble(i -> i.pathCost));
+        exploredNodes.clear();
+        unexploredNodes.clear();
 
         startNode.gCost = 0;
         unexploredNodes.add(startNode);
@@ -115,7 +117,6 @@ public class PathfindingComponent {
     }
 
     public void blockNodeBehindGhost() {
-        Node nodeBehindGhost;
         int row = parent.getRow();
         int column = parent.getColumn();
         if(parent.getDirection() == null){

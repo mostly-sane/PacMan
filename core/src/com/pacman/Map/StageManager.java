@@ -3,14 +3,11 @@ package com.pacman.Map;
 import com.pacman.Characters.Ghost;
 import com.pacman.PacMan;
 import com.pacman.Pair;
-import com.pacman.Components.CollisionComponent;
 
 import java.util.*;
 
 public class StageManager {
-    private ArrayList<Pair<PacMan.Stage, Double>> stages;
-    private PacMan.Stage currentStage;
-    private Pair<PacMan.Stage, Double> currentStagePair;
+    private final ArrayList<Pair<PacMan.Stage, Double>> stages;
     private Timer timer;
     private TimerTask currentTask;
     private int currentStageIndex;
@@ -27,8 +24,8 @@ public class StageManager {
     }
 
     private void changeStage(PacMan game) {
-        currentStagePair = stages.get(currentStageIndex);
-        currentStage = currentStagePair.getX();
+        Pair<PacMan.Stage, Double> currentStagePair = stages.get(currentStageIndex);
+        PacMan.Stage currentStage = currentStagePair.getX();
         game.stage = currentStage;
         System.out.println("Current stage: " + currentStage);
         for (Ghost ghost : game.ghosts) {
@@ -62,7 +59,6 @@ public class StageManager {
         game.stage = PacMan.Stage.FRIGHTENED;
         game.ghostSound.stop();
         game.scaredSound.loop();
-        //System.out.println("Current stage: " + game.stage);
 
         currentTask = new TimerTask() {
             @Override

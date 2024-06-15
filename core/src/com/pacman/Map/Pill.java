@@ -42,9 +42,5 @@ public class Pill extends Rectangle {
             }
         }
     }
-
-    public Rectangle getBoundingRectangle() {
-        return new Rectangle(x, y, width, height);
-    }
 }
 

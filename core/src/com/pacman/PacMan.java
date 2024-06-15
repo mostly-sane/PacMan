@@ -15,7 +15,6 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.pacman.Characters.*;
 import com.pacman.Characters.Character;
 import com.pacman.Components.AnimationComponent;
@@ -26,7 +25,6 @@ import com.pacman.Map.StageManager;
 import com.pacman.Map.Tile;
 import com.pacman.Map.Pill;
 import com.badlogic.gdx.graphics.Color;
-
 
 import java.util.*;
 
@@ -45,6 +43,7 @@ public class PacMan extends ApplicationAdapter {
 			this.startingLocation = startingLocation;
 		}
 	}
+
 	LevelStruct currentLevel = new LevelStruct("", "", new Pair<>(0, 0));
 	private FrameBuffer frameBuffer;
 	private TextureRegion textureRegion;
@@ -62,7 +61,7 @@ public class PacMan extends ApplicationAdapter {
 	private int highScore = 0;
 	private int playerLives = 3;
 	private FileHandle highScoreFile;
-private Texture lifeTexture;
+	private Texture lifeTexture;
 	float elapsedTime = 0;
 
 	private OrthographicCamera camera;
@@ -100,6 +99,9 @@ private Texture lifeTexture;
 
 	StageManager stageManager;
 
+	public Texture openTexture;
+	public Texture closedTexture;
+
 	public void activatePowerMode() {
 		stageManager.activatePowerMode(this);
 
@@ -132,6 +134,9 @@ private Texture lifeTexture;
 
 	public void create() {
 		super.create();
+		openTexture = new Texture("sprites/map/open.png");
+		closedTexture = new Texture("sprites/map/blocked.png");
+
 
 		initializeMenuAssets();
 		initializeSound();
@@ -236,8 +241,7 @@ private Texture lifeTexture;
 		textureRegion = new TextureRegion(frameBuffer.getColorBufferTexture());
 		textureRegion.flip(false, true);
 
-		Gdx.graphics.setContinuousRendering(true);
-		grid = LevelManager.loadLevel(Gdx.files.internal("levels/" + levelFile + ".txt").file());
+		grid = LevelManager.loadLevel(Gdx.files.internal("levels/" + levelFile + ".txt").file(), this);
 		pillGrid = LevelManager.loadPills(Gdx.files.internal("levels/" + pillFile + ".txt").file());
 
 		levelParams = LevelManager.getLevelParams(Gdx.files.internal("levels/" + levelFile + ".txt").file());
@@ -258,7 +262,7 @@ private Texture lifeTexture;
 		Texture pacmanTexture = new Texture(Gdx.files.internal("sprites/pacman/0.png"));
 		player = new Player(20, 20, pacmanTexture, this);
 
-		CollisionComponent collisionComponent = new CollisionComponent(this, player);
+		CollisionComponent collisionComponent = new CollisionComponent(this);
 
 		player.setCollisionComponent(collisionComponent);
 		controller = new PlayerController(player, pillGrid, wakaWakaSound);
@@ -395,35 +399,19 @@ private Texture lifeTexture;
 
 	private void renderGame() {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
 		batch.begin();
-		batch.draw(textureRegion, 0, 0);
-		batch.end();
+
 		controller.update();
+		player.update();
+
+		batch.draw(textureRegion, 0, 0);
+		drawPills();
+
 		for (Ghost ghost : ghosts) {
 			if (ghost != null) {
 				ghost.update();
-			}
-		}
-		player.update();
-		batch.begin();
-		TextureRegion currentFrame = player.animationToPlay().getKeyFrame(elapsedTime, true);
-		batch.draw(currentFrame, player.getPosition().getX(), player.getPosition().getY(),
-				playerWidth / 2, playerHeight / 2, playerWidth, playerHeight,
-				1, 1, player.animationComponent.rotation);
-		drawPills();
 
-		font.draw(batch, "Score: " + player.getScore(), 10, appH - 20);
-		font.draw(batch, "High Score: " + highScore, 340, appH - 20);
-		for (int i = 0; i < playerLives; i++) {
-			batch.draw(lifeTexture, 200 + i * 20, appH - 40, 30, 30);
-		}
-
-
-		batch.end();
-
-		batch.begin();
-		for (Ghost ghost : ghosts) {
-			if (ghost != null) {
 				if (ghost.showPoints) {
 					batch.draw(point200, ghost.getPosition().getX(), ghost.getPosition().getY(), playerWidth, playerHeight);
 				} else if (ghost.isVisible) {
@@ -438,6 +426,17 @@ private Texture lifeTexture;
 			}
 		}
 
+		TextureRegion currentFrame = player.animationToPlay().getKeyFrame(elapsedTime, true);
+		batch.draw(currentFrame, player.getPosition().getX(), player.getPosition().getY(),
+				playerWidth / 2, playerHeight / 2, playerWidth, playerHeight,
+				1, 1, player.animationComponent.rotation);
+
+		font.draw(batch, "Score: " + player.getScore(), 10, appH - 20);
+		font.draw(batch, "High Score: " + highScore, 340, appH - 20);
+		for (int i = 0; i < playerLives; i++) {
+			batch.draw(lifeTexture, 200 + i * 20, appH - 40, 30, 30);
+		}
+
 		if (isGameOver) {
 			batch.draw(gameOverTexture, (appW - gameOverTexture.getWidth()) / 2, (appH - gameOverTexture.getHeight()) / 2);
 			gameOverTime += Gdx.graphics.getDeltaTime();
@@ -449,7 +448,6 @@ private Texture lifeTexture;
 		}
 
 		batch.end();
-
 
 		if (player.getScore() > highScore) {
 			highScore = player.getScore();
@@ -565,7 +563,6 @@ private Texture lifeTexture;
 			}
 		}
 	}
-
 
 	private void restartLevel() {
 		Gdx.app.postRunnable(new Runnable() {

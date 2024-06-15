@@ -7,9 +7,6 @@ import com.pacman.Characters.Character;
 import java.util.ArrayList;
 
 public class Utils {
-    public static Pair<Float, Float> getPositionByIndex(int i, int j, int w, int h) {
-        return new Pair<>((float) i * w, (float) j * h);
-    }
 
     public static Pair<Float, Float> getPositionByIndex(Pair<Integer, Integer> index, int w, int h) {
         return new Pair<>((float) index.getX() * w, (float) index.getY() * h);

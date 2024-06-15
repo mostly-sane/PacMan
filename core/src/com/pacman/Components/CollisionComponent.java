@@ -8,17 +8,14 @@ import com.pacman.Characters.Player;
 import com.pacman.Map.Tile;
 import com.pacman.PacMan;
 
-import java.util.ArrayList;
-
 public class CollisionComponent {
     public Rectangle pacManRect;
     public Rectangle tileRect;
     private Tile[][] grid;
     private Character parent;
 
-    public CollisionComponent(PacMan game, Character parent) {
+    public CollisionComponent(PacMan game) {
         this.grid = game.grid;
-        this.parent = parent;
         this.pacManRect = new Rectangle(0, 0, game.tileWidth, game.tileHeight);
         this.tileRect = new Rectangle(0, 0, game.tileWidth, game.tileHeight);
     }
