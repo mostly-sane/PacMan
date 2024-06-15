@@ -29,7 +29,6 @@ import com.badlogic.gdx.graphics.Color;
 import java.util.*;
 
 public class PacMan extends ApplicationAdapter {
-
 	public class LevelStruct{
 		public int rows;
 		public int columns;
@@ -308,7 +307,6 @@ public class PacMan extends ApplicationAdapter {
 		TextureRegion currentPacmanFrame = pacmanAnimation.getKeyFrame(stateTime, true);
 		batch.draw(currentPacmanFrame, appW / 2 - 100, appH / 2 + 100);
 
-
 		TextureRegion currentGhostFrame = ghostAnimation.getKeyFrame(stateTime, true);
 		batch.draw(currentGhostFrame, appW / 2 + 100, appH / 2 + 100);
 		batch.draw(ghostEyeTexture, appW / 2 + 100, appH / 2 + 100);
@@ -411,10 +409,7 @@ public class PacMan extends ApplicationAdapter {
 		for (Ghost ghost : ghosts) {
 			if (ghost != null) {
 				ghost.update();
-
-				if (ghost.showPoints) {
-					batch.draw(point200, ghost.getPosition().getX(), ghost.getPosition().getY(), playerWidth, playerHeight);
-				} else if (ghost.isVisible) {
+				if (ghost.isVisible) {
 					TextureRegion currentGhostFrame = (TextureRegion) ghost.getCurrentAnimation().getKeyFrame(stateTime, true);
 					batch.draw(currentGhostFrame, ghost.getPosition().getX(), ghost.getPosition().getY(),
 							playerWidth / 2, playerHeight / 2, playerWidth, playerHeight, 1, 1, 0);
@@ -422,6 +417,11 @@ public class PacMan extends ApplicationAdapter {
 						batch.draw(ghost.getEyeTexture(), ghost.getPosition().getX() + ghost.eyeXOffset, ghost.getPosition().getY() + 1,
 								playerWidth, playerHeight);
 					}
+				}
+				if(!ghost.isVisible && ghost.isDying){
+					batch.draw(ghost.getEyeTexture(), ghost.getPosition().getX() + ghost.eyeXOffset, ghost.getPosition().getY() + 1,
+							playerWidth, playerHeight);
+					batch.draw(point200, ghost.deathLocation.getX(), ghost.deathLocation.getY(), 20, 20);
 				}
 			}
 		}
@@ -549,15 +549,12 @@ public class PacMan extends ApplicationAdapter {
 				timer.schedule(new TimerTask() {
 					@Override
 					public void run() {
-						Gdx.app.postRunnable(new Runnable() {
-							@Override
-							public void run() {
-								gameState = GameState.TITLE_SCREEN;
-								isGameOver = false;
-								gameOverTime = 0;
-								playerLives = 3;
-							}
-						});
+						Gdx.app.postRunnable(() -> {
+                            gameState = GameState.TITLE_SCREEN;
+                            isGameOver = false;
+                            gameOverTime = 0;
+                            playerLives = 3;
+                        });
 					}
 				}, 5000);
 			}
@@ -565,16 +562,13 @@ public class PacMan extends ApplicationAdapter {
 	}
 
 	private void restartLevel() {
-		Gdx.app.postRunnable(new Runnable() {
-			@Override
-			public void run() {
-				initializeLevel(currentLevel.levelFile, currentLevel.pillFile);
-				initializePlayer(currentLevel.startingLocation);
-				initializeGhosts();
-				initializeStages();
-				redrawGrid();
-			}
-		});
+		Gdx.app.postRunnable(() -> {
+            initializeLevel(currentLevel.levelFile, currentLevel.pillFile);
+            initializePlayer(currentLevel.startingLocation);
+            initializeGhosts();
+            initializeStages();
+            redrawGrid();
+        });
 	}
 
 	public void win(){

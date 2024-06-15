@@ -29,14 +29,21 @@ public class Ghost extends Character{
 
     public boolean isVisible = true;
     public boolean showPoints = false;
-    public float pointsDisplayTime = 2.0f;
+    public float pointsDisplayTime = 5.0f;
     private float pointsElapsed = 0f;
 
     protected Texture frightened0 = new Texture(Gdx.files.internal("sprites/ghosts/f-0.png"));
     protected Texture frightened1 = new Texture(Gdx.files.internal("sprites/ghosts/f-1.png"));
 
+    private Texture eyesDown = new Texture(Gdx.files.internal("sprites/eyes/d.png"));
+    private Texture eyesUp = new Texture(Gdx.files.internal("sprites/eyes/u.png"));
+    private Texture eyesLeft = new Texture(Gdx.files.internal("sprites/eyes/l.png"));
+    private Texture eyesRight = new Texture(Gdx.files.internal("sprites/eyes/r.png"));
+
     protected Texture moving0;
     protected Texture moving1;
+
+    public Pair<Float, Float> deathLocation;
 
 
     public Ghost(int width, int height, Texture texture, PacMan game, Pair<Integer, Integer> startingLocation) {
@@ -100,7 +107,7 @@ public class Ghost extends Character{
         }
 
         if(collisionComponent.isGhostCollidingWithPlayer(game.player, this)){
-            if(game.stage == PacMan.Stage.FRIGHTENED){
+            if(game.stage == PacMan.Stage.FRIGHTENED && !isDying){
                 die();
             } else{
                 game.playerDeath();
@@ -112,23 +119,29 @@ public class Ghost extends Character{
         pathfindingComponent.reopenNodes();
         pathfindingComponent.blockNodeBehindGhost();
 
-        switch(game.stage) {
-            case CHASE:
-                path = pathfindingComponent.findPath(Utils.getCurrentTile(this, game.grid), getChaseTile());
-            break;
-            case SCATTER:
-                path = pathfindingComponent.findPath(Utils.getCurrentTile(this, game.grid), getScatterTile());
-            break;
-            case FRIGHTENED:
-                path = pathfindingComponent.getAvailableNodes(Utils.getCurrentTile(this, game.grid));
-                if(!path.isEmpty()){
-                    Node n = path.get(random.nextInt(path.size()));
-                    Tile tile = Utils.getTileByIndex(n.location.getX(), n.location.getY(), game.grid);
-                    path = pathfindingComponent.findPath(Utils.getCurrentTile(this, game.grid), tile);
-                } else{
-                   path = null;
-                }
-            break;
+        if(isDying){
+            path = pathfindingComponent.findPath(Utils.getCurrentTile(this, game.grid),
+                    Utils.getTileByIndex(startingLocation.getX(), startingLocation.getY(), game.grid));
+
+        } else{
+            switch(game.stage) {
+                case CHASE:
+                    path = pathfindingComponent.findPath(Utils.getCurrentTile(this, game.grid), getChaseTile());
+                break;
+                case SCATTER:
+                    path = pathfindingComponent.findPath(Utils.getCurrentTile(this, game.grid), getScatterTile());
+                break;
+                case FRIGHTENED:
+                    path = pathfindingComponent.getAvailableNodes(Utils.getCurrentTile(this, game.grid));
+                    if(!path.isEmpty()){
+                        Node n = path.get(random.nextInt(path.size()));
+                        Tile tile = Utils.getTileByIndex(n.location.getX(), n.location.getY(), game.grid);
+                        path = pathfindingComponent.findPath(Utils.getCurrentTile(this, game.grid), tile);
+                    } else{
+                        path = null;
+                    }
+                break;
+            }
         }
 
         if(path == null){
@@ -235,18 +248,18 @@ public class Ghost extends Character{
         switch(direction){
             case UP:
                 eyeXOffset = 0;
-                return new Texture(Gdx.files.internal("sprites/eyes/d.png"));
+                return eyesDown ;
             case DOWN:
                 eyeXOffset = 0;
-                return new Texture(Gdx.files.internal("sprites/eyes/u.png"));
+                return eyesUp;
             case LEFT:
                 eyeXOffset = -1;
-                return new Texture(Gdx.files.internal("sprites/eyes/l.png"));
+                return eyesLeft;
             case RIGHT:
                 eyeXOffset = 1;
-                return new Texture(Gdx.files.internal("sprites/eyes/r.png"));
+                return eyesRight;
             default:
-                return null;
+                return eyesUp;
         }
     }
 
@@ -302,26 +315,25 @@ public class Ghost extends Character{
     }
 
     public void die(){
+        deathLocation = Utils.getPositionByIndex(getColumn(), getRow(), game.tileWidth, game.tileHeight);
         isDying = true;
-        canMove = false;
         isVisible = false;
         showPoints = true;
         deathSound.play();
         game.player.increaseScore(200);
+        speed = 2f;
+        recalculatePath();
 
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                Gdx.app.postRunnable(new Runnable() {
-                    @Override
-                    public void run() {
-                        setPosition(getPositionByIndex(startingLocation.getX(), startingLocation.getY(), game.tileWidth, game.tileHeight));
-                        isDying = false;
-                        isVisible = true;
-                        showPoints = false;
-                        canMove = true;
-                    }
+                Gdx.app.postRunnable(() -> {
+                    setPosition(getPositionByIndex(startingLocation.getX(), startingLocation.getY(), game.tileWidth, game.tileHeight));
+                    isDying = false;
+                    isVisible = true;
+                    showPoints = false;
+                    speed = 0.75f;
                 });
             }
         }, (long) (pointsDisplayTime * 1000));
