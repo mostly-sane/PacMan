@@ -32,6 +32,12 @@ public class Ghost extends Character{
     public float pointsDisplayTime = 2.0f;
     private float pointsElapsed = 0f;
 
+    protected Texture frightened0 = new Texture(Gdx.files.internal("sprites/ghosts/f-0.png"));
+    protected Texture frightened1 = new Texture(Gdx.files.internal("sprites/ghosts/f-1.png"));
+
+    protected Texture moving0;
+    protected Texture moving1;
+
 
     public Ghost(int width, int height, Texture texture, PacMan game, Pair<Integer, Integer> startingLocation) {
         super(width, height, texture, game);
@@ -242,6 +248,18 @@ public class Ghost extends Character{
             default:
                 return null;
         }
+    }
+
+    @Override
+    public Animation getMovingAnimation(){
+        if(game.stage == PacMan.Stage.FRIGHTENED){
+            movingFrames[0] = new TextureRegion(frightened0);
+            movingFrames[1] = new TextureRegion(frightened1);
+        } else{
+            movingFrames[0] = new TextureRegion(moving0);
+            movingFrames[1] = new TextureRegion(moving1);
+        }
+        return new Animation(0.2f, movingFrames);
     }
 
     public Animation getCurrentAnimation(){

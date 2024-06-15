@@ -12,24 +12,9 @@ import com.pacman.Utils;
 public class Pinky extends Ghost{
     public Pinky(int width, int height, Texture texture, PacMan game, Pair<Integer, Integer> startingLocation) {
         super(width, height, texture, game, startingLocation);
-    }
 
-    @Override
-    public Animation getMovingAnimation(){
-        if(game.stage == PacMan.Stage.FRIGHTENED){
-            Texture texture0 = new Texture(Gdx.files.internal("sprites/ghosts/f-0.png"));
-            Texture texture1 = new Texture(Gdx.files.internal("sprites/ghosts/f-1.png"));
-
-            movingFrames[0] = new TextureRegion(texture0);
-            movingFrames[1] = new TextureRegion(texture1);
-        } else{
-            Texture texture0 = new Texture(Gdx.files.internal("sprites/ghosts/p-0.png"));
-            Texture texture1 = new Texture(Gdx.files.internal("sprites/ghosts/p-1.png"));
-
-            movingFrames[0] = new TextureRegion(texture0);
-            movingFrames[1] = new TextureRegion(texture1);
-        }
-        return new Animation(0.2f, movingFrames);
+        moving0 = new Texture("sprites/ghosts/p-0.png");
+        moving1 = new Texture("sprites/ghosts/p-1.png");
     }
 
     @Override
