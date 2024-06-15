@@ -3,6 +3,7 @@ package com.pacman.Characters;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.pacman.AI.Node;
 import com.pacman.Components.PathfindingComponent;
@@ -24,6 +25,7 @@ public class Ghost extends Character{
     public Pair<Integer, Integer> startingLocation;
     public boolean isDying = false;
     Sound deathSound = Gdx.audio.newSound(Gdx.files.internal("sprites/Sounds/ghostdeath.mp3"));
+    public boolean fearEnding = false;
 
     public boolean isVisible = true;
     public boolean showPoints = false;
@@ -241,6 +243,25 @@ public class Ghost extends Character{
                 return null;
         }
     }
+
+    public Animation getCurrentAnimation(){
+        if(fearEnding){
+            return getFrightenedExitAnimation();
+        } else{
+            return getMovingAnimation();
+        }
+    }
+
+    public Animation getFrightenedExitAnimation() {
+        Texture texture0 = new Texture(Gdx.files.internal("sprites/ghosts/f-1.png"));
+        Texture texture1 = new Texture(Gdx.files.internal("sprites/ghosts/f-2.png"));
+
+        movingFrames[0] = new TextureRegion(texture0);
+        movingFrames[1] = new TextureRegion(texture1);
+
+        return new Animation(0.2f, movingFrames);
+    }
+
 
     public void turnAround(){
         if(direction == null){

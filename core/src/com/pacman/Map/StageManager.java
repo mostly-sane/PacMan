@@ -70,6 +70,9 @@ public class StageManager {
                 changeStage(game);
                 game.scaredSound.stop();
                 game.ghostSound.loop();
+                for(Ghost ghost : game.ghosts){
+                    ghost.fearEnding = false;
+                }
             }
         };
         timer.schedule(currentTask, POWER_PILL_DURATION);

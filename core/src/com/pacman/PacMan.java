@@ -70,7 +70,6 @@ private Texture lifeTexture;
 	private PlayerController controller;
 	public Player player;
 	private BitmapFont scoreFont;
-	private int score;
 
 	private Texture gameOverTexture;
 	private boolean isGameOver = false;
@@ -103,6 +102,16 @@ private Texture lifeTexture;
 
 	public void activatePowerMode() {
 		stageManager.activatePowerMode(this);
+
+		Timer timer = new Timer();
+		timer.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				for(Ghost ghost : ghosts){
+					ghost.fearEnding = true;
+				}
+			}
+		}, 3000);
 	}
 
 	public enum Stage {
@@ -128,7 +137,6 @@ private Texture lifeTexture;
 		initializeSound();
 		loadHighScore();
 		scoreFont = new BitmapFont();
-		score = 0;
 	}
 
 	private void initializeSound() {
@@ -164,17 +172,12 @@ private Texture lifeTexture;
 		point200 = new Texture(Gdx.files.internal("sprites/ui/200.png"));
 		lifeTexture = new Texture(Gdx.files.internal("sprites/ui/life.png"));
 		gameOverTexture = new Texture(Gdx.files.internal("sprites/ui/gameover.png"));
-
-
 	}
 
 	private void initializeGame(Pair<Integer, Integer> startingLocation, String levelFile, String pillFile) {
 		initializeLevel(levelFile, pillFile);
 		initializePlayer(startingLocation);
 		initializeGhosts();
-
-		ghostSound.loop();
-		ghostSound.setVolume((long) 1.5, 1.5f);
 
 		redrawGrid();
 
@@ -193,6 +196,8 @@ private Texture lifeTexture;
 					ghost.canMove = true;
 				}
 				elapsedTime = 0;
+				ghostSound.loop();
+				ghostSound.setVolume((long) 1.5, 1.5f);
 				initializeStages();
 			}
 		}, 4500);
@@ -284,7 +289,7 @@ private Texture lifeTexture;
 
 		if (gameState == GameState.TITLE_SCREEN) {
 			renderTitleScreen();
-		} else if (gameState == GameState.PLAYING || gameState == GameState.GAME_OVER) {
+		} else{
 			renderGame();
 		}
 	}
@@ -303,7 +308,7 @@ private Texture lifeTexture;
 		TextureRegion currentGhostFrame = ghostAnimation.getKeyFrame(stateTime, true);
 		batch.draw(currentGhostFrame, appW / 2 + 100, appH / 2 + 100);
 		batch.draw(ghostEyeTexture, appW / 2 + 100, appH / 2 + 100);
-batch.end();
+		batch.end();
 		com.badlogic.gdx.scenes.scene2d.Stage stage = new com.badlogic.gdx.scenes.scene2d.Stage();
 		Gdx.input.setInputProcessor(stage);
 
@@ -394,10 +399,9 @@ batch.end();
 		batch.draw(textureRegion, 0, 0);
 		batch.end();
 		controller.update();
-		for(Ghost ghost : ghosts){
-			if(ghost != null){
+		for (Ghost ghost : ghosts) {
+			if (ghost != null) {
 				ghost.update();
-				//ghost.drawPath(shapeRenderer, pathDrawer);
 			}
 		}
 		player.update();
@@ -423,7 +427,7 @@ batch.end();
 				if (ghost.showPoints) {
 					batch.draw(point200, ghost.getPosition().getX(), ghost.getPosition().getY(), playerWidth, playerHeight);
 				} else if (ghost.isVisible) {
-					TextureRegion currentGhostFrame = (TextureRegion) ghost.getMovingAnimation().getKeyFrame(stateTime, true);
+					TextureRegion currentGhostFrame = (TextureRegion) ghost.getCurrentAnimation().getKeyFrame(stateTime, true);
 					batch.draw(currentGhostFrame, ghost.getPosition().getX(), ghost.getPosition().getY(),
 							playerWidth / 2, playerHeight / 2, playerWidth, playerHeight, 1, 1, 0);
 					if (stage != Stage.FRIGHTENED) {
@@ -452,8 +456,6 @@ batch.end();
 			saveHighScore();
 		}
 	}
-
-
 
 	private void drawPills() {
 		for (int i = 0; i < rows; i++) {
@@ -584,7 +586,6 @@ batch.end();
 		winSound.play();
 	}
 
-
 	private void loadHighScore() {
 		highScoreFile = Gdx.files.local("levels/highscore.txt");
 		if (highScoreFile.exists()) {
@@ -600,15 +601,4 @@ batch.end();
 	private void saveHighScore() {
 		highScoreFile.writeString(Integer.toString(highScore), false);
 	}
-
-	public void updateScore(int score) {
-		this.score += score;
-		if (score > highScore) {
-			highScore = score;
-			saveHighScore();
-		}
-	}
-
-
-
 }
