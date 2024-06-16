@@ -102,6 +102,8 @@ public class PacMan extends ApplicationAdapter {
 	public Texture openTexture;
 	public Texture closedTexture;
 
+	Timer startupTimer;
+
 	public void activatePowerMode() {
 		stageManager.activatePowerMode(this);
 
@@ -194,7 +196,7 @@ public class PacMan extends ApplicationAdapter {
 			ghost.canMove = false;
 		}
 
-		Timer startupTimer = new Timer();
+		startupTimer = new Timer();
 		startupTimer.schedule(new TimerTask() {
 			@Override
 			public void run() {
@@ -595,5 +597,14 @@ font.setColor(Color.YELLOW);
 
 	private void saveHighScore() {
 		highScoreFile.writeString(Integer.toString(highScore), false);
+	}
+
+	public void openMenu(){
+		if(gameState == GameState.PLAYING){
+			startupTimer.cancel();
+			gameState = GameState.TITLE_SCREEN;
+			ghostSound.stop();
+			startupSound.stop();
+		}
 	}
 }

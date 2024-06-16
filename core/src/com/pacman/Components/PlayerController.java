@@ -127,6 +127,9 @@ public class PlayerController extends InputAdapter {
                 desiredMovementDirection.set(MOVE_AMOUNT, 0);
                 desiredDirection = Character.Direction.RIGHT;
             break;
+            case Input.Keys.ESCAPE:
+                player.game.openMenu();
+                break;
         }
         return true;
     }
