@@ -169,6 +169,7 @@ public class PacMan extends ApplicationAdapter {
 		stateTime = 0f;
 
 		font = new BitmapFont();
+		font = new BitmapFont(Gdx.files.internal("sprites/skin/commodore-64.fnt"));
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, appW, appH);
 		batch = new SpriteBatch();
@@ -430,9 +431,10 @@ public class PacMan extends ApplicationAdapter {
 		batch.draw(currentFrame, player.getPosition().getX(), player.getPosition().getY(),
 				playerWidth / 2, playerHeight / 2, playerWidth, playerHeight,
 				1, 1, player.animationComponent.rotation);
-
+font.getData().setScale(0.7f);
+font.setColor(Color.YELLOW);
 		font.draw(batch, "Score: " + player.getScore(), 10, appH - 20);
-		font.draw(batch, "High Score: " + highScore, 340, appH - 20);
+		font.draw(batch, "HighScore: " + highScore, 288, appH - 20);
 		for (int i = 0; i < playerLives; i++) {
 			batch.draw(lifeTexture, 200 + i * 20, appH - 40, 30, 30);
 		}
