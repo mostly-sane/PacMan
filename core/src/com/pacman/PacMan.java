@@ -35,11 +35,13 @@ public class PacMan extends ApplicationAdapter {
 		public String levelFile;
 		public String pillFile;
 		public Pair<Integer, Integer> startingLocation;
+		public boolean isCompleted;
 
 		public LevelStruct(String levelFile, String pillFile, Pair<Integer, Integer> startingLocation){
 			this.levelFile = levelFile;
 			this.pillFile = pillFile;
 			this.startingLocation = startingLocation;
+			this.isCompleted = false;
 		}
 	}
 
@@ -101,6 +103,7 @@ public class PacMan extends ApplicationAdapter {
 
 	public Texture openTexture;
 	public Texture closedTexture;
+	public Texture greenTickTexture;
 
 	Timer startupTimer;
 
@@ -181,6 +184,7 @@ public class PacMan extends ApplicationAdapter {
 		lifeTexture = new Texture(Gdx.files.internal("sprites/ui/life.png"));
 		gameOverTexture = new Texture(Gdx.files.internal("sprites/ui/gameover.png"));
 	backgroundTexture = new Texture(Gdx.files.internal("sprites/ui/background.png"));
+		greenTickTexture = new Texture(Gdx.files.internal("sprites/ui/green_tick.png"));
 	}
 
 	private void initializeGame(Pair<Integer, Integer> startingLocation, String levelFile, String pillFile) {
@@ -390,6 +394,18 @@ batch.draw(backgroundTexture, 0, 0);
 		level2Button.setPosition(appW / 2 - level2Button.getWidth() / 2, appH / 2);
 		level3Button.setPosition(appW / 2 - level3Button.getWidth() / 2, appH / 2 - 50);
 
+		batch.begin();
+		if (currentLevel.levelFile.equals("level1") && currentLevel.isCompleted) {
+			batch.draw(greenTickTexture, appW / 2 + level1Button.getWidth() / 2 + 10, appH / 2 + 50);
+		}
+		if (currentLevel.levelFile.equals("level2") && currentLevel.isCompleted) {
+			batch.draw(greenTickTexture, appW / 2 + level2Button.getWidth() / 2 + 10, appH / 2);
+		}
+		if (currentLevel.levelFile.equals("default") && currentLevel.isCompleted) {
+			batch.draw(greenTickTexture, appW / 2 + level3Button.getWidth() / 2 + 10, appH / 2 - 50);
+		}
+		batch.end();
+
 		stage.draw();
 
 		if (Gdx.input.isTouched()) {
@@ -581,6 +597,7 @@ font.setColor(Color.YELLOW);
 		player.controller.canMove = false;
 		Sound winSound = Gdx.audio.newSound(Gdx.files.internal("sprites/Sounds/win.mp3"));
 		winSound.play();
+		currentLevel.isCompleted = true;
 	}
 
 	private void loadHighScore() {
