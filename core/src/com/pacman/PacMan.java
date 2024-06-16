@@ -47,6 +47,7 @@ public class PacMan extends ApplicationAdapter {
 	private FrameBuffer frameBuffer;
 	private TextureRegion textureRegion;
 	private Texture titleScreenTexture;
+	private Texture backgroundTexture;
 	private Animation<TextureRegion> pacmanAnimation;
 	private Animation<TextureRegion> ghostAnimation;
 	private float stateTime;
@@ -177,6 +178,7 @@ public class PacMan extends ApplicationAdapter {
 		point200 = new Texture(Gdx.files.internal("sprites/ui/200.png"));
 		lifeTexture = new Texture(Gdx.files.internal("sprites/ui/life.png"));
 		gameOverTexture = new Texture(Gdx.files.internal("sprites/ui/gameover.png"));
+	backgroundTexture = new Texture(Gdx.files.internal("sprites/ui/background.png"));
 	}
 
 	private void initializeGame(Pair<Integer, Integer> startingLocation, String levelFile, String pillFile) {
@@ -303,7 +305,7 @@ public class PacMan extends ApplicationAdapter {
 
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		batch.begin();
-
+batch.draw(backgroundTexture, 0, 0);
 		stateTime += Gdx.graphics.getDeltaTime();
 		TextureRegion currentPacmanFrame = pacmanAnimation.getKeyFrame(stateTime, true);
 		batch.draw(currentPacmanFrame, appW / 2 - 100, appH / 2 + 100);
