@@ -243,7 +243,7 @@ public class Ghost extends Character{
 
     public Texture getEyeTexture(){
         if(direction == null){
-            return null;
+            return eyesUp;
         }
         switch(direction){
             case UP:
