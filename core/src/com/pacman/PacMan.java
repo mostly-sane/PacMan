@@ -622,6 +622,7 @@ font.setColor(Color.YELLOW);
 			gameState = GameState.TITLE_SCREEN;
 			ghostSound.stop();
 			startupSound.stop();
+			playerLives = 3;
 		}
 	}
 }
