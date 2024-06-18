@@ -86,4 +86,10 @@ public class Player extends Character {
 
         movingAnimation = new Animation(0.1f, movingFrames);
     }
+
+    public void increaseLives() {
+        if(game.playerLives < 3){
+            game.playerLives++;
+        }
+    }
 }

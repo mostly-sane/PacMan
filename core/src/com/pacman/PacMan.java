@@ -61,7 +61,7 @@ public class PacMan extends ApplicationAdapter {
 	public ArrayList<Pair<Stage, Double>> stageTimes = new ArrayList<>();
 	public int totalPills = 0;
 	private int highScore = 0;
-	private int playerLives = 3;
+	public int playerLives = 3;
 	private FileHandle highScoreFile;
 	private Texture lifeTexture;
 	float elapsedTime = 0;
@@ -451,8 +451,8 @@ batch.draw(backgroundTexture, 0, 0);
 		batch.draw(currentFrame, player.getPosition().getX(), player.getPosition().getY(),
 				playerWidth / 2, playerHeight / 2, playerWidth, playerHeight,
 				1, 1, player.animationComponent.rotation);
-font.getData().setScale(0.7f);
-font.setColor(Color.YELLOW);
+		font.getData().setScale(0.7f);
+		font.setColor(Color.YELLOW);
 		font.draw(batch, "Score: " + player.getScore(), 10, appH - 20);
 		font.draw(batch, "HighScore: " + highScore, 288, appH - 20);
 		for (int i = 0; i < playerLives; i++) {

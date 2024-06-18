@@ -94,6 +94,9 @@ public class PlayerController extends InputAdapter {
                             case Pill.CHERRY:
                                 player.increaseScore(200);
                             break;
+                            case Pill.HEAL:
+                                player.increaseLives();
+                            break;
                         }
                         pillsConsumed++;
                         pill.texture.dispose();

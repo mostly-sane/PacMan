@@ -7,6 +7,7 @@ public class Pill extends Rectangle {
     public static final int REGULAR_PILL = 1;
     public static final int POWER_PILL = 2;
     public static final int CHERRY = 3;
+    public static final int HEAL = 4;
 
     public int type;
     public Texture texture;
@@ -28,6 +29,9 @@ public class Pill extends Rectangle {
                 break;
             case CHERRY:
                 texturePath = "sprites/fruits/cherry.png";
+                break;
+            case HEAL:
+                texturePath = "sprites/ui/life.png";
                 break;
             default:
                 texturePath = null;
